@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Lançamento de Bolões</title>
+
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+
+  <style>
+    html,body{margin:0;height:100%;background:#f5f7fb;font-family:system-ui,-apple-system,Segoe UI,Roboto}
+    .top{height:44px;display:flex;align-items:center;justify-content:center;font-weight:900}
+    iframe{border:0;width:100%;height:calc(100% - 44px)}
+  </style>
+</head>
+<body>
+  <div class="top">Lançamento de Bolões</div>
+
+  <iframe
+    src="https://script.google.com/macros/s/AKfycbykQ0zJuohYKDbg09_Jcg5xrN7xHh_UjwcoOXFO-Rhp6DsJXVx9DfwW8fbE1SOUzdwL/exec">
+  </iframe>
+
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+  </script>
+</body>
+</html>
