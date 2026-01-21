@@ -1,5 +1,5 @@
-/* service-worker.js */
-const CACHE_NAME = "bolo-pwa-v3"; // <-- toda vez que der problema, sobe esse número
+const CACHE_NAME = "bolo-pwa-v1";
+
 const ASSETS = [
   "/bolo-pwa/",
   "/bolo-pwa/index.html",
@@ -17,7 +17,6 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
-      // limpa TUDO que não for o cache atual
       const keys = await caches.keys();
       await Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)));
       await self.clients.claim();
@@ -25,17 +24,15 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// NÃO cachear a API do Apps Script e nem JSONP script
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // API do Apps Script: sempre rede
+  // Apps Script: sempre rede (não cachear)
   if (url.hostname === "script.google.com" || url.hostname.endsWith("googleusercontent.com")) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // App shell: cache-first
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
