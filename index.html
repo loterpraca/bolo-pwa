@@ -530,7 +530,7 @@
 
     $("btnCadastrar").addEventListener("click", onCadastrar);
     $("btnDeletar").addEventListener("click", async () => {
-  const ok = confirm("Confirmar deleção do bolão?\nIsso envia -999 e remove o bolão da mestra.");
+  const ok = confirm("Confirmar deleção do bolão no"&lojaOrigem || "?" );
   if (!ok) return;
   await onDeletar();
 });
