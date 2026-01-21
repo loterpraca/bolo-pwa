@@ -530,7 +530,8 @@
 
     $("btnCadastrar").addEventListener("click", onCadastrar);
     $("btnDeletar").addEventListener("click", async () => {
-  const ok = confirm(`Confirmar deleção do bolão no ${lojaOrigem || "?"}?`);
+  const loja = document.getElementById("lojaOrigem").value;
+  const ok = confirm(`Confirmar deleção do bolão em ${loja}?`);
   if (!ok) return;
   await onDeletar();
 });
