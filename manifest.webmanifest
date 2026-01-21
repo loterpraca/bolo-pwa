@@ -1,7 +1,8 @@
 {
   "name": "Loterpraça - Bolões",
   "short_name": "Bolões",
-  "start_url": ".",
+  "start_url": "/bolo-pwa/",
+  "scope": "/bolo-pwa/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
