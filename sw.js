@@ -1,5 +1,5 @@
 /* service-worker.js */
-const CACHE_NAME = "bolo-pwa-v1";
+const CACHE_NAME = "bolo-pwa-v2";
 const ASSETS = [
   "/bolo-pwa/",
   "/bolo-pwa/index.html",
