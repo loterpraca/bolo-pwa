@@ -206,11 +206,7 @@
         <button type="button" class="btn-danger" id="btnDeletar" title="Deleta o bolão (envia -999)">Deletar bolao</button>
         <button type="button" class="btn-ghost" id="btnLimpar">Limpar</button>
       </div>
-
-      <div class="hint">
-        Regra: se Modalidade + Concurso + Valor da Cota forem iguais, o cadastro soma as cotas (mesmo com jogos/dezenas diferentes).
-      </div>
-
+    
       <div id="status" class="status muted">Pronto.</div>
     </div>
 
@@ -219,22 +215,22 @@
 
       <div class="grid">
         <div class="field">
-          <label>Boulevard (E4)</label>
+          <label>Boulevard </label>
           <input id="deltaBoulevard" inputmode="numeric" />
         </div>
         <div class="field">
-          <label>Centro (E5)</label>
+          <label>Centro </label>
           <input id="deltaCentro" inputmode="numeric" />
         </div>
       </div>
 
       <div class="grid">
         <div class="field">
-          <label>Lotobel (E6)</label>
+          <label>Lotobel </label>
           <input id="deltaLotobel" inputmode="numeric" />
         </div>
         <div class="field">
-          <label>Santa Tereza (E7)</label>
+          <label>Santa Tereza </label>
           <input id="deltaSantaTereza" inputmode="numeric" />
         </div>
       </div>
@@ -243,20 +239,9 @@
         <button type="button" class="btn-dark" id="btnMovimentar">Movimentar</button>
         <button type="button" class="btn-ghost" id="btnZerarMov">Zerar</button>
       </div>
-
-      <div class="hint">
-        Cada destino cria uma linha no controle se não existir; se existir, soma na linha.
-      </div>
+    
     </div>
   </div>
-
-  <div class="footerBar">
-    <div class="footerInner">
-      <div class="small">GitHub Pages + PWA. API Apps Script (exec).</div>
-      <button type="button" class="btn-ghost" id="btnPing">Testar API</button>
-    </div>
-  </div>
-
 <script>
   /********************************************************
    * CONFIG
