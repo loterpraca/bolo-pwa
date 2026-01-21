@@ -1,5 +1,5 @@
 /* service-worker.js */
-const CACHE_NAME = "bolo-pwa-v2";
+const CACHE_NAME = "bolo-pwa-v3"; // <-- toda vez que der problema, sobe esse número
 const ASSETS = [
   "/bolo-pwa/",
   "/bolo-pwa/index.html",
@@ -9,42 +9,33 @@ const ASSETS = [
   "/bolo-pwa/icons/icon-512.png"
 ];
 
-// Instala e coloca tudo no cache
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
   self.skipWaiting();
 });
 
-// Ativa e limpa caches antigos
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)))
-    )
+    (async () => {
+      // limpa TUDO que não for o cache atual
+      const keys = await caches.keys();
+      await Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)));
+      await self.clients.claim();
+    })()
   );
-  self.clients.claim();
 });
 
-// Estratégia:
-// - Para arquivos do app: cache-first
-// - Para chamadas do Apps Script (/exec): network-first (senão você fica preso em resposta velha)
+// NÃO cachear a API do Apps Script e nem JSONP script
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // 🔥 NÃO cachear chamadas ao Apps Script
+  // API do Apps Script: sempre rede
   if (url.hostname === "script.google.com" || url.hostname.endsWith("googleusercontent.com")) {
-    event.respondWith(
-      fetch(event.request).catch(() => new Response(
-        JSON.stringify({ ok: false, message: "Sem internet para chamar a API." }),
-        { headers: { "Content-Type": "application/json" } }
-      ))
-    );
+    event.respondWith(fetch(event.request));
     return;
   }
 
-  // App files: cache first
+  // App shell: cache-first
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
