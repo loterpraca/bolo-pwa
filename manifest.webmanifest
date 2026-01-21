@@ -1,11 +1,12 @@
 {
-  "name": "Loterpraça - Bolões",
+  "name": "Lançamento de Bolões - Loterpraça",
   "short_name": "Bolões",
-  "start_url": "/bolo-pwa/",
+  "start_url": "/bolo-pwa/index.html",
   "scope": "/bolo-pwa/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
+  "description": "Lançamento e movimentação de bolões.",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
