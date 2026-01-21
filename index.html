@@ -1,328 +1,656 @@
-<!-- ARQUIVO: index.html
-ONDE COLOCAR: GitHub → repo bolo-pwa → arquivo index.html → Edit → cole TUDO → Commit changes
--->
 <!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Lançamento de Bolões</title>
 
-  <!-- IMPORTANTE: tudo RELATIVO (sem / no começo) -->
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icons/icon-192.png" />
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
 
   <style>
     :root{
-      --bg:#f7f7f8; --card:#ffffff; --text:#111827; --muted:#6b7280;
-      --border:#e5e7eb; --shadow:0 8px 24px rgba(0,0,0,.08);
-      --radius:18px;
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --txt:#121826;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --btn:#111827;
+      --btn2:#2563eb;
+      --danger:#dc2626;
+      --ok:#16a34a;
+      --shadow:0 10px 25px rgba(0,0,0,.07);
+      --radius:16px;
+      --pad:14px;
+      --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
     *{box-sizing:border-box}
     body{
-      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:var(--bg); color:var(--text);
-      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+      margin:0;
+      font-family:var(--font);
+      color:var(--txt);
+      background:var(--bg);
     }
-    .wrap{max-width:560px; margin:0 auto; padding:14px 12px 26px}
-    header{padding:10px 6px 12px}
-    h1{margin:0; font-size:1.25rem; letter-spacing:-.2px}
-    .sub{margin-top:6px; color:var(--muted); font-size:.95rem; line-height:1.25rem}
+    .wrap{
+      max-width:920px;
+      margin:0 auto;
+      padding:14px 12px 90px;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .title{
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:.2px;
+      margin:0;
+    }
+    .chip{
+      font-size:12px;
+      color:var(--muted);
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 10px;
+    }
     .card{
-      background:var(--card); border:1px solid var(--border);
-      border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:14px;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:var(--pad);
+      margin:10px 0;
     }
-    .grid{display:grid; gap:10px}
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-    label{font-size:.9rem; color:var(--muted)}
-    input, select, textarea, button{
-      width:100%; font-size:1.05rem; padding:12px 12px;
-      border-radius:14px; border:1px solid var(--border);
-      background:#fff; color:var(--text); outline:none;
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
     }
-    input:focus, select:focus, textarea:focus{
-      border-color:#cbd5e1; box-shadow:0 0 0 4px rgba(148,163,184,.25);
+    .grid3{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
     }
-    textarea{min-height:72px; resize:vertical}
-    .btn{
-      border:none; background:#111827; color:#fff; font-weight:800;
-      padding:13px 14px; border-radius:16px; cursor:pointer;
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
     }
-    .btn2{
-      border:1px solid var(--border); background:#fff; color:#111827; font-weight:800;
-      padding:13px 14px; border-radius:16px; cursor:pointer;
+    .field label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 6px 2px;
     }
-    .btn:disabled,.btn2:disabled{opacity:.55; cursor:not-allowed}
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      border:1px solid var(--border); background:#fff;
-      border-radius:999px; padding:8px 12px; font-size:.9rem; color:var(--muted);
+    .field input, .field select{
+      width:100%;
+      font-size:16px;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      outline:none;
+      background:#fff;
     }
-    .topbar{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:10px}
-    .hint{font-size:.88rem; color:var(--muted); margin-top:10px; line-height:1.25rem}
-    .toast{
-      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
-      background:#111827; color:#fff; padding:12px 14px; border-radius:14px;
-      box-shadow:0 10px 30px rgba(0,0,0,.18);
-      opacity:0; pointer-events:none; transition:opacity .2s ease;
-      max-width:92vw; font-size:.95rem;
+    .field input:focus, .field select:focus{
+      border-color:#93c5fd;
+      box-shadow:0 0 0 3px rgba(59,130,246,.15);
     }
-    .toast.show{opacity:1}
-    .sep{height:1px; background:var(--border); margin:10px 0}
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:8px;
+      line-height:1.35;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    button{
+      border:0;
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      min-height:46px;
+    }
+    .btn-primary{ background:var(--btn2); color:#fff; flex:1; }
+    .btn-dark{ background:var(--btn); color:#fff; flex:1; }
+    .btn-danger{ background:var(--danger); color:#fff; }
+    .btn-ghost{ background:#fff; border:1px solid var(--line); color:var(--txt); }
+    .status{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px dashed var(--line);
+      background:#fff;
+      font-size:14px;
+      line-height:1.35;
+      white-space:pre-line;
+    }
+    .ok{ border-color: rgba(22,163,74,.35); background: rgba(22,163,74,.06); }
+    .err{ border-color: rgba(220,38,38,.35); background: rgba(220,38,38,.06); }
+    .muted{ color:var(--muted); }
+
+    .sectionTitle{
+      font-size:14px;
+      font-weight:800;
+      margin:0 0 10px;
+    }
+
+    .miniGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+
+    .footerBar{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      background:#ffffffcc;
+      backdrop-filter: blur(10px);
+      border-top:1px solid var(--line);
+      padding:10px 12px;
+    }
+    .footerInner{
+      max-width:920px;
+      margin:0 auto;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    @media (max-width:720px){
+      .grid, .grid3{ grid-template-columns: 1fr; }
+      .footerInner{ flex-direction:column; align-items:flex-start; }
+      .title{ font-size:18px; }
+      .field input, .field select{ font-size:17px; }
+      button{ font-size:17px; }
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <header>
-      <h1>Lançamento de Bolões</h1>
-      <div class="sub">PWA instalável + cadastrar/movimentar via Apps Script.</div>
-      <div class="topbar">
-        <span class="pill" id="status">📡 Online</span>
-        <button class="btn2" type="button" id="btnInstalar" style="display:none">📲 Instalar</button>
-      </div>
+      <h1 class="title">Lançamento de Bolões</h1>
+      <div class="chip" id="pwaChip">PWA: verificando…</div>
     </header>
 
-    <section class="card">
-      <form id="form" class="grid" autocomplete="off">
+    <div class="card">
+      <p class="sectionTitle">Dados do bolão</p>
 
-        <div class="row">
-          <div>
-            <label>Loja de origem</label>
-            <select id="lojaOrigem" required>
-              <option value="" selected>Selecione</option>
-              <option>Centro</option>
-              <option>Lotobel</option>
-              <option>Boulevard</option>
-              <option>Santa Tereza</option>
-            </select>
-          </div>
-          <div>
-            <label>Modalidade</label>
-            <input id="modalidade" placeholder="Ex: Lotofácil" required />
-          </div>
+      <div class="grid">
+        <div class="field">
+          <label>Loja de origem (obrigatório)</label>
+          <select id="lojaOrigem" required>
+            <option value="">Selecione…</option>
+            <option>Centro</option>
+            <option>Lotobel</option>
+            <option>Boulevard</option>
+            <option>Santa Tereza</option>
+          </select>
         </div>
 
-        <div class="row">
-          <div>
-            <label>Concurso</label>
-            <input id="concurso" inputmode="numeric" placeholder="Ex: 3590" required />
-          </div>
-          <div>
-            <label>Qtd Jogos</label>
-            <input id="qtdJogos" inputmode="numeric" placeholder="Opcional" />
-          </div>
+        <div class="field">
+          <label>Modalidade (obrigatório)</label>
+          <select id="modalidade" required>
+            <option value="">Selecione…</option>
+            <option>Mega Sena</option>
+            <option>Lotofácil</option>
+            <option>Quina</option>
+            <option>Dupla Sena</option>
+            <option>Dia de Sorte</option>
+            <option>Super Sete</option>
+            <option>+Milionária</option>
+            <option>Timemania</option>
+            <option>Lotomania</option>
+            <option>Federal</option>
+
+            <!-- Especiais -->
+            <option>Páscoa</option>
+            <option>São João</option>
+            <option>Independência</option>
+            <option>Virada</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label>Concurso (obrigatório)</label>
+          <input id="concurso" inputmode="numeric" placeholder="Ex: 3890" required />
         </div>
 
-        <div class="row">
-          <div>
-            <label>Qtd Dezenas</label>
-            <input id="qtdDezenas" inputmode="numeric" placeholder="Opcional" />
-          </div>
-          <div>
-            <label>Cotas</label>
-            <input id="cotas" inputmode="numeric" placeholder="Ex: 25" required />
-          </div>
+        <div class="field">
+          <label>Valor da cota (R$) (obrigatório)</label>
+          <input id="valorCota" inputmode="decimal" placeholder="Ex: 112,44" required />
+        </div>
+      </div>
+
+      <!-- Datas lado a lado -->
+      <div class="miniGrid">
+        <div class="field">
+          <label>Data inicial (obrigatório)</label>
+          <input id="dataInicial" type="date" required />
+        </div>
+        <div class="field">
+          <label>Data do concurso (obrigatório)</label>
+          <input id="dataConcurso" type="date" required />
+        </div>
+      </div>
+
+      <div class="grid3">
+        <div class="field">
+          <label>Qtd de Jogos (obrigatório)</label>
+          <input id="qtdJogos" inputmode="numeric" placeholder="Ex: 7" required />
         </div>
 
-        <div>
-          <label>Valor da cota (R$)</label>
-          <input id="valorCota" inputmode="decimal" placeholder="Ex: 21,00" required />
+        <div class="field">
+          <label>Qtd de Dezenas (obrigatório)</label>
+          <input id="qtdDezenas" inputmode="numeric" placeholder="Ex: 17" required />
         </div>
 
-        <div class="sep"></div>
-
-        <div>
-          <label>Movimentação (positivo/negativo)</label>
-          <div class="row">
-            <input id="deltaBoulevard" inputmode="numeric" placeholder="Boulevard (E4)" />
-            <input id="deltaCentro" inputmode="numeric" placeholder="Centro (E5)" />
-          </div>
-          <div class="row" style="margin-top:10px">
-            <input id="deltaLotobel" inputmode="numeric" placeholder="Lotobel (E6)" />
-            <input id="deltaSantaTereza" inputmode="numeric" placeholder="Santa Tereza (E7)" />
-          </div>
+        <div class="field">
+          <label>Qtde de Cotas (obrigatório)</label>
+          <input id="cotas" inputmode="numeric" placeholder="Ex: 38" required />
         </div>
+      </div>
 
-        <div class="row" style="margin-top:4px">
-          <button class="btn" id="btnCadastrar" type="button">✅ Cadastrar</button>
-          <button class="btn2" id="btnMovimentar" type="button">🔁 Movimentar</button>
-        </div>
+      <div class="actions">
+        <button class="btn-primary" id="btnCadastrar">Cadastrar / Somar cotas</button>
+        <button class="btn-danger" id="btnDeletar" title="Deleta o bolão (envia -999)">Deletar bolão</button>
+        <button class="btn-ghost" id="btnLimpar">Limpar</button>
+      </div>
 
-        <div class="row">
-          <button class="btn2" id="btnLimpar" type="button">🧹 Limpar</button>
-          <button class="btn2" id="btnTeste" type="button">🧪 Testar conexão</button>
-        </div>
+      <div class="hint">
+        Regra do seu script: ao cadastrar, se <b>modalidade + concurso + valor da cota</b> forem iguais, ele <b>soma as cotas</b>
+        mesmo que <b>qtd de jogos/dezenas</b> sejam diferentes.
+      </div>
 
-        <div class="hint">
-          Se estiver offline, o app abre normalmente (PWA). Para gravar, precisa internet.
+      <div id="status" class="status muted">Pronto.</div>
+    </div>
+
+    <div class="card">
+      <p class="sectionTitle">Movimentar (Controle) — E4:E7</p>
+
+      <div class="grid">
+        <div class="field">
+          <label>Adicionar / Subtrair para Boulevard (E4)</label>
+          <input id="deltaBoulevard" inputmode="numeric" placeholder="Ex: 10 ou -10" />
         </div>
-      </form>
-    </section>
+        <div class="field">
+          <label>Adicionar / Subtrair para Centro (E5)</label>
+          <input id="deltaCentro" inputmode="numeric" placeholder="Ex: 10 ou -10" />
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label>Adicionar / Subtrair para Lotobel (E6)</label>
+          <input id="deltaLotobel" inputmode="numeric" placeholder="Ex: 10 ou -10" />
+        </div>
+        <div class="field">
+          <label>Adicionar / Subtrair para Santa Tereza (E7)</label>
+          <input id="deltaSantaTereza" inputmode="numeric" placeholder="Ex: 10 ou -10" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-dark" id="btnMovimentar">Movimentar</button>
+        <button class="btn-ghost" id="btnZerarMov">Zerar E4:E7</button>
+      </div>
+
+      <div class="hint">
+        Movimentar cria uma linha se não existir e soma na linha se já existir (por origem+destino+modalidade+concurso+valor).
+      </div>
+    </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="footerBar">
+    <div class="footerInner">
+      <div class="small">
+        GitHub Pages + PWA. API Apps Script (exec).
+      </div>
+      <button class="btn-ghost" id="btnPing">Testar API (ping)</button>
+    </div>
+  </div>
 
-  <script>
-    // ====== URL DO SEU WEB APP (/exec) ======
-    const API_URL = "https://script.google.com/macros/s/AKfycbyqAsmTKUCPWe0llx4rly6PJXS0CcX2mYZIEs0GII9oHYjCxGrkWDw5zI6BlVb-9wi5/exec";
+<script>
+  /********************************************************
+   * CONFIG
+   ********************************************************/
+  const API_URL = "https://script.google.com/macros/s/AKfycbyqAsmTKUCPWe0llx4rly6PJXS0CcX2mYZIEs0GII9oHYjCxGrkWDw5zI6BlVb-9wi5/exec";
 
-    // ====== registrar service worker (RELATIVO) ======
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
+  /********************************************************
+   * HELPERS UI
+   ********************************************************/
+  const $ = (id) => document.getElementById(id);
 
-    // ====== PWA install ======
-    let deferredPrompt = null;
-    const btnInstalar = document.getElementById('btnInstalar');
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      btnInstalar.style.display = 'block';
-    });
-    btnInstalar.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      btnInstalar.style.display = 'none';
-    });
+  function setStatus(msg, type="muted"){
+    const el = $("status");
+    el.classList.remove("ok","err","muted");
+    el.classList.add(type);
+    el.textContent = msg;
+  }
 
-    // ====== status ======
-    const statusEl = document.getElementById('status');
-    function updateStatus(){ statusEl.textContent = navigator.onLine ? '📡 Online' : '📴 Offline'; }
-    window.addEventListener('online', updateStatus);
-    window.addEventListener('offline', updateStatus);
-    updateStatus();
+  function onlyDigits(v){ return String(v||"").replace(/[^\d\-]/g,""); }
 
-    // ====== toast ======
-    const toast = document.getElementById('toast');
-    let toastTimer;
-    function showToast(msg){
-      toast.textContent = msg;
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=>toast.classList.remove('show'), 2400);
-    }
+  function parseBRMoneyToNumber(v){
+    if (v == null) return 0;
+    const s = String(v).trim();
+    if (!s) return 0;
+    // remove R$, espaços, milhar
+    const cleaned = s.replace(/[R$\s]/g,"").replace(/\./g,"").replace(",",".");
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : 0;
+  }
 
-    // ====== helpers ======
-    const $ = (id) => document.getElementById(id);
+  function base64Json(obj){
+    const json = JSON.stringify(obj);
+    // btoa com utf-8 seguro
+    return btoa(unescape(encodeURIComponent(json)));
+  }
 
-    function parseBRNumber(v){
-      const s = String(v ?? "").trim();
-      if (!s) return 0;
-      // aceita "21,00" ou "21.00"
-      const norm = s.replace(/\./g,'').replace(',', '.');
-      const n = Number(norm);
-      return Number.isFinite(n) ? n : 0;
-    }
+  // JSONP para evitar CORS no Apps Script
+  function jsonp(url){
+    return new Promise((resolve, reject) => {
+      const cbName = "cb_" + Math.random().toString(36).slice(2);
+      const s = document.createElement("script");
+      const sep = url.includes("?") ? "&" : "?";
+      s.src = url + sep + "callback=" + cbName;
 
-    function parseIntSafe(v){
-      const s = String(v ?? "").trim();
-      if (!s) return 0;
-      const n = Number(s);
-      return Number.isFinite(n) ? Math.trunc(n) : 0;
-    }
+      const timer = setTimeout(() => {
+        cleanup();
+        reject(new Error("Timeout na chamada da API."));
+      }, 25000);
 
-    function coletarDados(){
-      return {
-        lojaOrigem: $('lojaOrigem').value.trim(),
-        modalidade: $('modalidade').value.trim(),
-        concurso: $('concurso').value.trim(),
-        qtdJogos: parseIntSafe($('qtdJogos').value),
-        qtdDezenas: parseIntSafe($('qtdDezenas').value),
-        cotas: parseIntSafe($('cotas').value),
-        valorCota: parseBRNumber($('valorCota').value),
+      function cleanup(){
+        clearTimeout(timer);
+        delete window[cbName];
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+      }
 
-        deltaBoulevard: parseIntSafe($('deltaBoulevard').value),
-        deltaCentro: parseIntSafe($('deltaCentro').value),
-        deltaLotobel: parseIntSafe($('deltaLotobel').value),
-        deltaSantaTereza: parseIntSafe($('deltaSantaTereza').value),
+      window[cbName] = (data) => {
+        cleanup();
+        resolve(data);
       };
-    }
 
-    function setBusy(busy){
-      ['btnCadastrar','btnMovimentar','btnLimpar','btnTeste'].forEach(id => $(id).disabled = busy);
-    }
+      s.onerror = () => {
+        cleanup();
+        reject(new Error("Falha carregando JSONP (script)."));
+      };
 
-    // ====== JSONP (pra não ter CORS) ======
-    function jsonp(action, payload){
-      return new Promise((resolve, reject) => {
-        const cbName = "__cb_" + Math.random().toString(36).slice(2);
-        const data64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      document.body.appendChild(s);
+    });
+  }
 
-        const url = new URL(API_URL);
-        url.searchParams.set("action", action);
-        url.searchParams.set("payload", data64);
-        url.searchParams.set("callback", cbName);
+  function saveDraft(){
+    const draft = {
+      lojaOrigem: $("lojaOrigem").value,
+      modalidade: $("modalidade").value,
+      concurso: $("concurso").value,
+      dataInicial: $("dataInicial").value,
+      dataConcurso: $("dataConcurso").value,
+      qtdJogos: $("qtdJogos").value,
+      qtdDezenas: $("qtdDezenas").value,
+      cotas: $("cotas").value,
+      valorCota: $("valorCota").value,
+      deltaBoulevard: $("deltaBoulevard").value,
+      deltaCentro: $("deltaCentro").value,
+      deltaLotobel: $("deltaLotobel").value,
+      deltaSantaTereza: $("deltaSantaTereza").value
+    };
+    localStorage.setItem("bolo_draft", JSON.stringify(draft));
+  }
 
-        window[cbName] = (res) => {
-          cleanup();
-          resolve(res);
-        };
+  function loadDraft(){
+    try{
+      const raw = localStorage.getItem("bolo_draft");
+      if(!raw) return;
+      const d = JSON.parse(raw);
+      $("lojaOrigem").value = d.lojaOrigem || "";
+      $("modalidade").value = d.modalidade || "";
+      $("concurso").value = d.concurso || "";
+      $("dataInicial").value = d.dataInicial || "";
+      $("dataConcurso").value = d.dataConcurso || "";
+      $("qtdJogos").value = d.qtdJogos || "";
+      $("qtdDezenas").value = d.qtdDezenas || "";
+      $("cotas").value = d.cotas || "";
+      $("valorCota").value = d.valorCota || "";
+      $("deltaBoulevard").value = d.deltaBoulevard || "";
+      $("deltaCentro").value = d.deltaCentro || "";
+      $("deltaLotobel").value = d.deltaLotobel || "";
+      $("deltaSantaTereza").value = d.deltaSantaTereza || "";
+    }catch(e){}
+  }
 
-        const script = document.createElement("script");
-        script.src = url.toString();
-        script.async = true;
+  function clearMain(){
+    $("modalidade").value = "";
+    $("concurso").value = "";
+    $("dataInicial").value = "";
+    $("dataConcurso").value = "";
+    $("qtdJogos").value = "";
+    $("qtdDezenas").value = "";
+    $("cotas").value = "";
+    $("valorCota").value = "";
+    saveDraft();
+  }
 
-        script.onerror = () => {
-          cleanup();
-          reject(new Error("Falha na API. Confira Deploy do Web App e permissões."));
-        };
+  function clearMov(){
+    $("deltaBoulevard").value = "";
+    $("deltaCentro").value = "";
+    $("deltaLotobel").value = "";
+    $("deltaSantaTereza").value = "";
+    saveDraft();
+  }
 
-        function cleanup(){
-          try { delete window[cbName]; } catch(e){ window[cbName] = undefined; }
-          if (script && script.parentNode) script.parentNode.removeChild(script);
-        }
+  function validateBase(requiredCotas=true){
+    const lojaOrigem = $("lojaOrigem").value.trim();
+    const modalidade = $("modalidade").value.trim();
+    const concurso = $("concurso").value.trim();
+    const dataInicial = $("dataInicial").value;
+    const dataConcurso = $("dataConcurso").value;
+    const qtdJogos = Number(onlyDigits($("qtdJogos").value));
+    const qtdDezenas = Number(onlyDigits($("qtdDezenas").value));
+    const cotas = Number(onlyDigits($("cotas").value));
+    const valorCota = parseBRMoneyToNumber($("valorCota").value);
 
-        document.body.appendChild(script);
-      });
-    }
+    if(!lojaOrigem) throw new Error("Loja de origem é obrigatória.");
+    if(!modalidade) throw new Error("Modalidade é obrigatória.");
+    if(!concurso) throw new Error("Concurso é obrigatório.");
+    if(!dataInicial) throw new Error("Data inicial é obrigatória.");
+    if(!dataConcurso) throw new Error("Data do concurso é obrigatória.");
+    if(!qtdJogos || qtdJogos <= 0) throw new Error("Qtd de Jogos deve ser > 0.");
+    if(!qtdDezenas || qtdDezenas <= 0) throw new Error("Qtd de Dezenas deve ser > 0.");
+    if(requiredCotas && (!Number.isFinite(cotas) || cotas === 0)) throw new Error("Qtde de Cotas é obrigatória (≠ 0).");
+    if(!valorCota || valorCota <= 0) throw new Error("Valor da cota deve ser > 0.");
 
-    // ====== ações ======
-    $('btnTeste').addEventListener('click', async () => {
-      setBusy(true);
-      try{
-        const res = await jsonp("ping", { t: Date.now() });
-        showToast(res?.ok ? "Conexão OK ✅" : (res?.message || "Conexão falhou ❌"));
-      } catch(err){
-        showToast(err.message || "Falha no teste");
-      } finally {
-        setBusy(false);
+    return { lojaOrigem, modalidade, concurso, dataInicial, dataConcurso, qtdJogos, qtdDezenas, cotas, valorCota };
+  }
+
+  function getMovDeltas(){
+    const deltaBoulevard = Number(onlyDigits($("deltaBoulevard").value || "0")) || 0;
+    const deltaCentro = Number(onlyDigits($("deltaCentro").value || "0")) || 0;
+    const deltaLotobel = Number(onlyDigits($("deltaLotobel").value || "0")) || 0;
+    const deltaSantaTereza = Number(onlyDigits($("deltaSantaTereza").value || "0")) || 0;
+    return { deltaBoulevard, deltaCentro, deltaLotobel, deltaSantaTereza };
+  }
+
+  async function callApi(action, payloadObj){
+    const payload = base64Json(payloadObj || {});
+    const url = `${API_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(payload)}`;
+    return await jsonp(url);
+  }
+
+  /********************************************************
+   * ACTIONS
+   ********************************************************/
+  async function onCadastrar(){
+    try{
+      setStatus("Enviando…");
+      const base = validateBase(true);
+
+      const payload = {
+        lojaOrigem: base.lojaOrigem,
+        modalidade: base.modalidade,
+        concurso: base.concurso,
+        dataInicial: base.dataInicial,
+        dataConcurso: base.dataConcurso,
+        qtdJogos: base.qtdJogos,
+        qtdDezenas: base.qtdDezenas,
+        cotas: base.cotas,
+        valorCota: base.valorCota
+      };
+
+      saveDraft();
+      const res = await callApi("cadastrar", payload);
+
+      if(res && res.ok){
+        setStatus(res.message || "OK!", "ok");
+      }else{
+        setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err");
       }
-    });
+    }catch(err){
+      setStatus(err.message || String(err), "err");
+    }
+  }
 
-    $('btnCadastrar').addEventListener('click', async () => {
-      setBusy(true);
-      try{
-        const d = coletarDados();
-        const res = await jsonp("cadastrar", d);
-        showToast(res?.ok ? (res.message || "Cadastrado ✅") : (res?.message || "Falha ❌"));
-      } catch(err){
-        showToast(err.message || "Erro ao cadastrar");
-      } finally {
-        setBusy(false);
+  async function onDeletar(){
+    try{
+      setStatus("Enviando deleção…");
+      const base = validateBase(false);
+
+      const payload = {
+        lojaOrigem: base.lojaOrigem,
+        modalidade: base.modalidade,
+        concurso: base.concurso,
+        dataInicial: base.dataInicial,
+        dataConcurso: base.dataConcurso,
+        qtdJogos: Number(onlyDigits($("qtdJogos").value)) || 1,
+        qtdDezenas: Number(onlyDigits($("qtdDezenas").value)) || 1,
+        cotas: -999,
+        valorCota: base.valorCota
+      };
+
+      saveDraft();
+      const res = await callApi("cadastrar", payload);
+
+      if(res && res.ok){
+        setStatus(res.message || "OK!", "ok");
+      }else{
+        setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err");
       }
-    });
+    }catch(err){
+      setStatus(err.message || String(err), "err");
+    }
+  }
 
-    $('btnMovimentar').addEventListener('click', async () => {
-      setBusy(true);
-      try{
-        const d = coletarDados();
-        const res = await jsonp("movimentar", d);
-        showToast(res?.ok ? (res.message || "Movimentado ✅") : (res?.message || "Falha ❌"));
-      } catch(err){
-        showToast(err.message || "Erro ao movimentar");
-      } finally {
-        setBusy(false);
+  async function onMovimentar(){
+    try{
+      setStatus("Enviando movimentação…");
+      const base = validateBase(false);
+      const deltas = getMovDeltas();
+      if(!deltas.deltaBoulevard && !deltas.deltaCentro && !deltas.deltaLotobel && !deltas.deltaSantaTereza){
+        throw new Error("Informe pelo menos um destino com valor diferente de zero (E4:E7).");
       }
-    });
 
-    $('btnLimpar').addEventListener('click', () => {
-      $('form').reset();
-      showToast("Limpo.");
+      const payload = {
+        lojaOrigem: base.lojaOrigem,
+        modalidade: base.modalidade,
+        concurso: base.concurso,
+        dataInicial: base.dataInicial,
+        dataConcurso: base.dataConcurso,
+        qtdJogos: Number(onlyDigits($("qtdJogos").value)),
+        qtdDezenas: Number(onlyDigits($("qtdDezenas").value)),
+        valorCota: base.valorCota,
+        deltaBoulevard: deltas.deltaBoulevard,
+        deltaCentro: deltas.deltaCentro,
+        deltaLotobel: deltas.deltaLotobel,
+        deltaSantaTereza: deltas.deltaSantaTereza
+      };
+
+      saveDraft();
+      const res = await callApi("movimentar", payload);
+
+      if(res && res.ok){
+        setStatus(res.message || "OK!", "ok");
+        // zera deltas na tela (igual você pediu)
+        clearMov();
+      }else{
+        setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err");
+      }
+    }catch(err){
+      setStatus(err.message || String(err), "err");
+    }
+  }
+
+  async function onPing(){
+    try{
+      setStatus("Ping…");
+      const res = await callApi("ping", {});
+      if(res && res.ok){
+        setStatus(`OK! ${res.message}\n${res.ts || ""}`, "ok");
+      }else{
+        setStatus((res && res.message) ? res.message : "Falha no ping.", "err");
+      }
+    }catch(err){
+      setStatus(err.message || String(err), "err");
+    }
+  }
+
+  /********************************************************
+   * INIT
+   ********************************************************/
+  function bind(){
+    const inputs = document.querySelectorAll("input,select");
+    inputs.forEach(el => el.addEventListener("change", saveDraft));
+    inputs.forEach(el => el.addEventListener("keyup", saveDraft));
+
+    $("btnCadastrar").addEventListener("click", onCadastrar);
+    $("btnDeletar").addEventListener("click", onDeletar);
+    $("btnMovimentar").addEventListener("click", onMovimentar);
+
+    $("btnLimpar").addEventListener("click", () => { clearMain(); setStatus("Campos limpos.", "muted"); });
+    $("btnZerarMov").addEventListener("click", () => { clearMov(); setStatus("Movimentação zerada.", "muted"); });
+
+    $("btnPing").addEventListener("click", onPing);
+  }
+
+  function setPwaChip(){
+    const el = $("pwaChip");
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+    el.textContent = isStandalone ? "PWA: instalado" : "PWA: navegador";
+  }
+
+  loadDraft();
+  bind();
+  setPwaChip();
+  window.addEventListener("visibilitychange", setPwaChip);
+
+  /********************************************************
+   * SERVICE WORKER
+   ********************************************************/
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js")
+        .then(() => setPwaChip())
+        .catch(() => {});
     });
-  </script>
+  }
+</script>
 </body>
 </html>
