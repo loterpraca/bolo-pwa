@@ -193,13 +193,30 @@
       </div>
 
       <div class="actions">
-        <button type="button" class="btn-primary" id="btnCadastrar">Cadastrar / Somar cotas</button>
-        <button type="button" class="btn-danger" id="btnDeletar" title="Deleta o bolão (envia -999)">Deletar bolao</button>
-        <button type="button" class="btn-ghost" id="btnLimpar">Limpar</button>
-      </div>
-    
-      <div id="status" class="status muted">Pronto.</div>
+  <button type="button" class="btn-primary" id="btnCadastrar">
+    Cadastrar / Somar cotas
+  </button>
+
+  <!-- Limpar agora no lugar do deletar -->
+  <button type="button" class="btn-ghost" id="btnLimpar">
+    Limpar
+  </button>
+
+  <!-- Deletar + Status lado a lado -->
+  <div class="delete-wrap">
+    <button type="button"
+            class="btn-danger btn-mini"
+            id="btnDeletar"
+            title="Deleta o bolão (envia -999)">
+      Deletar
+    </button>
+
+    <div id="status" class="status muted inline-status">
+      Pronto.
     </div>
+  </div>
+</div>
+
 
     <div class="card">
       <p class="sectionTitle">Movimentar (Controle)</p>
