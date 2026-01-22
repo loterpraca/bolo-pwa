@@ -1,273 +1,3 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <style>
-    :root{
-      --bg:#f6f7fb;
-      --card:#ffffff;
-      --txt:#111827;
-      --muted:#6b7280;
-      --label:#111827;
-      --line:#e5e7eb;
-      --btn:#111827;
-      --btn2:#2563eb;
-      --danger:#dc2626;
-      --shadow:0 10px 25px rgba(0,0,0,.07);
-      --radius:16px;
-      --pad:14px;
-      --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
-    *{box-sizing:border-box}
-    body{ margin:0; font-family:var(--font); color:var(--txt); background:var(--bg); }
-    .wrap{ max-width:920px; margin:0 auto; padding:14px 12px 90px; }
-    header{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
-    .title{ font-size:20px; font-weight:900; letter-spacing:.2px; margin:0; }
-    .chip{ font-size:12px; color:var(--muted); background:#fff; border:1px solid var(--line); border-radius:999px; padding:6px 10px; }
-    .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:var(--pad); margin:10px 0; }
-
-    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; } /* mantém 2 colunas até no celular */
-    
-    .mov-origem{
-      display:inline-block;
-      margin-left:8px;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:#fff;
-      font-size:12px;
-      font-weight:800;
-      color:#111827;
-}
-
-input:disabled{
-  background:#f3f4f6;
-  color:#9ca3af;
-  cursor:not-allowed;
-}
-    .field label{
-      display:block;
-      font-size:12px;
-      color:var(--label);
-      font-weight:800;
-      margin:0 0 6px 2px;
-    }
-    .field input, .field select{
-      width:100%;
-      font-size:16px;
-      padding:12px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      outline:none;
-      background:#fff;
-    }
-    .field input:focus, .field select:focus{
-      border-color:#93c5fd;
-      box-shadow:0 0 0 3px rgba(59,130,246,.15);
-    }
-    .hint{ font-size:12px; color:var(--muted); margin-top:8px; line-height:1.35; }
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
-    .actions-3{
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* mesmo tamanho */
-  gap: 10px;
-}
-    button{
-      border:0;
-      border-radius:14px;
-      padding:12px 14px;
-      font-size:16px;
-      font-weight:800;
-      cursor:pointer;
-      min-height:46px;
-    }
-    .btn-primary{ background:var(--btn2); color:#fff; flex:1; }
-    .btn-dark{ background:var(--btn); color:#fff; flex:1; }
-    .btn-danger{ background:var(--danger); color:#fff; }
-    .btn-ghost{ background:#fff; border:1px solid var(--line); color:var(--txt); }
-    .status{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px dashed var(--line);
-      background:#fff;
-      font-size:14px;
-      line-height:1.35;
-      white-space:pre-line;
-    }
-    .ok{ border-color: rgba(22,163,74,.35); background: rgba(22,163,74,.06); }
-    .err{ border-color: rgba(220,38,38,.35); background: rgba(220,38,38,.06); }
-    .muted{ color:var(--muted); }
-    .sectionTitle{ font-size:14px; font-weight:900; margin:0 0 10px; }
-
-    .footerBar{
-      position:fixed;
-      left:0; right:0; bottom:0;
-      background:#ffffffcc;
-      backdrop-filter: blur(10px);
-      border-top:1px solid var(--line);
-      padding:10px 12px;
-    }
-    .footerInner{
-      max-width:920px;
-      margin:0 auto;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .small{ font-size:12px; color:var(--muted); }
-
-    @media (max-width:720px){
-      .grid{ grid-template-columns: 1fr; }      /* grid normal vira 1 coluna */
-      .title{ font-size:18px; }
-      .field input, .field select{ font-size:17px; }
-      button{ font-size:17px; }
-      .footerInner{ flex-direction:column; align-items:flex-start; }
-      /* row2 continua 2 colunas no celular */
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <header>
-    </header>
-
-    <div class="card">
-      <p class="sectionTitle">Dados do bolão</p>
-
-      <div class="grid">
-        <div class="field">
-          <label>Loja de origem</label>
-          <select id="lojaOrigem" required>
-            <option value="">Selecione…</option>
-            <option>Centro</option>
-            <option>Lotobel</option>
-            <option>Boulevard</option>
-            <option>Santa Tereza</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Modalidade</label>
-          <select id="modalidade" required>
-            <option value="">Selecione…</option>
-            <option>Mega Sena</option>
-            <option>Lotofacil</option>
-            <option>Quina</option>
-            <option>Dupla Sena</option>
-            <option>Dia de Sorte</option>
-            <option>Super Sete</option>
-            <option>Milionaria</option>
-            <option>Timemania</option>
-            <option>Lotomania</option>
-            <option>Federal</option>
-            <option>Pascoa</option>
-            <option>Sao Joao</option>
-            <option>Independencia</option>
-            <option>Virada</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid">
-        <div class="field">
-          <label>Concurso</label>
-          <input id="concurso" inputmode="numeric" required />
-        </div>
-      <!-- Datas lado a lado SEMPRE -->
-      <div class="row2">
-        <div class="field">
-          <label>Data inicial</label>
-          <input id="dataInicial" type="date" required />
-        </div>
-        <div class="field">
-          <label>Data do concurso</label>
-          <input id="dataConcurso" type="date" required />
-        </div>
-      </div>
-
-      <!-- Qtd jogos + dezenas lado a lado SEMPRE -->
-      <div class="row2">
-        <div class="field">
-          <label>Qtd de Jogos</label>
-          <input id="qtdJogos" inputmode="numeric" required />
-        </div>
-        <div class="field">
-          <label>Qtd de Dezenas</label>
-          <input id="qtdDezenas" inputmode="numeric" required />
-        </div>
-      </div>
-
-      <!-- Valor cota + cotas lado a lado SEMPRE -->
-      <div class="row2">
-        <div class="field">
-          <label>Valor da cota (R$)</label>
-          <input id="valorCota" inputmode="decimal" required />
-        </div>
-        <div class="field">
-          <label>Qtde de Cotas</label>
-          <input id="cotas" inputmode="numeric" required />
-        </div>
-      </div>
-
-      <div class="actions actions-3">
-  <button type="button" class="btn-primary" id="btnCadastrar">
-    Cadastrar
-  </button>
-
-  <button type="button" class="btn-ghost" id="btnLimpar">
-    Limpar
-  </button>
-
-  <button type="button" class="btn-danger" id="btnDeletar"
-          title="Deleta o bolão (envia -999)">
-    Deletar
-  </button>
-</div>
-
-<div id="status" class="status muted status-full">
-  Pronto.
-</div>
-
-
-    <div class="card">
-      <p class="sectionTitle">
-  Movimentar (Controle) <span class="mov-origem" id="movOrigemChip">Origem: —</span>
-</p>
-
-      <div class="grid">
-        <div class="field">
-          <label>Boulevard </label>
-          <input id="deltaBoulevard" inputmode="numeric" />
-        </div>
-        <div class="field">
-          <label>Centro </label>
-          <input id="deltaCentro" inputmode="numeric" />
-        </div>
-      </div>
-
-      <div class="grid">
-        <div class="field">
-          <label>Lotobel </label>
-          <input id="deltaLotobel" inputmode="numeric" />
-        </div>
-        <div class="field">
-          <label>Santa Tereza </label>
-          <input id="deltaSantaTereza" inputmode="numeric" />
-        </div>
-      </div>
-
-      <div class="actions">
-        <button type="button" class="btn-dark" id="btnMovimentar">Movimentar</button>
-        <button type="button" class="btn-ghost" id="btnZerarMov">Limpar</button>
-      </div>
-    
-    </div>
-  </div>
 <script>
   /********************************************************
    * CONFIG
@@ -430,6 +160,24 @@ input:disabled{
     saveDraft();
   }
 
+  function fmtBRL(n){
+    const num = Number(n || 0);
+    return num.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+  }
+
+  function buildExistsConfirmText(base, currentCotas){
+    // exatamente como você pediu: linhas separadas
+    return [
+      `Bolão da ${base.modalidade} Concurso ${base.concurso}`,
+      `${base.qtdJogos} jogos de ${base.qtdDezenas} dezenas`,
+      `Valor ${fmtBRL(base.valorCota)}`,
+      ``,
+      `Já existe.`,
+      `Gostaria de adicionar ${base.cotas} cotas nesse bolão?`,
+      `Saldo atual: ${currentCotas} | Novo saldo: ${Number(currentCotas) + Number(base.cotas)}`
+    ].join("\n");
+  }
+
   /********************************************************
    * ACTIONS
    ********************************************************/
@@ -452,6 +200,21 @@ input:disabled{
 
       saveDraft();
       const res = await callApi("cadastrar", payload);
+
+      // >>> AQUI: confirmação formatada do jeito que você pediu <<<
+      if(res && res.code === "EXISTS"){
+        const txt = buildExistsConfirmText(base, res.currentCotas || 0);
+        const ok = confirm(txt);
+        if(!ok){
+          setStatus("Operação cancelada.", "muted");
+          return;
+        }
+
+        const res2 = await callApi("cadastrar", { ...payload, confirmAdd: true });
+        if(res2 && res2.ok) setStatus(res2.message || "OK! (cotas somadas)", "ok");
+        else setStatus((res2 && res2.message) ? res2.message : "Erro ao somar cotas.", "err");
+        return;
+      }
 
       if(res && res.ok) setStatus(res.message || "OK!", "ok");
       else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err");
@@ -597,6 +360,3 @@ input:disabled{
     });
   }
 </script>
-
-</body>
-</html>
