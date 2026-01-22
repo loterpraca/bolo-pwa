@@ -1,4 +1,4 @@
-const CACHE_NAME = "bolo-pwa-v22";
+const CACHE_NAME = "bolo-pwa-v23";
 
 const ASSETS = [
   "/bolo-pwa/",
