@@ -574,7 +574,9 @@ function updateMovimentarUIByOrigem(){
       el.addEventListener("change", saveDraft);
       el.addEventListener("keyup", saveDraft);
     });
-
+document.getElementById("lojaOrigem")
+  .addEventListener("change", updateMovimentarUIByOrigem);
+    
     $("btnCadastrar").addEventListener("click", onCadastrar);
     $("btnDeletar").addEventListener("click", async () => {
   const loja = document.getElementById("lojaOrigem").value;
