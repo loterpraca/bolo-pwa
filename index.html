@@ -272,7 +272,6 @@ input:disabled{
   /********************************************************
    * CONFIG
    ********************************************************/
-  // COLE AQUI A URL /exec DO DEPLOY ATUAL
   const API_URL = "https://script.google.com/macros/s/AKfycbz26SSiVvH9Tf78YVEQPN0eNA4iTQPXSAtLJjrNcZjFWX2SYvSaT8xW9FP9X8_12Oyi/exec";
 
   /********************************************************
@@ -463,7 +462,7 @@ input:disabled{
 
   async function onDeletar(){
     try{
-      setStatus("Enviando delecao…");
+      setStatus("Enviando deleção…");
       const base = validateBase(false);
 
       const payload = {
@@ -490,7 +489,7 @@ input:disabled{
 
   async function onMovimentar(){
     try{
-      setStatus("Enviando movimentacao…");
+      setStatus("Enviando movimentação…");
       const base = validateBase(false);
       const deltas = getMovDeltas();
 
@@ -527,45 +526,34 @@ input:disabled{
     }
   }
 
-  async function onPing(){
-    try{
-      setStatus("Ping…");
-      const res = await callApi("ping", {});
-      if(res && res.ok) setStatus(`OK! ${res.message}\n${res.ts || ""}`, "ok");
-      else setStatus((res && res.message) ? res.message : "Falha no ping.", "err");
-    }catch(err){
-      setStatus(err.message || String(err), "err");
-    }
+  function updateMovimentarUIByOrigem(){
+    const origemEl = $("lojaOrigem");
+    const chip = $("movOrigemChip");
+    if (!origemEl || !chip) return;
+
+    const origem =
+      (origemEl.selectedOptions?.[0]?.text || "").trim() ||
+      (origemEl.value || "").trim();
+
+    chip.textContent = `Origem: ${origem || "—"}`;
+
+    const map = [
+      { loja: "Boulevard",    inputId: "deltaBoulevard" },
+      { loja: "Centro",       inputId: "deltaCentro" },
+      { loja: "Lotobel",      inputId: "deltaLotobel" },
+      { loja: "Santa Tereza", inputId: "deltaSantaTereza" },
+    ];
+
+    map.forEach(({ loja, inputId }) => {
+      const el = $(inputId);
+      if (!el) return;
+
+      const shouldDisable = !!origem && origem === loja;
+      el.disabled = shouldDisable;
+      if (shouldDisable) el.value = "";
+    });
   }
 
-function updateMovimentarUIByOrigem(){
-  const origemEl = document.getElementById("lojaOrigem");
-  const chip = document.getElementById("movOrigemChip");
-  if (!origemEl || !chip) return;
-
-  const origem =
-    (origemEl.selectedOptions?.[0]?.text || "").trim() ||
-    (origemEl.value || "").trim();
-
-  chip.textContent = `Origem: ${origem || "—"}`;
-
-  const map = [
-    { loja: "Boulevard",    inputId: "deltaBoulevard" },
-    { loja: "Centro",       inputId: "deltaCentro" },
-    { loja: "Lotobel",      inputId: "deltaLotobel" },
-    { loja: "Santa Tereza", inputId: "deltaSantaTereza" },
-  ];
-
-  map.forEach(({ loja, inputId }) => {
-    const el = document.getElementById(inputId);
-    if (!el) return;
-
-    const shouldDisable = !!origem && origem === loja;
-    el.disabled = shouldDisable;
-    if (shouldDisable) el.value = "";
-  });
-
-  
   /********************************************************
    * INIT
    ********************************************************/
@@ -574,42 +562,32 @@ function updateMovimentarUIByOrigem(){
       el.addEventListener("change", saveDraft);
       el.addEventListener("keyup", saveDraft);
     });
-document.getElementById("lojaOrigem")
-  .addEventListener("change", updateMovimentarUIByOrigem);
-    
+
+    $("lojaOrigem").addEventListener("change", () => {
+      updateMovimentarUIByOrigem();
+      saveDraft();
+    });
+
     $("btnCadastrar").addEventListener("click", onCadastrar);
+
     $("btnDeletar").addEventListener("click", async () => {
-  const loja = document.getElementById("lojaOrigem").value;
-  const ok = confirm(`Confirmar deleção do bolão em ${loja}?`);
-  if (!ok) return;
-  await onDeletar();
-});
+      const loja = $("lojaOrigem").value;
+      const ok = confirm(`Confirmar deleção do bolão em ${loja}?`);
+      if (!ok) return;
+      await onDeletar();
+    });
+
     $("btnMovimentar").addEventListener("click", onMovimentar);
 
     $("btnLimpar").addEventListener("click", () => { clearMain(); setStatus("Campos limpos.", "muted"); });
-    $("btnZerarMov").addEventListener("click", () => { clearMov(); setStatus("Movimentacao zerada.", "muted"); });
-
-    $("btnPing").addEventListener("click", onPing);
-  
-    $("lojaOrigem").addEventListener("change", () => {
-    updateMovimentarUIByOrigem();
-    saveDraft();
-});
-  }
-
-  function setPwaChip(){
-    const el = $("pwaChip");
-    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-    el.textContent = isStandalone ? "PWA: instalado" : "PWA: navegador";
+    $("btnZerarMov").addEventListener("click", () => { clearMov(); setStatus("Movimentação zerada.", "muted"); });
   }
 
   loadDraft();
   bind();
   updateMovimentarUIByOrigem();
-  setPwaChip();
-  window.addEventListener("visibilitychange", setPwaChip);
 
-  // Service Worker: força update
+  // SW (opcional)
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
       try {
@@ -619,5 +597,6 @@ document.getElementById("lojaOrigem")
     });
   }
 </script>
+
 </body>
 </html>
