@@ -29,7 +29,24 @@
 
     .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
     .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; } /* mantém 2 colunas até no celular */
+    
+    .mov-origem{
+      display:inline-block;
+      margin-left:8px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:12px;
+      font-weight:800;
+      color:#111827;
+}
 
+input:disabled{
+  background:#f3f4f6;
+  color:#9ca3af;
+  cursor:not-allowed;
+}
     .field label{
       display:block;
       font-size:12px;
@@ -218,7 +235,9 @@
 
 
     <div class="card">
-      <p class="sectionTitle">Movimentar (Controle)</p>
+      <p class="sectionTitle">
+  Movimentar (Controle) <span class="mov-origem" id="movOrigemChip">Origem: —</span>
+</p>
 
       <div class="grid">
         <div class="field">
@@ -244,7 +263,7 @@
 
       <div class="actions">
         <button type="button" class="btn-dark" id="btnMovimentar">Movimentar</button>
-        <button type="button" class="btn-ghost" id="btnZerarMov">Zerar</button>
+        <button type="button" class="btn-ghost" id="btnZerarMov">Limpar</button>
       </div>
     
     </div>
@@ -519,6 +538,31 @@
     }
   }
 
+function updateMovimentarUIByOrigem(){
+  const origem = document.getElementById("lojaOrigem").value || "";
+  const chip = document.getElementById("movOrigemChip");
+  chip.textContent = `Origem: ${origem || "—"}`;
+
+  const map = [
+    { loja: "Boulevard",    inputId: "deltaBoulevard" },
+    { loja: "Centro",       inputId: "deltaCentro" },
+    { loja: "Lotobel",      inputId: "deltaLotobel" },
+    { loja: "Santa Tereza", inputId: "deltaSantaTereza" },
+  ];
+
+  map.forEach(({ loja, inputId }) => {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+
+    const shouldDisable = !!origem && origem === loja;
+    el.disabled = shouldDisable;
+
+    // se desabilitar, zera o campo para não ficar número "preso"
+    if (shouldDisable) el.value = "";
+  });
+}
+
+  
   /********************************************************
    * INIT
    ********************************************************/
@@ -541,6 +585,11 @@
     $("btnZerarMov").addEventListener("click", () => { clearMov(); setStatus("Movimentacao zerada.", "muted"); });
 
     $("btnPing").addEventListener("click", onPing);
+  
+    $("lojaOrigem").addEventListener("change", () => {
+    updateMovimentarUIByOrigem();
+    saveDraft();
+});
   }
 
   function setPwaChip(){
@@ -551,6 +600,7 @@
 
   loadDraft();
   bind();
+  updateMovimentarUIByOrigem();
   setPwaChip();
   window.addEventListener("visibilitychange", setPwaChip);
 
