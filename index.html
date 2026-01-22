@@ -539,8 +539,14 @@ input:disabled{
   }
 
 function updateMovimentarUIByOrigem(){
-  const origem = document.getElementById("lojaOrigem").value || "";
+  const origemEl = document.getElementById("lojaOrigem");
   const chip = document.getElementById("movOrigemChip");
+  if (!origemEl || !chip) return;
+
+  const origem =
+    (origemEl.selectedOptions?.[0]?.text || "").trim() ||
+    (origemEl.value || "").trim();
+
   chip.textContent = `Origem: ${origem || "—"}`;
 
   const map = [
@@ -556,11 +562,8 @@ function updateMovimentarUIByOrigem(){
 
     const shouldDisable = !!origem && origem === loja;
     el.disabled = shouldDisable;
-
-    // se desabilitar, zera o campo para não ficar número "preso"
     if (shouldDisable) el.value = "";
   });
-}
 
   
   /********************************************************
