@@ -191,32 +191,31 @@
 
 .quickbar-grid{
   display:grid;
-  grid-template-columns:repeat(9, minmax(0,1fr));
   gap:8px;
+  grid-template-columns:repeat(3, minmax(0,1fr));
 }
 
 /* Botão da modalidade */
+/* Botão vira "tile" quadrado e a imagem preenche tudo */
 .qmod{
   border:1px solid var(--line);
   background:#fff;
-  border-radius:20px;     /* mais arredondado */
-  height:48px;            /* levemente mais baixo */
-  width:100%;
-  display:grid;
-  place-items:center;
+  border-radius:18px;
+  padding:0;
+  height:auto;
+  aspect-ratio:1/1;
+  overflow:hidden;
   cursor:pointer;
   transition:var(--transition);
-  overflow:hidden;
+  display:block;
+  position:relative;
 }
 
-.qmod:hover{
-  transform:translateY(-1px);
-  border-color:rgba(99,102,241,.45);
-}
+.qmod:hover{ transform:translateY(-1px); border-color:rgba(99,102,241,.45); }
 
 .qmod.active{
   border-color:var(--primary);
-  box-shadow:0 10px 20px rgba(0,0,0,.12);
+  box-shadow:0 10px 20px rgba(0,0,0,.10);
   transform:translateY(-1px);
 }
 
@@ -224,7 +223,7 @@
 .qmod > img{
   width:100%;
   height:100%;
-  object-fit: contain;     /* não corta */
+  object-fit:cover;          /* não corta */
   object-position:center;
   padding:7px 9px;         /* margem interna fixa = “tamanho visual” mais igual */
   display:block;
@@ -257,13 +256,11 @@
 }
 
 /* Mobile */
-@media (max-width:720px){
-  .qmod{height:46px;border-radius:22px}
-  .qmod > img{padding:6px 8px}
+@media (min-width:520px){
+  .quickbar-grid{ grid-template-columns:repeat(4, minmax(0,1fr)); }
 }
-@media (max-width:380px){
-  .qmod{height:44px;border-radius:22px}
-  .qmod > img{padding:6px 8px}
+@media (min-width:760px){
+  .quickbar-grid{ grid-template-columns:repeat(6, minmax(0,1fr)); }
 }
 
       /* ✅ 3 botões: mesma linha, menores, iguais */
@@ -1031,16 +1028,17 @@
   btn.type = "button";
   btn.className = "qmod";
   btn.setAttribute("data-mod", mod.key);
+  btn.setAttribute("aria-label", mod.key);
   btn.title = mod.key;
 
   const img = document.createElement("img");
   img.src = mod.icon;
-  img.alt = mod.key;
+  img.alt = mod.key; // acessibilidade
+  img.loading = "lazy";
 
   btn.appendChild(img);
   return btn;
 }
-
     function setActiveModButton(modKey){
       document.querySelectorAll(".qmod").forEach(b => {
         b.classList.toggle("active", b.getAttribute("data-mod") === modKey);
