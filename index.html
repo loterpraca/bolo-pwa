@@ -199,8 +199,8 @@
 .qmod{
   border:1px solid var(--line);
   background:#fff;
-  border-radius:16px;
-  height:52px;
+  border-radius:20px;     /* mais arredondado */
+  height:48px;            /* levemente mais baixo */
   width:100%;
   display:grid;
   place-items:center;
@@ -225,8 +225,8 @@
   width:100%;
   height:100%;
   object-fit: contain;     /* não corta */
-  object-position:center;  /* centraliza */
-  padding:6px;             /* “respiro” sem virar zoom */
+  object-position:center;
+  padding:7px 9px;         /* margem interna fixa = “tamanho visual” mais igual */
   display:block;
 }
 
@@ -258,15 +258,12 @@
 
 /* Mobile */
 @media (max-width:720px){
-  .quickbar-grid{grid-template-columns:repeat(5, minmax(0,1fr))}
-  .qmod{height:50px;border-radius:18px}
-  .qmod > img{padding:6px}
+  .qmod{height:46px;border-radius:22px}
+  .qmod > img{padding:6px 8px}
 }
-
 @media (max-width:380px){
-  .quickbar-grid{grid-template-columns:repeat(4, minmax(0,1fr))}
-  .qmod{height:46px}
-  .qmod > img{padding:5px}
+  .qmod{height:44px;border-radius:22px}
+  .qmod > img{padding:6px 8px}
 }
 
       /* ✅ 3 botões: mesma linha, menores, iguais */
