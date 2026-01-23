@@ -174,39 +174,49 @@
        ZONA DE ATALHOS (COMPACTA)
        ========================= */
     .quickbar{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:10px 10px 8px;
-      margin:10px 0 12px;
-    }
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:10px;
+  margin:10px 0 12px;
+}
 
     .quickbar-grid{
-      display:grid;
-      grid-template-columns:repeat(9, minmax(0,1fr));
-      gap:8px;
-    }
+  display:grid;
+  grid-template-columns:repeat(9, minmax(0,1fr));
+  gap:8px;
+}
 
    .qmod{
   border:1px solid var(--line);
   background:#fff;
-  border-radius:16px;
-  height:48px;              /* antes 56 */
-  padding:6px 2px;          /* menos padding */
+  border-radius:18px;
+  height:52px;
+  padding:0;
   display:flex;
-  flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:3px;
   cursor:pointer;
   transition:var(--transition);
+  overflow:hidden;
 }
-    .qmod:hover{transform:translateY(-1px);border-color:rgba(99,102,241,.45)}
+    .qmod:hover{
+  transform:translateY(-1px);
+  border-color:rgba(99,102,241,.45);
+}
 .qmod.active{
   border-color:var(--primary);
-  box-shadow:0 10px 20px rgba(0,0,0,.10);
+  box-shadow:0 10px 20px rgba(0,0,0,.12);
   transform:translateY(-1px);
+  
+  /* imagem ocupa tudo */
+.qmod img{
+  width:120%;
+  height:120%;
+  object-fit:cover;
+  object-position:center;
+}
 }
    .qmod .ico{
   width:36px;               /* antes 32 (mas com botão grande ficava pequeno) */
@@ -232,10 +242,14 @@
   opacity:.95;
 }
 
-    .quickchips{margin-top:8px;display:none;}
-    .quickchips.active{display:block}
+   .quickchips{margin-top:8px;display:none}
+.quickchips.active{display:block}
 
-    .chips-row{display:flex;flex-wrap:wrap;gap:6px;}
+    .chips-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
 
     .chip{
   border:1px solid var(--line);
@@ -247,20 +261,20 @@
   cursor:pointer;
   transition:var(--transition);
 }
-    .chip:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
+    .chip:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+  transform:translateY(-1px);
+}
 
     /* ====== AJUSTES MOBILE: BOTÕES ====== */
     @media (max-width:720px){
   .quickbar-grid{grid-template-columns:repeat(5, minmax(0,1fr))}
-  .qmod{height:46px;border-radius:16px}
-  .qmod .ico{width:34px;height:34px}
-  .qmod .lbl{font-size:9px}
+  .qmod{height:50px}
 }
-    @media (max-width:380px){
+@media (max-width:380px){
   .quickbar-grid{grid-template-columns:repeat(4, minmax(0,1fr))}
-  .qmod{height:44px}
-  .qmod .ico{width:32px;height:32px}
-  .qmod .lbl{font-size:8px}
+  .qmod{height:46px}
 }
       /* ✅ 3 botões: mesma linha, menores, iguais */
       .actions-3{
@@ -1022,27 +1036,20 @@
     /********************************************************
      * QUICKBAR (ATALHOS)
      ********************************************************/
-    function buildModButton(mod){
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "qmod";
-      btn.setAttribute("data-mod", mod.key);
+   function buildModButton(mod){
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "qmod";
+  btn.setAttribute("data-mod", mod.key);
+  btn.title = mod.key;
 
-      const ico = document.createElement("div");
-      ico.className = "ico";
-      const img = document.createElement("img");
-      img.src = mod.icon;
-      img.alt = mod.short;
-      ico.appendChild(img);
+  const img = document.createElement("img");
+  img.src = mod.icon;
+  img.alt = mod.key;
 
-      const label = document.createElement("div");
-      label.className = "lbl";
-      label.textContent = mod.short;
-
-      btn.appendChild(ico);
-      btn.appendChild(label);
-      return btn;
-    }
+  btn.appendChild(img);
+  return btn;
+}
 
     function setActiveModButton(modKey){
       document.querySelectorAll(".qmod").forEach(b => {
