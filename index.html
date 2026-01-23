@@ -5,609 +5,189 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Sistema de Bolões</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
   <style>
-    :root {
-      /* Cores padrão (neutro) */
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --primary-light: #818cf8;
-      --secondary: #f59e0b;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --txt: #0f172a;
-      --muted: #64748b;
-      --label: #334155;
-      --line: #e2e8f0;
-      --success: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --shadow: 0 10px 25px rgba(0,0,0,.08);
-      --shadow-lg: 0 20px 50px rgba(0,0,0,.12);
-      --radius: 16px;
-      --radius-sm: 12px;
-      --pad: 20px;
-      --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    :root{
+      --primary:#6366f1;--primary-dark:#4f46e5;--primary-light:#818cf8;--secondary:#f59e0b;
+      --bg:#f8fafc;--card:#fff;--txt:#0f172a;--muted:#64748b;--label:#334155;--line:#e2e8f0;
+      --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
+      --shadow:0 10px 25px rgba(0,0,0,.08);--shadow-lg:0 20px 50px rgba(0,0,0,.12);
+      --radius:16px;--radius-sm:12px;--pad:18px;
+      --font:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      --transition:all .25s cubic-bezier(.4,0,.2,1);
+    }
+
+    [data-theme="boulevard"]{--primary:#3b82f6;--primary-dark:#2563eb;--primary-light:#60a5fa;--secondary:#f97316;}
+    [data-theme="centro"]{--primary:#22c55e;--primary-dark:#16a34a;--primary-light:#4ade80;--secondary:#eab308;}
+    [data-theme="lotobel"]{--primary:#dc2626;--primary-dark:#b91c1c;--primary-light:#ef4444;--secondary:#d97706;}
+    [data-theme="santa-tereza"]{--primary:#9333ea;--primary-dark:#7e22ce;--primary-light:#a855f7;--secondary:#f59e0b;}
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{margin:0;font-family:var(--font);color:var(--txt);background:var(--bg);min-height:100vh;transition:var(--transition)}
+
+    /* HEADER (mais baixo + barra com 4 logos) */
+    .header{
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff;
+      padding:12px 14px;
+      box-shadow:var(--shadow);
+      position:sticky;top:0;z-index:100;
+    }
+    .header-content{max-width:920px;margin:0 auto;display:flex;align-items:center;gap:12px}
+    .logo-container{
+      width:44px;height:44px;background:#fff;border-radius:12px;padding:6px;
+      box-shadow:0 4px 12px rgba(0,0,0,.15);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto
+    }
+    .logo-container img{width:100%;height:100%;object-fit:contain}
+    .header-title{flex:1;min-width:0}
+    .header-title h1{font-size:18px;font-weight:900;line-height:1.05;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .header-title p{font-size:12px;opacity:.9;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .brand-logos{
+      display:flex;gap:8px;align-items:center;justify-content:flex-end;flex:0 0 auto
+    }
+    .brand-logos button{
+      border:0;background:rgba(255,255,255,.14);
+      width:34px;height:34px;border-radius:12px;
+      display:grid;place-items:center;cursor:pointer;
+      transition:var(--transition)
+    }
+    .brand-logos button:hover{transform:translateY(-1px);background:rgba(255,255,255,.22)}
+    .brand-logos button:active{transform:translateY(0)}
+    .brand-logos img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
+    .brand-logos button.active{outline:2px solid rgba(255,255,255,.55);background:rgba(255,255,255,.24)}
+
+    /* CONTEÚDO */
+    .wrap{max-width:920px;margin:0 auto;padding:14px 12px 84px}
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:var(--pad);margin:12px 0;transition:var(--transition)
+    }
+
+    .section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--primary)}
+    .section-icon{
+      width:34px;height:34px;border-radius:10px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex:0 0 auto
+    }
+    .section-title{font-size:16px;font-weight:900;margin:0;color:var(--txt);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+    /* GRID */
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+
+    /* CAMPOS */
+    .field{position:relative}
+    .field label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--label);font-weight:800;margin:0 0 6px 2px}
+    .field label i{color:var(--primary);font-size:13px}
+    .field input,.field select{
+      width:100%;font-size:16px;padding:12px 14px;border-radius:var(--radius-sm);
+      border:2px solid var(--line);outline:none;background:#fff;transition:var(--transition);font-family:var(--font)
+    }
+    .field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,.10);transform:translateY(-1px)}
+    .field input:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed;opacity:.7}
+
+    /* CHIP ORIGEM */
+    .mov-origem{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:900
+    }
+
+    /* AÇÕES */
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .actions-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+
+    button{
+      border:0;border-radius:var(--radius-sm);
+      padding:12px 14px;font-size:15px;font-weight:900;cursor:pointer;min-height:48px;
+      transition:var(--transition);font-family:var(--font);
+      display:flex;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden
+    }
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 4px 12px rgba(99,102,241,.25)}
+    .btn-dark{background:linear-gradient(135deg,#1e293b,#0f172a);color:#fff;box-shadow:0 4px 12px rgba(15,23,42,.25)}
+    .btn-danger{background:linear-gradient(135deg,var(--danger),#dc2626);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,.25)}
+    .btn-ghost{background:#fff;border:2px solid var(--line);color:var(--txt)}
+    .btn-ghost:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+
+    .btn-loading{pointer-events:none;opacity:.75}
+    .btn-loading::after{
+      content:"";position:absolute;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);
+      border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* STATUS */
+    .status{
+      margin-top:12px;padding:12px 14px;border-radius:var(--radius-sm);
+      font-size:13px;line-height:1.45;display:flex;align-items:flex-start;gap:10px
+    }
+    .status i{font-size:16px;margin-top:1px}
+    .status.muted{background:#f1f5f9;border:2px solid #e2e8f0;color:var(--muted)}
+    .status.ok{background:#dcfce7;border:2px solid #86efac;color:#15803d}
+    .status.ok i{color:var(--success)}
+    .status.err{background:#fee2e2;border:2px solid #fca5a5;color:#991b1b}
+    .status.err i{color:var(--danger)}
+
+    /* MODAL */
+    .modal-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;
+      align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)
+    }
+    .modal-overlay.active{display:flex}
+    .modal{background:#fff;border-radius:var(--radius);padding:20px;max-width:520px;width:92%;box-shadow:0 25px 50px rgba(0,0,0,.3)}
+    .modal-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .modal-icon{
+      width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      font-size:22px;background:linear-gradient(135deg,var(--warning),#f59e0b);color:#fff;flex:0 0 auto
+    }
+    .modal-title{font-size:18px;font-weight:900;color:var(--txt)}
+    .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+    /* MOBILE */
+    @media (max-width:720px){
+      :root{--pad:14px;--radius:14px;--radius-sm:12px}
+      .grid,.row2{grid-template-columns:1fr}
+      .wrap{padding:12px 10px 88px}
+      .header{padding:10px 10px}
+      .header-title h1{font-size:16px}
+      .logo-container{width:40px;height:40px}
+      .brand-logos button{width:32px;height:32px}
+      .actions-3{grid-template-columns:1fr}
+      button{font-size:16px;min-height:50px}
+      .field input,.field select{font-size:17px}
     }
-
-    /* Temas por loja */
-    [data-theme="boulevard"] {
-      --primary: #3b82f6;
-      --primary-dark: #2563eb;
-      --primary-light: #60a5fa;
-      --secondary: #f97316;
-    }
-
-    [data-theme="centro"] {
-      --primary: #22c55e;
-      --primary-dark: #16a34a;
-      --primary-light: #4ade80;
-      --secondary: #eab308;
-    }
-
-    [data-theme="lotobel"] {
-      --primary: #dc2626;
-      --primary-dark: #b91c1c;
-      --primary-light: #ef4444;
-      --secondary: #d97706;
-    }
-
-    [data-theme="santa-tereza"] {
-      --primary: #9333ea;
-      --primary-dark: #7e22ce;
-      --primary-light: #a855f7;
-      --secondary: #f59e0b;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body {
-      margin: 0;
-      font-family: var(--font);
-      color: var(--txt);
-      background: var(--bg);
-      transition: var(--transition);
-      min-height: 100vh;
-    }
-
-    /* Header com logo */
-    .header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      padding: 20px;
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      transition: var(--transition);
-    }
-
-    .header-content {
-      max-width: 920px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .logo-container {
-      width: 60px;
-      height: 60px;
-      background: white;
-      border-radius: 12px;
-      padding: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.15);
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .logo-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      transition: var(--transition);
-    }
-
-    .header-title {
-      flex: 1;
-    }
-
-    .header-title h1 {
-      font-size: 24px;
-      font-weight: 800;
-      margin: 0 0 4px;
-      text-shadow: 0 2px 4px rgba(0,0,0,.1);
-    }
-
-    .header-title p {
-      font-size: 14px;
-      opacity: 0.9;
-      margin: 0;
-    }
-
-    /* Container principal */
-    .wrap {
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 20px 16px 90px;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: var(--pad);
-      margin: 20px 0;
-      transition: var(--transition);
-      animation: slideUp 0.4s ease;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .card:hover {
-      box-shadow: var(--shadow-lg);
-      transform: translateY(-2px);
-    }
-
-    /* Section title */
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--primary);
-    }
-
-    .section-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-
-    .section-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--txt);
-      margin: 0;
-    }
-
-    /* Grid */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .row2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-
-    /* Fields */
-    .field {
-      position: relative;
-    }
-
-    .field label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--label);
-      font-weight: 700;
-      margin: 0 0 8px 2px;
-      transition: var(--transition);
-    }
-
-    .field label i {
-      color: var(--primary);
-      font-size: 14px;
-    }
-
-    .field input,
-    .field select {
-      width: 100%;
-      font-size: 16px;
-      padding: 14px 16px;
-      border-radius: var(--radius-sm);
-      border: 2px solid var(--line);
-      outline: none;
-      background: #fff;
-      transition: var(--transition);
-      font-family: var(--font);
-    }
-
-    .field input:focus,
-    .field select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-      transform: translateY(-1px);
-    }
-
-    .field input:disabled {
-      background: #f1f5f9;
-      color: #94a3b8;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    .field.has-error input,
-    .field.has-error select {
-      border-color: var(--danger);
-      animation: shake 0.3s;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    .field-error {
-      color: var(--danger);
-      font-size: 12px;
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Chip de origem */
-    .mov-origem {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      background: var(--primary-light);
-      color: white;
-      font-size: 13px;
-      font-weight: 700;
-      margin-left: 12px;
-      transition: var(--transition);
-    }
-
-    /* Buttons */
-    .actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .actions-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    button {
-      border: 0;
-      border-radius: var(--radius-sm);
-      padding: 14px 20px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      min-height: 52px;
-      transition: var(--transition);
-      font-family: var(--font);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    button::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-
-    button:active::before {
-      width: 300px;
-      height: 300px;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-    }
-
-    .btn-dark {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
-    }
-
-    .btn-dark:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.4);
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, var(--danger), #dc2626);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-danger:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-    }
-
-    .btn-ghost {
-      background: #fff;
-      border: 2px solid var(--line);
-      color: var(--txt);
-    }
-
-    .btn-ghost:hover:not(:disabled) {
-      border-color: var(--primary);
-      color: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    /* Loading */
-    .btn-loading {
-      pointer-events: none;
-      opacity: 0.7;
-    }
-
-    .btn-loading::after {
-      content: '';
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Status/Toast */
-    .status {
-      margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      line-height: 1.5;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      animation: slideDown 0.3s ease;
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .status i {
-      font-size: 18px;
-      margin-top: 1px;
-    }
-
-    .status.muted {
-      background: #f1f5f9;
-      border: 2px solid #e2e8f0;
-      color: var(--muted);
-    }
-
-    .status.ok {
-      background: #dcfce7;
-      border: 2px solid #86efac;
-      color: #15803d;
-    }
-
-    .status.ok i {
-      color: var(--success);
-    }
-
-    .status.err {
-      background: #fee2e2;
-      border: 2px solid #fca5a5;
-      color: #991b1b;
-    }
-
-    .status.err i {
-      color: var(--danger);
-    }
-
-    /* Modal customizado */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      animation: fadeIn 0.3s ease;
-      backdrop-filter: blur(4px);
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal {
-      background: white;
-      border-radius: var(--radius);
-      padding: 30px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-      animation: modalSlide 0.3s ease;
-    }
-
-    @keyframes modalSlide {
-      from {
-        opacity: 0;
-        transform: translateY(-30px) scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .modal-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      background: linear-gradient(135deg, var(--warning), #f59e0b);
-      color: white;
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--txt);
-    }
-
-    .modal-body {
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 24px;
-      white-space: pre-line;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-    }
-
-    /* Responsive */
-    @media (max-width: 720px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .header-title h1 {
-        font-size: 20px;
-      }
-
-      .logo-container {
-        width: 50px;
-        height: 50px;
-      }
-
-      .actions-3 {
-        grid-template-columns: 1fr;
-      }
-
-      button {
-        font-size: 17px;
-      }
-
-      .field input,
-      .field select {
-        font-size: 17px;
-      }
-    }
-
-    /* Animação de entrada */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .card:nth-child(1) { animation-delay: 0.1s; }
-    .card:nth-child(2) { animation-delay: 0.2s; }
-    .card:nth-child(3) { animation-delay: 0.3s; }
   </style>
 </head>
 
 <body>
-  <!-- Header com logo e título -->
   <header class="header">
     <div class="header-content">
-      <div class="logo-container" id="logoContainer">
+      <div class="logo-container" id="logoContainer" title="Loja selecionada">
         <img src="" alt="Logo" id="logoImg" />
       </div>
+
       <div class="header-title">
         <h1 id="headerTitle">Sistema de Bolões</h1>
-        <p>Gerenciamento de apostas</p>
+        <p id="headerSub">Gerenciamento rápido</p>
+      </div>
+
+      <!-- 4 LOGOS SEMPRE NO TOPO (clicável) -->
+      <div class="brand-logos" aria-label="Atalhos das lojas">
+        <button type="button" class="brand-btn" data-loja="Boulevard" title="Boulevard">
+          <img id="brandBoulevard" alt="Boulevard">
+        </button>
+        <button type="button" class="brand-btn" data-loja="Centro" title="Centro">
+          <img id="brandCentro" alt="Centro">
+        </button>
+        <button type="button" class="brand-btn" data-loja="Lotobel" title="Lotobel">
+          <img id="brandLotobel" alt="Lotobel">
+        </button>
+        <button type="button" class="brand-btn" data-loja="Santa Tereza" title="Santa Tereza">
+          <img id="brandSantaTereza" alt="Santa Tereza">
+        </button>
       </div>
     </div>
   </header>
@@ -654,7 +234,7 @@
         </div>
       </div>
 
-      <div class="grid" style="margin-top: 16px;">
+      <div class="grid" style="margin-top:12px">
         <div class="field">
           <label><i class="fas fa-hashtag"></i> Concurso</label>
           <input id="concurso" inputmode="numeric" placeholder="Ex: 2654" required />
@@ -697,16 +277,13 @@
 
       <div class="actions actions-3">
         <button type="button" class="btn-primary" id="btnCadastrar">
-          <i class="fas fa-check"></i>
-          <span>Cadastrar</span>
+          <i class="fas fa-check"></i><span>Cadastrar</span>
         </button>
         <button type="button" class="btn-ghost" id="btnLimpar">
-          <i class="fas fa-eraser"></i>
-          <span>Limpar</span>
+          <i class="fas fa-eraser"></i><span>Limpar</span>
         </button>
         <button type="button" class="btn-danger" id="btnDeletar" title="Deleta o bolão (envia -999)">
-          <i class="fas fa-trash"></i>
-          <span>Deletar</span>
+          <i class="fas fa-trash"></i><span>Deletar</span>
         </button>
       </div>
 
@@ -740,7 +317,7 @@
         </div>
       </div>
 
-      <div class="grid" style="margin-top: 16px;">
+      <div class="grid" style="margin-top:12px">
         <div class="field">
           <label><i class="fas fa-landmark"></i> Lotobel</label>
           <input id="deltaLotobel" inputmode="numeric" placeholder="0" />
@@ -753,37 +330,29 @@
 
       <div class="actions">
         <button type="button" class="btn-dark" id="btnMovimentar">
-          <i class="fas fa-arrows-alt-h"></i>
-          <span>Movimentar</span>
+          <i class="fas fa-arrows-alt-h"></i><span>Movimentar</span>
         </button>
         <button type="button" class="btn-ghost" id="btnZerarMov">
-          <i class="fas fa-undo"></i>
-          <span>Limpar</span>
+          <i class="fas fa-undo"></i><span>Limpar</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Modal customizado -->
+  <!-- Modal -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
-        <div class="modal-icon">
-          <i class="fas fa-question-circle"></i>
-        </div>
+        <div class="modal-icon"><i class="fas fa-question-circle"></i></div>
         <h3 class="modal-title" id="modalTitle">Confirmação</h3>
       </div>
-      <div class="modal-body" id="modalBody">
-        Mensagem do modal
-      </div>
+      <div class="modal-body" id="modalBody">Mensagem do modal</div>
       <div class="modal-actions">
         <button type="button" class="btn-ghost" id="modalCancel">
-          <i class="fas fa-times"></i>
-          <span>Cancelar</span>
+          <i class="fas fa-times"></i><span>Cancelar</span>
         </button>
         <button type="button" class="btn-primary" id="modalConfirm">
-          <i class="fas fa-check"></i>
-          <span>Confirmar</span>
+          <i class="fas fa-check"></i><span>Confirmar</span>
         </button>
       </div>
     </div>
@@ -795,28 +364,11 @@
      ********************************************************/
     const API_URL = "https://script.google.com/macros/s/AKfycbx0-Yyh7BvhHEm40Y7I_cd_G21JsKhP-osnj6yhukVnXqUYafhkammVTSLltjrexSbC/exec";
 
-    // Logos e temas das lojas
     const LOJA_CONFIG = {
-      "Boulevard": {
-        logo: "https://www.genspark.ai/api/files/s/DI1CDkuk",
-        theme: "boulevard",
-        nome: "Boulevard"
-      },
-      "Centro": {
-        logo: "https://www.genspark.ai/api/files/s/KCPCbpuf",
-        theme: "centro",
-        nome: "Centro"
-      },
-      "Lotobel": {
-        logo: "https://www.genspark.ai/api/files/s/02mm2zqB",
-        theme: "lotobel",
-        nome: "Lotobel"
-      },
-      "Santa Tereza": {
-        logo: "https://www.genspark.ai/api/files/s/Z3YK0E5H",
-        theme: "santa-tereza",
-        nome: "Santa Tereza"
-      }
+      "Boulevard": { logo: "https://www.genspark.ai/api/files/s/DI1CDkuk", theme: "boulevard", nome: "Boulevard" },
+      "Centro": { logo: "https://www.genspark.ai/api/files/s/KCPCbpuf", theme: "centro", nome: "Centro" },
+      "Lotobel": { logo: "https://www.genspark.ai/api/files/s/02mm2zqB", theme: "lotobel", nome: "Lotobel" },
+      "Santa Tereza": { logo: "https://www.genspark.ai/api/files/s/Z3YK0E5H", theme: "santa-tereza", nome: "Santa Tereza" }
     };
 
     /********************************************************
@@ -831,18 +383,11 @@
     }
 
     function setButtonLoading(btn, loading) {
-      if (loading) {
-        btn.classList.add("btn-loading");
-        btn.disabled = true;
-      } else {
-        btn.classList.remove("btn-loading");
-        btn.disabled = false;
-      }
+      if (loading) { btn.classList.add("btn-loading"); btn.disabled = true; }
+      else { btn.classList.remove("btn-loading"); btn.disabled = false; }
     }
 
-    function onlyDigits(v) {
-      return String(v || "").replace(/[^\d\-]/g, "");
-    }
+    function onlyDigits(v) { return String(v || "").replace(/[^\d\-]/g, ""); }
 
     function parseBRMoneyToNumber(v) {
       if (v == null) return 0;
@@ -865,14 +410,11 @@
         const sep = url.includes("?") ? "&" : "?";
         s.src = url + sep + "callback=" + cbName + "&_t=" + Date.now();
 
-        const timer = setTimeout(() => {
-          cleanup();
-          reject(new Error("Timeout na chamada da API."));
-        }, 25000);
+        const timer = setTimeout(() => { cleanup(); reject(new Error("Timeout na chamada da API.")); }, 25000);
 
         function cleanup() {
           clearTimeout(timer);
-          try { delete window[cbName]; } catch (e) { }
+          try { delete window[cbName]; } catch (e) {}
           if (s && s.parentNode) s.parentNode.removeChild(s);
         }
 
@@ -961,7 +503,7 @@
         $("deltaCentro").value = d.deltaCentro || "";
         $("deltaLotobel").value = d.deltaLotobel || "";
         $("deltaSantaTereza").value = d.deltaSantaTereza || "";
-      } catch (e) { }
+      } catch (e) {}
     }
 
     function clearMain() {
@@ -989,73 +531,78 @@
       return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     }
 
-    function buildExistsConfirmText(base, currentCotas) {
+    function buildExistsConfirmText(base) {
       return [
         `Bolão da ${base.modalidade} Concurso ${base.concurso}`,
         `${base.qtdJogos} jogos de ${base.qtdDezenas} dezenas`,
         `Valor ${fmtBRL(base.valorCota)}`,
         ``,
         `Já existe.`,
-        `Gostaria de adicionar ${base.cotas} cotas nesse bolão?`
+        `Adicionar ${base.cotas} cotas nesse bolão?`
       ].join("\n");
     }
 
-    // Modal customizado
     function showModal(title, body, onConfirm) {
       $("modalTitle").textContent = title;
       $("modalBody").textContent = body;
       $("modalOverlay").classList.add("active");
 
-      const confirmHandler = () => {
-        closeModal();
-        onConfirm();
-      };
+      $("modalConfirm").onclick = () => { closeModal(); onConfirm(); };
+      $("modalCancel").onclick = () => closeModal();
+      $("modalOverlay").onclick = (e) => { if (e.target === $("modalOverlay")) closeModal(); };
+    }
+    function closeModal() { $("modalOverlay").classList.remove("active"); }
 
-      const cancelHandler = () => {
-        closeModal();
-      };
+    /* 4 logos no topo */
+    function initBrandLogos() {
+      $("brandBoulevard").src = LOJA_CONFIG["Boulevard"].logo;
+      $("brandCentro").src = LOJA_CONFIG["Centro"].logo;
+      $("brandLotobel").src = LOJA_CONFIG["Lotobel"].logo;
+      $("brandSantaTereza").src = LOJA_CONFIG["Santa Tereza"].logo;
 
-      $("modalConfirm").onclick = confirmHandler;
-      $("modalCancel").onclick = cancelHandler;
-      $("modalOverlay").onclick = (e) => {
-        if (e.target === $("modalOverlay")) closeModal();
-      };
+      document.querySelectorAll(".brand-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const loja = btn.getAttribute("data-loja");
+          $("lojaOrigem").value = loja;
+          updateThemeAndLogo();
+          updateMovimentarUIByOrigem();
+          saveDraft();
+        });
+      });
     }
 
-    function closeModal() {
-      $("modalOverlay").classList.remove("active");
+    function updateBrandActive(loja) {
+      document.querySelectorAll(".brand-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-loja") === loja);
+      });
     }
 
-    // Atualiza tema e logo baseado na loja
     function updateThemeAndLogo() {
       const loja = $("lojaOrigem").value;
       const config = LOJA_CONFIG[loja];
 
       if (config) {
-        // Atualiza tema
         document.body.setAttribute("data-theme", config.theme);
-        
-        // Atualiza logo
-        const logoImg = $("logoImg");
-        logoImg.src = config.logo;
-        logoImg.alt = `Logo ${config.nome}`;
 
-        // Atualiza título
-        $("headerTitle").textContent = `${config.nome} - Sistema de Bolões`;
+        $("logoImg").src = config.logo;
+        $("logoImg").alt = `Logo ${config.nome}`;
+
+        $("headerTitle").textContent = `${config.nome} • Bolões`;
+        $("headerSub").textContent = "Cadastro e movimentação";
+        updateBrandActive(loja);
       } else {
         document.body.removeAttribute("data-theme");
         $("logoImg").src = "";
         $("headerTitle").textContent = "Sistema de Bolões";
+        $("headerSub").textContent = "Gerenciamento rápido";
+        updateBrandActive("");
       }
     }
 
     function updateMovimentarUIByOrigem() {
       const loja = $("lojaOrigem").value.trim();
       const chip = $("movOrigemText");
-      
-      if (chip) {
-        chip.textContent = loja ? `Origem: ${loja}` : "Origem: —";
-      }
+      if (chip) chip.textContent = loja ? `Origem: ${loja}` : "Origem: —";
 
       const map = [
         { loja: "Boulevard", inputId: "deltaBoulevard" },
@@ -1067,7 +614,6 @@
       map.forEach(({ loja: lojaName, inputId }) => {
         const el = $(inputId);
         if (!el) return;
-
         const shouldDisable = !!loja && loja === lojaName;
         el.disabled = shouldDisable;
         if (shouldDisable) el.value = "";
@@ -1082,9 +628,8 @@
       try {
         setStatus("Enviando dados...", "muted", "spinner fa-spin");
         setButtonLoading(btn, true);
-        
-        const base = validateBase(true);
 
+        const base = validateBase(true);
         const payload = {
           lojaOrigem: base.lojaOrigem,
           modalidade: base.modalidade,
@@ -1101,35 +646,26 @@
         const res = await callApi("cadastrar", payload);
 
         if (res && res.code === "EXISTS") {
-          const txt = buildExistsConfirmText(base, res.currentCotas || 0);
-          
-          showModal("Bolão já existe", txt, async () => {
+          showModal("Bolão já existe", buildExistsConfirmText(base), async () => {
             setStatus("Adicionando cotas...", "muted", "spinner fa-spin");
             setButtonLoading(btn, true);
-            
+
             const res2 = await callApi("cadastrar", { ...payload, confirmAdd: true });
-            
             setButtonLoading(btn, false);
-            
-            if (res2 && res2.ok) {
-              setStatus(res2.message || "Cotas adicionadas com sucesso!", "ok", "check-circle");
-            } else {
-              setStatus((res2 && res2.message) ? res2.message : "Erro ao somar cotas.", "err", "exclamation-circle");
-            }
+
+            if (res2 && res2.ok) setStatus(res2.message || "Cotas adicionadas!", "ok", "check-circle");
+            else setStatus((res2 && res2.message) ? res2.message : "Erro ao somar cotas.", "err", "exclamation-circle");
           });
-          
+
           setButtonLoading(btn, false);
           setStatus("Aguardando confirmação...", "muted", "clock");
           return;
         }
 
         setButtonLoading(btn, false);
-        
-        if (res && res.ok) {
-          setStatus(res.message || "Bolão cadastrado com sucesso!", "ok", "check-circle");
-        } else {
-          setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-        }
+        if (res && res.ok) setStatus(res.message || "Bolão cadastrado!", "ok", "check-circle");
+        else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
+
       } catch (err) {
         setButtonLoading(btn, false);
         setStatus(err.message || String(err), "err", "exclamation-circle");
@@ -1138,18 +674,17 @@
 
     async function onDeletar() {
       const loja = $("lojaOrigem").value;
-      
+
       showModal(
         "Confirmar deleção",
-        `Tem certeza que deseja deletar o bolão em ${loja}?\n\nEsta ação não pode ser desfeita.`,
+        `Deletar o bolão em ${loja}?\n\nEssa ação não pode ser desfeita.`,
         async () => {
           const btn = $("btnDeletar");
           try {
-            setStatus("Deletando bolão...", "muted", "spinner fa-spin");
+            setStatus("Deletando...", "muted", "spinner fa-spin");
             setButtonLoading(btn, true);
-            
-            const base = validateBase(false);
 
+            const base = validateBase(false);
             const payload = {
               lojaOrigem: base.lojaOrigem,
               modalidade: base.modalidade,
@@ -1166,12 +701,9 @@
             const res = await callApi("cadastrar", payload);
 
             setButtonLoading(btn, false);
-            
-            if (res && res.ok) {
-              setStatus(res.message || "Bolão deletado com sucesso!", "ok", "check-circle");
-            } else {
-              setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-            }
+            if (res && res.ok) setStatus(res.message || "Bolão deletado!", "ok", "check-circle");
+            else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
+
           } catch (err) {
             setButtonLoading(btn, false);
             setStatus(err.message || String(err), "err", "exclamation-circle");
@@ -1185,7 +717,7 @@
       try {
         setStatus("Enviando movimentação...", "muted", "spinner fa-spin");
         setButtonLoading(btn, true);
-        
+
         const base = validateBase(false);
         const deltas = getMovDeltas();
 
@@ -1212,13 +744,9 @@
         const res = await callApi("movimentar", payload);
 
         setButtonLoading(btn, false);
-        
-        if (res && res.ok) {
-          setStatus(res.message || "Movimentação realizada com sucesso!", "ok", "check-circle");
-          clearMov();
-        } else {
-          setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-        }
+        if (res && res.ok) { setStatus(res.message || "Movimentação feita!", "ok", "check-circle"); clearMov(); }
+        else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
+
       } catch (err) {
         setButtonLoading(btn, false);
         setStatus(err.message || String(err), "err", "exclamation-circle");
@@ -1256,6 +784,7 @@
     }
 
     // Init
+    initBrandLogos();
     loadDraft();
     bind();
     updateThemeAndLogo();
