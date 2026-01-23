@@ -4,6 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Sistema de Bolões</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <style>
@@ -25,12 +30,10 @@
     *{box-sizing:border-box;margin:0;padding:0}
     body{margin:0;font-family:var(--font);color:var(--txt);background:var(--bg);min-height:100vh;transition:var(--transition)}
 
-    /* HEADER (mais baixo + barra com 4 logos) */
+    /* HEADER compacto + 4 logos */
     .header{
       background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-      color:#fff;
-      padding:12px 14px;
-      box-shadow:var(--shadow);
+      color:#fff;padding:10px 12px;box-shadow:var(--shadow);
       position:sticky;top:0;z-index:100;
     }
     .header-content{max-width:920px;margin:0 auto;display:flex;align-items:center;gap:12px}
@@ -44,14 +47,11 @@
     .header-title h1{font-size:18px;font-weight:900;line-height:1.05;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .header-title p{font-size:12px;opacity:.9;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-    .brand-logos{
-      display:flex;gap:8px;align-items:center;justify-content:flex-end;flex:0 0 auto
-    }
+    .brand-logos{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex:0 0 auto}
     .brand-logos button{
       border:0;background:rgba(255,255,255,.14);
-      width:34px;height:34px;border-radius:12px;
-      display:grid;place-items:center;cursor:pointer;
-      transition:var(--transition)
+      width:34px;height:34px;border-radius:12px;display:grid;place-items:center;cursor:pointer;
+      transition:var(--transition);padding:0
     }
     .brand-logos button:hover{transform:translateY(-1px);background:rgba(255,255,255,.22)}
     .brand-logos button:active{transform:translateY(0)}
@@ -64,18 +64,21 @@
       background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
       box-shadow:var(--shadow);padding:var(--pad);margin:12px 0;transition:var(--transition)
     }
-
+    .card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
     .section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--primary)}
     .section-icon{
       width:34px;height:34px;border-radius:10px;
       background:linear-gradient(135deg,var(--primary),var(--primary-dark));
       display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex:0 0 auto
     }
-    .section-title{font-size:16px;font-weight:900;margin:0;color:var(--txt);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .section-title{
+      font-size:16px;font-weight:900;margin:0;color:var(--txt);
+      display:flex;align-items:center;gap:8px;flex-wrap:wrap
+    }
 
-    /* GRID */
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    /* GRID CONTROLADA (smartphone do jeito que você pediu) */
+    .grid-1{display:grid;grid-template-columns:1fr;gap:12px}
+    .grid-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
 
     /* CAMPOS */
     .field{position:relative}
@@ -86,7 +89,7 @@
       border:2px solid var(--line);outline:none;background:#fff;transition:var(--transition);font-family:var(--font)
     }
     .field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,.10);transform:translateY(-1px)}
-    .field input:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed;opacity:.7}
+    .field input:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed;opacity:.75}
 
     /* CHIP ORIGEM */
     .mov-origem{
@@ -95,8 +98,8 @@
     }
 
     /* AÇÕES */
+    .actions-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .actions-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
 
     button{
       border:0;border-radius:var(--radius-sm);
@@ -106,10 +109,13 @@
     }
     button:disabled{opacity:.55;cursor:not-allowed}
     .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 4px 12px rgba(99,102,241,.25)}
+    .btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.32)}
     .btn-dark{background:linear-gradient(135deg,#1e293b,#0f172a);color:#fff;box-shadow:0 4px 12px rgba(15,23,42,.25)}
+    .btn-dark:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,23,42,.32)}
     .btn-danger{background:linear-gradient(135deg,var(--danger),#dc2626);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,.25)}
+    .btn-danger:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(239,68,68,.32)}
     .btn-ghost{background:#fff;border:2px solid var(--line);color:var(--txt)}
-    .btn-ghost:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+    .btn-ghost:hover:not(:disabled){border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
 
     .btn-loading{pointer-events:none;opacity:.75}
     .btn-loading::after{
@@ -131,33 +137,29 @@
     .status.err i{color:var(--danger)}
 
     /* MODAL */
-    .modal-overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;
-      align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)
-    }
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
     .modal-overlay.active{display:flex}
     .modal{background:#fff;border-radius:var(--radius);padding:20px;max-width:520px;width:92%;box-shadow:0 25px 50px rgba(0,0,0,.3)}
     .modal-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-    .modal-icon{
-      width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-      font-size:22px;background:linear-gradient(135deg,var(--warning),#f59e0b);color:#fff;flex:0 0 auto
-    }
+    .modal-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(135deg,var(--warning),#f59e0b);color:#fff;flex:0 0 auto}
     .modal-title{font-size:18px;font-weight:900;color:var(--txt)}
     .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* MOBILE */
+    /* MOBILE: mantém 2 colunas. só cai pra 1 em tela MUITO estreita */
     @media (max-width:720px){
       :root{--pad:14px;--radius:14px;--radius-sm:12px}
-      .grid,.row2{grid-template-columns:1fr}
       .wrap{padding:12px 10px 88px}
       .header{padding:10px 10px}
       .header-title h1{font-size:16px}
       .logo-container{width:40px;height:40px}
       .brand-logos button{width:32px;height:32px}
+      button{font-size:15px;min-height:48px}
+      .field input,.field select{font-size:16px}
+    }
+    @media (max-width:360px){
+      .grid-2{grid-template-columns:1fr}
       .actions-3{grid-template-columns:1fr}
-      button{font-size:16px;min-height:50px}
-      .field input,.field select{font-size:17px}
     }
   </style>
 </head>
@@ -165,28 +167,28 @@
 <body>
   <header class="header">
     <div class="header-content">
-      <div class="logo-container" id="logoContainer" title="Loja selecionada">
-        <img src="" alt="Logo" id="logoImg" />
+      <div class="logo-container" title="Loja selecionada">
+        <img src="./icons/loterpraca.png" alt="Logo" id="logoImg" />
       </div>
 
       <div class="header-title">
         <h1 id="headerTitle">Sistema de Bolões</h1>
-        <p id="headerSub">Gerenciamento rápido</p>
+        <p id="headerSub">Cadastro e movimentação</p>
       </div>
 
-      <!-- 4 LOGOS SEMPRE NO TOPO (clicável) -->
+      <!-- 4 ícones (logos) no topo -->
       <div class="brand-logos" aria-label="Atalhos das lojas">
         <button type="button" class="brand-btn" data-loja="Boulevard" title="Boulevard">
-          <img id="brandBoulevard" alt="Boulevard">
+          <img id="brandBoulevard" src="./icons/boulevard.jpg" alt="Boulevard">
         </button>
         <button type="button" class="brand-btn" data-loja="Centro" title="Centro">
-          <img id="brandCentro" alt="Centro">
+          <img id="brandCentro" src="./icons/loterpraca.png" alt="Centro">
         </button>
         <button type="button" class="brand-btn" data-loja="Lotobel" title="Lotobel">
-          <img id="brandLotobel" alt="Lotobel">
+          <img id="brandLotobel" src="./icons/lotobel.jpg" alt="Lotobel">
         </button>
         <button type="button" class="brand-btn" data-loja="Santa Tereza" title="Santa Tereza">
-          <img id="brandSantaTereza" alt="Santa Tereza">
+          <img id="brandSantaTereza" src="./icons/santa-tereza.png" alt="Santa Tereza">
         </button>
       </div>
     </div>
@@ -200,7 +202,8 @@
         <h2 class="section-title">Dados do bolão</h2>
       </div>
 
-      <div class="grid">
+      <!-- Loja de origem: ocupa linha inteira -->
+      <div class="grid-1">
         <div class="field">
           <label><i class="fas fa-store"></i> Loja de origem</label>
           <select id="lojaOrigem" required>
@@ -211,7 +214,10 @@
             <option>Santa Tereza</option>
           </select>
         </div>
+      </div>
 
+      <!-- Modalidade + Concurso -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-clover"></i> Modalidade</label>
           <select id="modalidade" required>
@@ -232,28 +238,27 @@
             <option>Virada</option>
           </select>
         </div>
-      </div>
 
-      <div class="grid" style="margin-top:12px">
         <div class="field">
           <label><i class="fas fa-hashtag"></i> Concurso</label>
           <input id="concurso" inputmode="numeric" placeholder="Ex: 2654" required />
         </div>
-        <div></div>
       </div>
 
-      <div class="row2">
+      <!-- Data inicial + Data final -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-calendar-day"></i> Data inicial</label>
           <input id="dataInicial" type="date" required />
         </div>
         <div class="field">
-          <label><i class="fas fa-calendar-check"></i> Data do concurso</label>
+          <label><i class="fas fa-calendar-check"></i> Data final</label>
           <input id="dataConcurso" type="date" required />
         </div>
       </div>
 
-      <div class="row2">
+      <!-- Qtd de Jogos + Qtd de Dezenas -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-list-ol"></i> Qtd de Jogos</label>
           <input id="qtdJogos" inputmode="numeric" placeholder="Ex: 10" required />
@@ -264,18 +269,20 @@
         </div>
       </div>
 
-      <div class="row2">
+      <!-- Valor da cota + Qtd de Cotas -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-money-bill-wave"></i> Valor da cota (R$)</label>
           <input id="valorCota" inputmode="decimal" placeholder="Ex: 15,00" required />
         </div>
         <div class="field">
-          <label><i class="fas fa-users"></i> Qtde de Cotas</label>
+          <label><i class="fas fa-users"></i> Qtd de Cotas</label>
           <input id="cotas" inputmode="numeric" placeholder="Ex: 50" required />
         </div>
       </div>
 
-      <div class="actions actions-3">
+      <!-- Botões -->
+      <div class="actions-3">
         <button type="button" class="btn-primary" id="btnCadastrar">
           <i class="fas fa-check"></i><span>Cadastrar</span>
         </button>
@@ -306,7 +313,8 @@
         </h2>
       </div>
 
-      <div class="grid">
+      <!-- Boulevard + Centro -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-building"></i> Boulevard</label>
           <input id="deltaBoulevard" inputmode="numeric" placeholder="0" />
@@ -317,7 +325,8 @@
         </div>
       </div>
 
-      <div class="grid" style="margin-top:12px">
+      <!-- Lotobel + Santa Tereza -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-landmark"></i> Lotobel</label>
           <input id="deltaLotobel" inputmode="numeric" placeholder="0" />
@@ -364,11 +373,12 @@
      ********************************************************/
     const API_URL = "https://script.google.com/macros/s/AKfycbx0-Yyh7BvhHEm40Y7I_cd_G21JsKhP-osnj6yhukVnXqUYafhkammVTSLltjrexSbC/exec";
 
+    // ✅ usando exatamente seus arquivos na pasta /icons
     const LOJA_CONFIG = {
-      "Boulevard": { logo: "https://www.genspark.ai/api/files/s/DI1CDkuk", theme: "boulevard", nome: "Boulevard" },
-      "Centro": { logo: "https://www.genspark.ai/api/files/s/KCPCbpuf", theme: "centro", nome: "Centro" },
-      "Lotobel": { logo: "https://www.genspark.ai/api/files/s/02mm2zqB", theme: "lotobel", nome: "Lotobel" },
-      "Santa Tereza": { logo: "https://www.genspark.ai/api/files/s/Z3YK0E5H", theme: "santa-tereza", nome: "Santa Tereza" }
+      "Boulevard":    { logo: "./icons/boulevard.jpg",     theme: "boulevard",     nome: "Boulevard" },
+      "Centro":       { logo: "./icons/loterpraca.png",    theme: "centro",        nome: "Centro" },
+      "Lotobel":      { logo: "./icons/lotobel.jpg",       theme: "lotobel",       nome: "Lotobel" },
+      "Santa Tereza": { logo: "./icons/santa-tereza.png",  theme: "santa-tereza",  nome: "Santa Tereza" }
     };
 
     /********************************************************
@@ -449,11 +459,11 @@
       if (!modalidade) throw new Error("Modalidade é obrigatória.");
       if (!concurso) throw new Error("Concurso é obrigatório.");
       if (!dataInicial) throw new Error("Data inicial é obrigatória.");
-      if (!dataConcurso) throw new Error("Data do concurso é obrigatória.");
+      if (!dataConcurso) throw new Error("Data final é obrigatória.");
       if (!qtdJogos || qtdJogos <= 0) throw new Error("Qtd de Jogos deve ser > 0.");
       if (!qtdDezenas || qtdDezenas <= 0) throw new Error("Qtd de Dezenas deve ser > 0.");
       if (!valorCota || valorCota <= 0) throw new Error("Valor da cota deve ser > 0.");
-      if (exigirCotas && (!Number.isFinite(cotas) || cotas === 0)) throw new Error("Qtde de Cotas é obrigatória (≠ 0).");
+      if (exigirCotas && (!Number.isFinite(cotas) || cotas === 0)) throw new Error("Qtd de Cotas é obrigatória (≠ 0).");
 
       return { lojaOrigem, modalidade, concurso, dataInicial, dataConcurso, qtdJogos, qtdDezenas, valorCota, cotas };
     }
@@ -542,6 +552,7 @@
       ].join("\n");
     }
 
+    // Modal customizado
     function showModal(title, body, onConfirm) {
       $("modalTitle").textContent = title;
       $("modalBody").textContent = body;
@@ -551,25 +562,8 @@
       $("modalCancel").onclick = () => closeModal();
       $("modalOverlay").onclick = (e) => { if (e.target === $("modalOverlay")) closeModal(); };
     }
+
     function closeModal() { $("modalOverlay").classList.remove("active"); }
-
-    /* 4 logos no topo */
-    function initBrandLogos() {
-      $("brandBoulevard").src = LOJA_CONFIG["Boulevard"].logo;
-      $("brandCentro").src = LOJA_CONFIG["Centro"].logo;
-      $("brandLotobel").src = LOJA_CONFIG["Lotobel"].logo;
-      $("brandSantaTereza").src = LOJA_CONFIG["Santa Tereza"].logo;
-
-      document.querySelectorAll(".brand-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const loja = btn.getAttribute("data-loja");
-          $("lojaOrigem").value = loja;
-          updateThemeAndLogo();
-          updateMovimentarUIByOrigem();
-          saveDraft();
-        });
-      });
-    }
 
     function updateBrandActive(loja) {
       document.querySelectorAll(".brand-btn").forEach(btn => {
@@ -577,24 +571,24 @@
       });
     }
 
+    // Atualiza tema e logo baseado na loja
     function updateThemeAndLogo() {
       const loja = $("lojaOrigem").value;
       const config = LOJA_CONFIG[loja];
 
       if (config) {
         document.body.setAttribute("data-theme", config.theme);
-
         $("logoImg").src = config.logo;
         $("logoImg").alt = `Logo ${config.nome}`;
-
         $("headerTitle").textContent = `${config.nome} • Bolões`;
         $("headerSub").textContent = "Cadastro e movimentação";
         updateBrandActive(loja);
       } else {
         document.body.removeAttribute("data-theme");
-        $("logoImg").src = "";
+        $("logoImg").src = "./icons/loterpraca.png";
+        $("logoImg").alt = "Loterpraça";
         $("headerTitle").textContent = "Sistema de Bolões";
-        $("headerSub").textContent = "Gerenciamento rápido";
+        $("headerSub").textContent = "Cadastro e movimentação";
         updateBrandActive("");
       }
     }
@@ -602,6 +596,7 @@
     function updateMovimentarUIByOrigem() {
       const loja = $("lojaOrigem").value.trim();
       const chip = $("movOrigemText");
+
       if (chip) chip.textContent = loja ? `Origem: ${loja}` : "Origem: —";
 
       const map = [
@@ -614,6 +609,7 @@
       map.forEach(({ loja: lojaName, inputId }) => {
         const el = $(inputId);
         if (!el) return;
+
         const shouldDisable = !!loja && loja === lojaName;
         el.disabled = shouldDisable;
         if (shouldDisable) el.value = "";
@@ -630,6 +626,7 @@
         setButtonLoading(btn, true);
 
         const base = validateBase(true);
+
         const payload = {
           lojaOrigem: base.lojaOrigem,
           modalidade: base.modalidade,
@@ -651,6 +648,7 @@
             setButtonLoading(btn, true);
 
             const res2 = await callApi("cadastrar", { ...payload, confirmAdd: true });
+
             setButtonLoading(btn, false);
 
             if (res2 && res2.ok) setStatus(res2.message || "Cotas adicionadas!", "ok", "check-circle");
@@ -663,9 +661,9 @@
         }
 
         setButtonLoading(btn, false);
+
         if (res && res.ok) setStatus(res.message || "Bolão cadastrado!", "ok", "check-circle");
         else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-
       } catch (err) {
         setButtonLoading(btn, false);
         setStatus(err.message || String(err), "err", "exclamation-circle");
@@ -681,10 +679,11 @@
         async () => {
           const btn = $("btnDeletar");
           try {
-            setStatus("Deletando...", "muted", "spinner fa-spin");
+            setStatus("Deletando bolão...", "muted", "spinner fa-spin");
             setButtonLoading(btn, true);
 
             const base = validateBase(false);
+
             const payload = {
               lojaOrigem: base.lojaOrigem,
               modalidade: base.modalidade,
@@ -701,9 +700,9 @@
             const res = await callApi("cadastrar", payload);
 
             setButtonLoading(btn, false);
+
             if (res && res.ok) setStatus(res.message || "Bolão deletado!", "ok", "check-circle");
             else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-
           } catch (err) {
             setButtonLoading(btn, false);
             setStatus(err.message || String(err), "err", "exclamation-circle");
@@ -744,18 +743,15 @@
         const res = await callApi("movimentar", payload);
 
         setButtonLoading(btn, false);
+
         if (res && res.ok) { setStatus(res.message || "Movimentação feita!", "ok", "check-circle"); clearMov(); }
         else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-
       } catch (err) {
         setButtonLoading(btn, false);
         setStatus(err.message || String(err), "err", "exclamation-circle");
       }
     }
 
-    /********************************************************
-     * INIT
-     ********************************************************/
     function bind() {
       document.querySelectorAll("input,select").forEach(el => {
         el.addEventListener("change", saveDraft);
@@ -766,6 +762,16 @@
         updateThemeAndLogo();
         updateMovimentarUIByOrigem();
         saveDraft();
+      });
+
+      document.querySelectorAll(".brand-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const loja = btn.getAttribute("data-loja");
+          $("lojaOrigem").value = loja;
+          updateThemeAndLogo();
+          updateMovimentarUIByOrigem();
+          saveDraft();
+        });
       });
 
       $("btnCadastrar").addEventListener("click", onCadastrar);
@@ -784,7 +790,6 @@
     }
 
     // Init
-    initBrandLogos();
     loadDraft();
     bind();
     updateThemeAndLogo();
