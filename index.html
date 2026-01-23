@@ -170,65 +170,74 @@
     .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-   /* =========================
-   ZONA DE ATALHOS (COMPACTA)
+/* =========================
+   ZONA DE ATALHOS (COMPACTA – 1 LINHA)
    ========================= */
 .quickbar{
   background:var(--card);
   border:1px solid var(--line);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
-  padding:10px;
+  padding:6px;
   margin:10px 0 12px;
 }
 
-/* ✅ não deixa os estilos globais de button “vazar” pra quickbar */
+/* evita estilos globais do button vazarem */
 .quickbar button{
   all: unset;
   box-sizing: border-box;
   font-family: var(--font);
 }
 
+/* 1 linha horizontal com scroll */
 .quickbar-grid{
-  display:grid;
-  gap:8px;
-  grid-template-columns:repeat(3, minmax(0,1fr));
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:2px;
+  scrollbar-width:none;
 }
+.quickbar-grid::-webkit-scrollbar{display:none}
 
-/* Botão da modalidade */
-/* Botão vira "tile" quadrado e a imagem preenche tudo */
+/* tile */
 .qmod{
   border:1px solid var(--line);
   background:#fff;
-  border-radius:18px;
+  border-radius:14px;
   padding:0;
-  height:auto;
-  aspect-ratio:1/1;
+  width:66px;     /* ajuste fino aqui */
+  height:44px;    /* ajuste fino aqui */
+  flex:0 0 auto;
   overflow:hidden;
   cursor:pointer;
   transition:var(--transition);
-  display:block;
   position:relative;
 }
 
-.qmod:hover{ transform:translateY(-1px); border-color:rgba(99,102,241,.45); }
+.qmod:hover{
+  transform:translateY(-1px);
+  border-color:rgba(99,102,241,.45);
+}
 
 .qmod.active{
   border-color:var(--primary);
-  box-shadow:0 10px 20px rgba(0,0,0,.10);
-  transform:translateY(-1px);
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
 }
 
-/* ✅ imagem REAL do seu HTML: <button class="qmod"><img ...></button> */
+/* imagem 100% (igual ao chat) */
 .qmod > img{
   width:100%;
   height:100%;
-  object-fit:cover;          /* não corta */
-  object-position:center;
-  padding:7px 9px;         /* margem interna fixa = “tamanho visual” mais igual */
   display:block;
+  object-fit:cover;          /* preenche tudo */
+  object-position:center;
+  pointer-events:none;
+  user-select:none;
 }
 
+/* chips (fica igual seu original) */
 .quickchips{margin-top:8px;display:none}
 .quickchips.active{display:block}
 
@@ -255,72 +264,15 @@
   transform:translateY(-1px);
 }
 
-/* Mobile */
-@media (min-width:520px){
-  .quickbar-grid{ grid-template-columns:repeat(4, minmax(0,1fr)); }
+/* micro-ajustes por tela (mantém 1 linha sempre) */
+@media (max-width:380px){
+  .quickbar{padding:5px}
+  .quickbar-grid{gap:5px}
+  .qmod{width:58px;height:40px;border-radius:13px}
 }
 @media (min-width:760px){
-  .quickbar-grid{ grid-template-columns:repeat(6, minmax(0,1fr)); }
+  .qmod{width:72px;height:46px} /* desktop um pouco maior */
 }
-
-      /* ✅ 3 botões: mesma linha, menores, iguais */
-      .actions-3{
-        grid-template-columns:repeat(3,minmax(0,1fr));
-        gap:8px;
-      }
-      .actions-3 button{
-        width:100%;
-        min-height:44px;
-        padding:10px 8px;
-        font-size:13px;
-        border-radius:12px;
-        gap:6px;
-        white-space:nowrap;
-      }
-      .actions-3 button i{font-size:13px;}
-
-      /* ✅ 2 botões da movimentação: 50/50 e iguais */
-      .actions{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:10px;
-      }
-      .actions button{
-        width:100%;
-        min-height:46px;
-        padding:11px 10px;
-        font-size:14px;
-        border-radius:12px;
-        white-space:nowrap;
-      }
-
-      /* Quickbar */
-      .quickbar-grid{grid-template-columns:repeat(5, minmax(0,1fr))}
-      .qmod{height:54px;border-radius:18px}
-      .qmod .ico{width:30px;height:30px}
-      .qmod .lbl{font-size:10px}
-    }
-
-    @media (max-width:380px){
-      .actions-3{gap:6px}
-      .actions-3 button{
-        min-height:42px;
-        padding:9px 6px;
-        font-size:12px;
-        border-radius:11px;
-      }
-      .actions button{
-        min-height:44px;
-        padding:10px 8px;
-        font-size:13px;
-        border-radius:11px;
-      }
-
-      .quickbar-grid{grid-template-columns:repeat(4, minmax(0,1fr))}
-      .qmod{height:52px}
-    }
-  </style>
-</head>
 
 <body>
   <header class="header">
