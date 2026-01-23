@@ -191,7 +191,7 @@
    .qmod{
   border:1px solid var(--line);
   background:#fff;
-  border-radius:18px;
+  border-radius:16px;
   height:52px;
   padding:0;
   display:flex;
@@ -212,10 +212,10 @@
   
   /* imagem ocupa tudo */
 .qmod img{
-  width:120%;
-  height:120%;
-  object-fit:cover;
-  object-position:center;
+  width:100%;
+  height:100%;
+  object-fit:contain;     /* não corta o ícone */
+  padding:6px;            /* margem interna elegante */
 }
 }
    .qmod .ico{
