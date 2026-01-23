@@ -170,109 +170,109 @@
     .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-/* =========================
-   ZONA DE ATALHOS (COMPACTA – 1 LINHA)
-   ========================= */
-.quickbar{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:6px;
-  margin:10px 0 12px;
-}
+    /* =========================
+       ZONA DE ATALHOS (COMPACTA – 1 LINHA)
+       ========================= */
+    .quickbar{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:6px;
+      margin:10px 0 12px;
+    }
 
-/* evita estilos globais do button vazarem */
-.quickbar button{
-  all: unset;
-  box-sizing: border-box;
-  font-family: var(--font);
-}
+    /* evita estilos globais do button vazarem */
+    .quickbar button{
+      all: unset;
+      box-sizing: border-box;
+      font-family: var(--font);
+    }
 
-/* 1 linha horizontal com scroll */
-.quickbar-grid{
-  display:flex;
-  gap:6px;
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  padding:2px;
-  scrollbar-width:none;
-}
-.quickbar-grid::-webkit-scrollbar{display:none}
+    /* 1 linha horizontal com scroll */
+    .quickbar-grid{
+      display:flex;
+      gap:6px;
+      overflow-x:auto;
+      overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;
+      padding:2px;
+      scrollbar-width:none;
+    }
+    .quickbar-grid::-webkit-scrollbar{display:none}
 
-/* tile */
-.qmod{
-  border:1px solid var(--line);
-  background:#fff;
-  border-radius:14px;
-  padding:0;
-  width:66px;     /* ajuste fino aqui */
-  height:44px;    /* ajuste fino aqui */
-  flex:0 0 auto;
-  overflow:hidden;
-  cursor:pointer;
-  transition:var(--transition);
-  position:relative;
-}
+    /* tile */
+    .qmod{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:14px;
+      padding:0;
+      width:66px;
+      height:44px;
+      flex:0 0 auto;
+      overflow:hidden;
+      cursor:pointer;
+      transition:var(--transition);
+      position:relative;
+    }
 
-.qmod:hover{
-  transform:translateY(-1px);
-  border-color:rgba(99,102,241,.45);
-}
+    .qmod:hover{
+      transform:translateY(-1px);
+      border-color:rgba(99,102,241,.45);
+    }
 
-.qmod.active{
-  border-color:var(--primary);
-  box-shadow:0 6px 14px rgba(0,0,0,.12);
-}
+    .qmod.active{
+      border-color:var(--primary);
+      box-shadow:0 6px 14px rgba(0,0,0,.12);
+    }
 
-/* imagem 100% (igual ao chat) */
-.qmod > img{
-  width:100%;
-  height:100%;
-  display:block;
-  object-fit:cover;          /* preenche tudo */
-  object-position:center;
-  pointer-events:none;
-  user-select:none;
-}
+    /* imagem 100% */
+    .qmod > img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+      object-position:center;
+      pointer-events:none;
+      user-select:none;
+    }
 
-/* chips (fica igual seu original) */
-.quickchips{margin-top:8px;display:none}
-.quickchips.active{display:block}
+    .quickchips{margin-top:8px;display:none}
+    .quickchips.active{display:block}
 
-.chips-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
+    .chips-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
 
-.chip{
-  border:1px solid var(--line);
-  background:#fff;
-  border-radius:999px;
-  padding:7px 10px;
-  font-size:12px;
-  font-weight:900;
-  cursor:pointer;
-  transition:var(--transition);
-}
+    .chip{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+      transition:var(--transition);
+    }
 
-.chip:hover{
-  border-color:var(--primary);
-  color:var(--primary);
-  transform:translateY(-1px);
-}
+    .chip:hover{
+      border-color:var(--primary);
+      color:var(--primary);
+      transform:translateY(-1px);
+    }
 
-/* micro-ajustes por tela (mantém 1 linha sempre) */
-@media (max-width:380px){
-  .quickbar{padding:5px}
-  .quickbar-grid{gap:5px}
-  .qmod{width:58px;height:40px;border-radius:13px}
-}
-@media (min-width:760px){
-  .qmod{width:72px;height:46px} /* desktop um pouco maior */
-}
+    @media (max-width:380px){
+      .quickbar{padding:5px}
+      .quickbar-grid{gap:5px}
+      .qmod{width:58px;height:40px;border-radius:13px}
+    }
+    @media (min-width:760px){
+      .qmod{width:72px;height:46px}
+    }
+  </style>
+</head>
 
 <body>
   <header class="header">
