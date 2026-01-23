@@ -1,12 +1,19 @@
-const CACHE_NAME = "bolo-pwa-v29";
+const CACHE_NAME = "bolo-pwa-v30"; // suba a versão sempre que mexer em assets
 
 const ASSETS = [
   "/bolo-pwa/",
   "/bolo-pwa/index.html",
   "/bolo-pwa/manifest.json",
-  "/bolo-pwa/service-worker.js",
+
+  // Ícones do PWA
   "/bolo-pwa/icons/icon-192.png",
-  "/bolo-pwa/icons/icon-512.png"
+  "/bolo-pwa/icons/icon-512.png",
+
+  // ✅ Logos da interface (as 4 que você citou)
+  "/bolo-pwa/icons/boulevard.jpg",
+  "/bolo-pwa/icons/loterpraca.png",
+  "/bolo-pwa/icons/lotobel.jpg",
+  "/bolo-pwa/icons/santa-tereza.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -33,10 +40,15 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Cache-first com fallback pra rede + grava no cache
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
+
       return fetch(event.request).then((resp) => {
+        // se falhar ou for opaco, só retorna sem cachear
+        if (!resp || resp.status !== 200 || resp.type === "opaque") return resp;
+
         const copy = resp.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return resp;
