@@ -37,12 +37,19 @@
       position:sticky;top:0;z-index:100;
     }
     .header-content{max-width:920px;margin:0 auto;display:flex;align-items:center;gap:12px}
+
+    /* ✅ LOGO MAIOR + CIRCULAR + CORTE (avatar estilo Google) */
     .logo-container{
-      width:44px;height:44px;background:#fff;border-radius:12px;padding:6px;
-      box-shadow:0 4px 12px rgba(0,0,0,.15);
+      width:56px;height:56px;background:#fff;border-radius:50%;
+      padding:0;box-shadow:0 6px 16px rgba(0,0,0,.18);
       display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto
     }
-    .logo-container img{width:100%;height:100%;object-fit:contain}
+    .logo-container img{
+      width:120%;height:120%;
+      object-fit:cover;              /* preenche e corta o “mundo” */
+      object-position:center;        /* ajustável via JS */
+    }
+
     .header-title{flex:1;min-width:0}
     .header-title h1{font-size:18px;font-weight:900;line-height:1.05;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .header-title p{font-size:12px;opacity:.9;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -146,16 +153,19 @@
     .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* MOBILE: mantém 2 colunas. só cai pra 1 em tela MUITO estreita */
+    /* MOBILE */
     @media (max-width:720px){
       :root{--pad:14px;--radius:14px;--radius-sm:12px}
       .wrap{padding:12px 10px 88px}
       .header{padding:10px 10px}
       .header-title h1{font-size:16px}
-      .logo-container{width:40px;height:40px}
       .brand-logos button{width:32px;height:32px}
       button{font-size:15px;min-height:48px}
       .field input,.field select{font-size:16px}
+
+      /* ✅ logo ainda mais “perfil” no mobile */
+      .logo-container{width:60px;height:60px}
+      .logo-container img{width:122%;height:122%}
     }
     @media (max-width:360px){
       .grid-2{grid-template-columns:1fr}
@@ -373,12 +383,13 @@
      ********************************************************/
     const API_URL = "https://script.google.com/macros/s/AKfycbx0-Yyh7BvhHEm40Y7I_cd_G21JsKhP-osnj6yhukVnXqUYafhkammVTSLltjrexSbC/exec";
 
-    // ✅ usando exatamente seus arquivos na pasta /icons
+    // ✅ nomes exatos dos arquivos em /icons
+    // position = ajuste fino do recorte (avatar estilo Google)
     const LOJA_CONFIG = {
-      "Boulevard":    { logo: "./icons/boulevard.jpg",     theme: "boulevard",     nome: "Boulevard" },
-      "Centro":       { logo: "./icons/loterpraca.png",    theme: "centro",        nome: "Centro" },
-      "Lotobel":      { logo: "./icons/lotobel.jpg",       theme: "lotobel",       nome: "Lotobel" },
-      "Santa Tereza": { logo: "./icons/santa-tereza.png",  theme: "santa-tereza",  nome: "Santa Tereza" }
+      "Boulevard":    { logo: "./icons/boulevard.jpg",     theme: "boulevard",    nome: "Boulevard",     position: "50% 50%" },
+      "Centro":       { logo: "./icons/loterpraca.png",    theme: "centro",       nome: "Centro",        position: "50% 42%" },
+      "Lotobel":      { logo: "./icons/lotobel.jpg",       theme: "lotobel",      nome: "Lotobel",       position: "50% 50%" },
+      "Santa Tereza": { logo: "./icons/santa-tereza.png",  theme: "santa-tereza", nome: "Santa Tereza",  position: "50% 50%" }
     };
 
     /********************************************************
@@ -552,7 +563,6 @@
       ].join("\n");
     }
 
-    // Modal customizado
     function showModal(title, body, onConfirm) {
       $("modalTitle").textContent = title;
       $("modalBody").textContent = body;
@@ -571,22 +581,29 @@
       });
     }
 
-    // Atualiza tema e logo baseado na loja
+    // ✅ Atualiza tema + logo + recorte (object-position)
     function updateThemeAndLogo() {
       const loja = $("lojaOrigem").value;
       const config = LOJA_CONFIG[loja];
+      const img = $("logoImg");
 
       if (config) {
         document.body.setAttribute("data-theme", config.theme);
-        $("logoImg").src = config.logo;
-        $("logoImg").alt = `Logo ${config.nome}`;
+
+        img.src = config.logo;
+        img.alt = `Logo ${config.nome}`;
+        img.style.objectPosition = config.position || "center";
+
         $("headerTitle").textContent = `${config.nome} • Bolões`;
         $("headerSub").textContent = "Cadastro e movimentação";
         updateBrandActive(loja);
       } else {
         document.body.removeAttribute("data-theme");
-        $("logoImg").src = "./icons/loterpraca.png";
-        $("logoImg").alt = "Loterpraça";
+
+        img.src = "./icons/loterpraca.png";
+        img.alt = "Loterpraça";
+        img.style.objectPosition = "center";
+
         $("headerTitle").textContent = "Sistema de Bolões";
         $("headerSub").textContent = "Cadastro e movimentação";
         updateBrandActive("");
@@ -596,7 +613,6 @@
     function updateMovimentarUIByOrigem() {
       const loja = $("lojaOrigem").value.trim();
       const chip = $("movOrigemText");
-
       if (chip) chip.textContent = loja ? `Origem: ${loja}` : "Origem: —";
 
       const map = [
@@ -626,7 +642,6 @@
         setButtonLoading(btn, true);
 
         const base = validateBase(true);
-
         const payload = {
           lojaOrigem: base.lojaOrigem,
           modalidade: base.modalidade,
@@ -650,7 +665,6 @@
             const res2 = await callApi("cadastrar", { ...payload, confirmAdd: true });
 
             setButtonLoading(btn, false);
-
             if (res2 && res2.ok) setStatus(res2.message || "Cotas adicionadas!", "ok", "check-circle");
             else setStatus((res2 && res2.message) ? res2.message : "Erro ao somar cotas.", "err", "exclamation-circle");
           });
@@ -661,7 +675,6 @@
         }
 
         setButtonLoading(btn, false);
-
         if (res && res.ok) setStatus(res.message || "Bolão cadastrado!", "ok", "check-circle");
         else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
       } catch (err) {
@@ -672,7 +685,6 @@
 
     async function onDeletar() {
       const loja = $("lojaOrigem").value;
-
       showModal(
         "Confirmar deleção",
         `Deletar o bolão em ${loja}?\n\nEssa ação não pode ser desfeita.`,
@@ -683,7 +695,6 @@
             setButtonLoading(btn, true);
 
             const base = validateBase(false);
-
             const payload = {
               lojaOrigem: base.lojaOrigem,
               modalidade: base.modalidade,
@@ -700,7 +711,6 @@
             const res = await callApi("cadastrar", payload);
 
             setButtonLoading(btn, false);
-
             if (res && res.ok) setStatus(res.message || "Bolão deletado!", "ok", "check-circle");
             else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
           } catch (err) {
@@ -743,7 +753,6 @@
         const res = await callApi("movimentar", payload);
 
         setButtonLoading(btn, false);
-
         if (res && res.ok) { setStatus(res.message || "Movimentação feita!", "ok", "check-circle"); clearMov(); }
         else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
       } catch (err) {
@@ -794,6 +803,15 @@
     bind();
     updateThemeAndLogo();
     updateMovimentarUIByOrigem();
+  </script>
+
+  <!-- Registrar Service Worker (se você estiver usando) -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js");
+      });
+    }
   </script>
 </body>
 </html>
