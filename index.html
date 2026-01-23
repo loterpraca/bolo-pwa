@@ -170,10 +170,10 @@
     .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* =========================
-       ZONA DE ATALHOS (COMPACTA)
-       ========================= */
-    .quickbar{
+   /* =========================
+   ZONA DE ATALHOS (COMPACTA)
+   ========================= */
+.quickbar{
   background:var(--card);
   border:1px solid var(--line);
   border-radius:var(--radius);
@@ -182,76 +182,64 @@
   margin:10px 0 12px;
 }
 
-    .quickbar-grid{
+/* ✅ não deixa os estilos globais de button “vazar” pra quickbar */
+.quickbar button{
+  all: unset;
+  box-sizing: border-box;
+  font-family: var(--font);
+}
+
+.quickbar-grid{
   display:grid;
   grid-template-columns:repeat(9, minmax(0,1fr));
   gap:8px;
 }
 
-   .qmod{
+/* Botão da modalidade */
+.qmod{
   border:1px solid var(--line);
   background:#fff;
   border-radius:16px;
   height:52px;
-  padding:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  width:100%;
+  display:grid;
+  place-items:center;
   cursor:pointer;
   transition:var(--transition);
   overflow:hidden;
 }
-    .qmod:hover{
+
+.qmod:hover{
   transform:translateY(-1px);
   border-color:rgba(99,102,241,.45);
 }
+
 .qmod.active{
   border-color:var(--primary);
   box-shadow:0 10px 20px rgba(0,0,0,.12);
   transform:translateY(-1px);
-  
-  /* imagem ocupa tudo */
-.qmod img{
+}
+
+/* ✅ imagem REAL do seu HTML: <button class="qmod"><img ...></button> */
+.qmod > img{
   width:100%;
   height:100%;
-  object-fit:contain;     /* não corta o ícone */
-  padding:6px;            /* margem interna elegante */
-}
-}
-   .qmod .ico{
-  width:36px;               /* antes 32 (mas com botão grande ficava pequeno) */
-  height:36px;
-  border-radius:12px;
-  overflow:hidden;
-  display:grid;
-  place-items:center;
-}
-    .qmod .ico img{
-  width:110%;
-  height:110%;
-  object-fit:cover;         /* preenche melhor que contain */
-  object-position:center;
+  object-fit: contain;     /* não corta */
+  object-position:center;  /* centraliza */
+  padding:6px;             /* “respiro” sem virar zoom */
+  display:block;
 }
 
-    .qmod .lbl{
-  font-size:9px;            /* menor */
-  font-weight:900;
-  line-height:1;
-  color:var(--txt);
-  white-space:nowrap;
-  opacity:.95;
-}
-
-   .quickchips{margin-top:8px;display:none}
+.quickchips{margin-top:8px;display:none}
 .quickchips.active{display:block}
 
-    .chips-row{
+.chips-row{
   display:flex;
   flex-wrap:wrap;
   gap:6px;
 }
 
-    .chip{
+.chip{
   border:1px solid var(--line);
   background:#fff;
   border-radius:999px;
@@ -261,21 +249,26 @@
   cursor:pointer;
   transition:var(--transition);
 }
-    .chip:hover{
+
+.chip:hover{
   border-color:var(--primary);
   color:var(--primary);
   transform:translateY(-1px);
 }
 
-    /* ====== AJUSTES MOBILE: BOTÕES ====== */
-    @media (max-width:720px){
+/* Mobile */
+@media (max-width:720px){
   .quickbar-grid{grid-template-columns:repeat(5, minmax(0,1fr))}
-  .qmod{height:50px}
+  .qmod{height:50px;border-radius:18px}
+  .qmod > img{padding:6px}
 }
+
 @media (max-width:380px){
   .quickbar-grid{grid-template-columns:repeat(4, minmax(0,1fr))}
   .qmod{height:46px}
+  .qmod > img{padding:5px}
 }
+
       /* ✅ 3 botões: mesma linha, menores, iguais */
       .actions-3{
         grid-template-columns:repeat(3,minmax(0,1fr));
