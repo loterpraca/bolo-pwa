@@ -90,11 +90,15 @@
       font-size:16px;font-weight:900;margin:0;color:var(--txt);
       display:flex;align-items:center;gap:10px;flex-wrap:wrap
     }
+
+    /* ✅ MOVIMENTAR: texto alinhado ao lado do ícone */
     .section-title.inline-title{align-items:center;}
 
     /* GRIDS */
     .grid-1{display:grid;grid-template-columns:1fr;gap:12px}
     .grid-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
+
+    /* ✅ força 2 colunas mesmo no celular (para MOVIMENTAÇÃO) */
     .force-2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
 
     .field label{
@@ -167,115 +171,84 @@
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
     /* =========================
-       ZONA DE ATALHOS (NOVO)
+       ZONA DE ATALHOS (COMPACTA)
        ========================= */
-    .quick-card{padding:14px 14px 12px}
-    .quick-head{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      margin-bottom:10px
+    .quickbar{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:10px 10px 8px;
+      margin:10px 0 12px;
     }
-    .quick-title{
-      display:flex;align-items:center;gap:10px;
-      font-weight:900;font-size:15px
-    }
-    .quick-title i{color:var(--primary)}
-    .quick-badges{
-      display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end
-    }
-    .quick-pill{
-      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
-      background:rgba(0,0,0,.05);border:1px solid var(--line);
-      font-size:12px;font-weight:900;color:var(--txt)
-    }
-    .quick-pill i{color:var(--primary)}
-    .quick-grid{
+
+    .quickbar-grid{
       display:grid;
-      grid-template-columns:repeat(9,minmax(0,1fr));
+      grid-template-columns:repeat(9, minmax(0,1fr));
       gap:8px;
-      margin-top:8px
     }
-    .mod-btn{
-      border:2px solid var(--line);
+
+    .qmod{
+      border:1px solid var(--line);
       background:#fff;
-      border-radius:14px;
-      min-height:46px;
-      padding:10px 8px;
+      border-radius:18px;
+      height:56px;
+      padding:6px 4px;
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:center;
-      gap:6px;
+      gap:5px;
       cursor:pointer;
       transition:var(--transition);
-      user-select:none;
     }
-    .mod-btn:hover{transform:translateY(-1px);border-color:rgba(99,102,241,.45)}
-    .mod-btn.active{
+
+    .qmod:hover{transform:translateY(-1px);border-color:rgba(99,102,241,.45)}
+    .qmod.active{
       border-color:var(--primary);
-      box-shadow:0 10px 25px rgba(0,0,0,.10);
+      box-shadow:0 10px 20px rgba(0,0,0,.10);
       transform:translateY(-1px);
     }
-    .mod-ico{
-      width:34px;height:34px;border-radius:12px;
-      background:#fff;
-      border:1px solid var(--line);
-      box-shadow:0 6px 14px rgba(0,0,0,.08);
+
+    .qmod .ico{
+      width:32px;height:32px;
+      border-radius:12px;
+      overflow:hidden;
       display:grid;place-items:center;
-      overflow:hidden
     }
-    .mod-ico img{width:120%;height:120%;object-fit:cover;object-position:center}
-    .mod-label{
-      font-size:11px;font-weight:900;color:var(--txt);
+    .qmod .ico img{width:100%;height:100%;object-fit:contain}
+
+    .qmod .lbl{
+      font-size:10px;
+      font-weight:900;
       line-height:1;
+      color:var(--txt);
       white-space:nowrap;
     }
 
-    .chips-wrap{
-      margin-top:10px;
-      padding-top:10px;
-      border-top:1px dashed var(--line);
+    .quickchips{
+      margin-top:8px;
       display:none;
-      animation:fadeIn .18s ease-out;
     }
-    .chips-wrap.active{display:block}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:translateY(0)}}
+    .quickchips.active{display:block}
 
     .chips-row{
-      display:flex;flex-wrap:wrap;gap:8px;
-      align-items:center
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
     }
+
     .chip{
-      border:2px solid var(--line);
+      border:1px solid var(--line);
       background:#fff;
       border-radius:999px;
-      padding:10px 12px;
-      font-size:13px;
+      padding:7px 10px;
+      font-size:12px;
       font-weight:900;
       cursor:pointer;
       transition:var(--transition);
-      display:inline-flex;align-items:center;gap:8px;
     }
     .chip:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
-    .chip small{font-size:11px;font-weight:800;color:var(--muted)}
-    .chips-hint{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--muted);
-      display:flex;gap:8px;align-items:flex-start
-    }
-    .chips-hint i{margin-top:2px;color:var(--primary)}
-
-    @media (max-width:720px){
-      .quick-grid{
-        grid-template-columns:repeat(5,minmax(0,1fr));
-      }
-      .mod-btn{min-height:44px}
-      .mod-ico{width:32px;height:32px;border-radius:12px}
-      .mod-label{font-size:10px}
-    }
-    @media (max-width:380px){
-      .quick-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-    }
 
     /* ====== AJUSTES MOBILE: BOTÕES ====== */
     @media (max-width:720px){
@@ -283,6 +256,7 @@
       .logo-container{width:60px;height:60px}
       .logo-container img{width:124%;height:124%}
 
+      /* ✅ 3 botões: mesma linha, menores, iguais */
       .actions-3{
         grid-template-columns:repeat(3,minmax(0,1fr));
         gap:8px;
@@ -298,6 +272,7 @@
       }
       .actions-3 button i{font-size:13px;}
 
+      /* ✅ 2 botões da movimentação: 50/50 e iguais */
       .actions{
         display:grid;
         grid-template-columns:1fr 1fr;
@@ -311,6 +286,12 @@
         border-radius:12px;
         white-space:nowrap;
       }
+
+      /* Quickbar */
+      .quickbar-grid{grid-template-columns:repeat(5, minmax(0,1fr))}
+      .qmod{height:54px;border-radius:18px}
+      .qmod .ico{width:30px;height:30px}
+      .qmod .lbl{font-size:10px}
     }
 
     @media (max-width:380px){
@@ -327,6 +308,9 @@
         font-size:13px;
         border-radius:11px;
       }
+
+      .quickbar-grid{grid-template-columns:repeat(4, minmax(0,1fr))}
+      .qmod{height:52px}
     }
   </style>
 </head>
@@ -362,38 +346,11 @@
 
   <div class="wrap">
 
-    <!-- =========================
-         ZONA DE ATALHOS (NOVO)
-         ========================= -->
-    <div class="card quick-card" id="quickZone">
-      <div class="quick-head">
-        <div class="quick-title">
-          <i class="fas fa-bolt"></i>
-          <span>Atalhos rápidos</span>
-        </div>
-        <div class="quick-badges">
-          <span class="quick-pill" title="Loja selecionada no cadastro">
-            <i class="fas fa-store"></i>
-            <span id="quickLojaText">Loja: —</span>
-          </span>
-          <span class="quick-pill" title="Modalidade selecionada nos atalhos">
-            <i class="fas fa-ticket"></i>
-            <span id="quickModText">Modalidade: —</span>
-          </span>
-        </div>
-      </div>
-
-      <div class="quick-grid" id="modGrid" aria-label="Ícones das modalidades"></div>
-
-      <div class="chips-wrap" id="chipsWrap">
+    <!-- ZONA DE ATALHOS (acima do cadastro) -->
+    <div class="quickbar" id="quickZone">
+      <div class="quickbar-grid" id="modGrid"></div>
+      <div class="quickchips" id="chipsWrap">
         <div class="chips-row" id="chipsRow"></div>
-        <div class="chips-hint">
-          <i class="fas fa-info-circle"></i>
-          <div>
-            Clique numa <b>modalidade</b> e depois em um <b>atalho</b> para preencher o formulário.
-            O sistema também tenta sugerir <b>concurso</b> e <b>datas</b>.
-          </div>
-        </div>
       </div>
     </div>
 
@@ -582,253 +539,243 @@
       "Santa Tereza": { logo: "./icons/santa-tereza.png", theme: "santa-tereza", nome: "Santa Tereza",  position: "50% 50%" }
     };
 
-    /* =========================
-       MODALIDADES / ÍCONES
-       =========================
-       - Por enquanto: usa iniciais (imagem opcional)
-       - Depois: você troca "img" por mini volante real.
-    */
+    // Ícones (arquivos que você vai subir em ./icons/)
+    // OBS: você escreveu "timenania.jpg". Se o arquivo for "timemania.jpg", troca aqui.
     const MODS = [
-      { key:"Mega Sena",    short:"MS", icon:"./icons/mods/ms.png", fallback:"MS" },
-      { key:"Lotofacil",    short:"LF", icon:"./icons/mods/lf.png", fallback:"LF" },
-      { key:"Quina",        short:"QN", icon:"./icons/mods/qn.png", fallback:"QN" },
-      { key:"Dia de Sorte", short:"DI", icon:"./icons/mods/di.png", fallback:"DI" },
-      { key:"Timemania",    short:"TM", icon:"./icons/mods/tm.png", fallback:"TM" },
-      { key:"Dupla Sena",   short:"DS", icon:"./icons/mods/ds.png", fallback:"DS" },
-      { key:"Super Sete",   short:"S7", icon:"./icons/mods/s7.png", fallback:"S7" },
-      { key:"Milionaria",   short:"MN", icon:"./icons/mods/mn.png", fallback:"MN" },
-      { key:"Loteca",       short:"LT", icon:"./icons/mods/lt.png", fallback:"LT" },
+      { key:"Mega Sena",    short:"MS", icon:"./icons/mega-sena.jpg" },
+      { key:"Lotofacil",    short:"LF", icon:"./icons/lotofacil.png" },
+      { key:"Quina",        short:"QN", icon:"./icons/quina.jpg" },
+      { key:"Dia de Sorte", short:"DI", icon:"./icons/dia-de-sorte.jpg" },
+      { key:"Timemania",    short:"TM", icon:"./icons/timenania.jpg" },
+      { key:"Dupla Sena",   short:"DS", icon:"./icons/dupla.jpg" },
+      { key:"Super Sete",   short:"S7", icon:"./icons/super-sete.jpg" },
+      { key:"Milionaria",   short:"MN", icon:"./icons/milionaria.jpg" },
+      { key:"Loteca",       short:"LT", icon:"./icons/loteca.jpg" },
     ];
 
-    /* =========================
-       ATALHOS (BASE) POR LOJA
-       =========================
-       IMPORTANTE:
-       - Mantive exatamente os dados que você validou.
-       - Se quiser reduzir/ocultar modalidades que não usam em certa loja,
-         basta deixar a lista vazia.
-    */
-    const PRESETS = {
+    // Atalhos por loja + modalidade
+    // label = texto do chip; games = qtdJogos; dezenas = qtdDezenas; valor = valorCota; cotas = qtdCotas
+    const SHORTCUTS = {
       "Boulevard": {
         "Mega Sena": [
-          { id:"MS1", label:"03x10", jogos:3, dezenas:10, valor:51.03, cotas:100 },
-          { id:"MS2", label:"02x10", jogos:2, dezenas:10, valor:34.01, cotas:100 },
-          { id:"MS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:100 },
-          { id:"MS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:30 },
+          { label:"[03x10]", games:3, dezenas:10, valor:"51,03", cotas:100 },
+          { label:"[02x10]", games:2, dezenas:10, valor:"34,01", cotas:100 },
+          { label:"[10x08]", games:10, dezenas:8, valor:"22,68", cotas:100 },
+          { label:"[10x07]", games:10, dezenas:7, valor:"18,90", cotas:30 },
         ],
         "Lotofacil": [
-          { id:"LF1", label:"02x17", jogos:2, dezenas:17, valor:32.13, cotas:40 },
-          { id:"LF2", label:"10x16", jogos:10, dezenas:16, valor:25.19, cotas:30 },
-          { id:"LF3", label:"05x16", jogos:5, dezenas:16, valor:12.59, cotas:30 },
-          { id:"LF4", label:"10x15", jogos:10, dezenas:15, valor:11.81, cotas:4 },
+          { label:"[02x17]", games:2, dezenas:17, valor:"32,13", cotas:40 },
+          { label:"[10x16]", games:10, dezenas:16, valor:"25,19", cotas:30 },
+          { label:"[05x16]", games:5, dezenas:16, valor:"12,59", cotas:30 },
+          { label:"[10x15]", games:10, dezenas:15, valor:"11,81", cotas:4 },
         ],
         "Quina": [
-          { id:"QN1", label:"01x12", jogos:1, dezenas:12, valor:64.15, cotas:50 },
-          { id:"QN2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
-          { id:"QN3", label:"07x07", jogos:7, dezenas:7, valor:12.15, cotas:49 },
-          { id:"QN4", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:20 },
+          { label:"[01x12]", games:1, dezenas:12, valor:"64,15", cotas:50 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+          { label:"[07x07]", games:7, dezenas:7,  valor:"12,15", cotas:49 },
+          { label:"[10x06]", games:10,dezenas:6,  valor:"12,14", cotas:20 },
         ],
         "Dia de Sorte": [
-          { id:"DI1", label:"01x12", jogos:1, dezenas:12, valor:44.55, cotas:60 },
-          { id:"DI2", label:"01x11", jogos:1, dezenas:11, valor:27.82, cotas:40 },
-          { id:"DI3", label:"01x10", jogos:1, dezenas:10, valor:27.00, cotas:15 },
-          { id:"DI4", label:"10x08", jogos:10, dezenas:8, valor:17.99, cotas:15 },
+          { label:"[01x12]", games:1, dezenas:12, valor:"44,55", cotas:60 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"27,82", cotas:40 },
+          { label:"[01x10]", games:1, dezenas:10, valor:"27,00", cotas:15 },
+          { label:"[10x08]", games:10,dezenas:8,  valor:"17,99", cotas:15 },
         ],
         "Timemania": [
-          { id:"TM01", label:"15x10", jogos:15, dezenas:10, valor:10.12, cotas:7 },
+          { label:"[15x10]", games:15,dezenas:10, valor:"10,12", cotas:7 },
         ],
         "Dupla Sena": [
-          { id:"DS1", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
-          { id:"DS2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
-          { id:"DS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:50 },
-          { id:"DS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:15 },
+          { label:"[10x09]", games:10,dezenas:9,  valor:"68,04", cotas:50 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+          { label:"[10x08]", games:10,dezenas:8,  valor:"22,68", cotas:50 },
+          { label:"[10x17]", games:10,dezenas:17, valor:"18,90", cotas:15 },
         ],
         "Super Sete": [
-          { id:"S701", label:"07x10", jogos:7, dezenas:10, valor:56.70, cotas:5 },
-          { id:"S702", label:"05x10", jogos:5, dezenas:10, valor:54.00, cotas:3 },
-          { id:"S703", label:"04x11", jogos:4, dezenas:11, valor:51.83, cotas:5 },
-          { id:"S704", label:"10x10", jogos:10, dezenas:10, valor:21.60, cotas:10 },
+          { label:"[07x10]", games:7, dezenas:10, valor:"56,70", cotas:5 },
+          { label:"[05x10]", games:5, dezenas:10, valor:"54,00", cotas:3 },
+          { label:"[04x11]", games:4, dezenas:11, valor:"51,83", cotas:5 },
+          { label:"[10x10]", games:10,dezenas:10, valor:"21,60", cotas:10 },
         ],
         "Milionaria": [
-          { id:"MN01", label:"01x10", jogos:1, dezenas:10, valor:48.60, cotas:35 },
-          { id:"MN02", label:"05x07", jogos:5, dezenas:7, valor:18.90, cotas:15 },
-          { id:"MN03", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:20 },
-          { id:"MN04", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:9 },
+          { label:"[01x10]", games:1, dezenas:10, valor:"48,60", cotas:35 },
+          { label:"[05x07]", games:5, dezenas:7,  valor:"18,90", cotas:15 },
+          { label:"[14x06]", games:14,dezenas:6,  valor:"12,59", cotas:20 },
+          { label:"[14x06]", games:14,dezenas:6,  valor:"12,59", cotas:9  },
         ],
         "Loteca": [
-          { id:"LT01", label:"01x26", jogos:1, dezenas:26, valor:39.36, cotas:50 },
-          { id:"LT02", label:"01x24", jogos:1, dezenas:24, valor:21.87, cotas:30 },
+          { label:"[01x26]", games:1, dezenas:26, valor:"39,36", cotas:50 },
+          { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
         ],
       },
 
       "Centro": {
         "Mega Sena": [
-          { id:"MS1", label:"03x10", jogos:3, dezenas:10, valor:51.03, cotas:100 },
-          { id:"MS2", label:"02x10", jogos:2, dezenas:10, valor:34.01, cotas:100 },
-          { id:"MS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:100 },
-          { id:"MS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:30 },
+          { label:"[03x10]", games:3, dezenas:10, valor:"51,03", cotas:100 },
+          { label:"[02x10]", games:2, dezenas:10, valor:"34,01", cotas:100 },
+          { label:"[10x08]", games:10, dezenas:8, valor:"22,68", cotas:100 },
+          { label:"[10x07]", games:10, dezenas:7, valor:"18,90", cotas:30 },
         ],
         "Lotofacil": [
-          { id:"LF1", label:"07x17", jogos:7, dezenas:17, valor:112.44, cotas:40 },
-          { id:"LF2", label:"10x16", jogos:10, dezenas:16, valor:25.19, cotas:30 },
-          { id:"LF3", label:"05x16", jogos:5, dezenas:16, valor:12.59, cotas:30 },
-          { id:"LF4", label:"10x15", jogos:10, dezenas:15, valor:11.81, cotas:4 },
+          { label:"[07x17]", games:7, dezenas:17, valor:"112,44", cotas:40 },
+          { label:"[10x16]", games:10, dezenas:16, valor:"25,19", cotas:30 },
+          { label:"[05x16]", games:5, dezenas:16, valor:"12,59", cotas:30 },
+          { label:"[10x15]", games:10, dezenas:15, valor:"11,81", cotas:4 },
         ],
         "Quina": [
-          { id:"QN1", label:"01x12", jogos:1, dezenas:12, valor:64.15, cotas:50 },
-          { id:"QN2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
-          { id:"QN3", label:"07x07", jogos:7, dezenas:7, valor:12.15, cotas:49 },
-          { id:"QN4", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:20 },
+          { label:"[01x12]", games:1, dezenas:12, valor:"64,15", cotas:50 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+          { label:"[07x07]", games:7, dezenas:7,  valor:"12,15", cotas:49 },
+          { label:"[10x06]", games:10,dezenas:6,  valor:"12,14", cotas:20 },
         ],
         "Dia de Sorte": [
-          { id:"DI1", label:"01x12", jogos:1, dezenas:12, valor:44.55, cotas:60 },
-          { id:"DI2", label:"01x11", jogos:1, dezenas:11, valor:27.82, cotas:40 },
-          { id:"DI3", label:"01x10", jogos:1, dezenas:10, valor:27.00, cotas:15 },
-          { id:"DI4", label:"10x08", jogos:10, dezenas:8, valor:17.99, cotas:15 },
+          { label:"[01x12]", games:1, dezenas:12, valor:"44,55", cotas:60 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"27,82", cotas:40 },
+          { label:"[01x10]", games:1, dezenas:10, valor:"27,00", cotas:15 },
+          { label:"[10x08]", games:10,dezenas:8,  valor:"17,99", cotas:15 },
         ],
         "Timemania": [
-          { id:"TM01", label:"15x10", jogos:15, dezenas:10, valor:14.17, cotas:5 },
+          { label:"[15x10]", games:15,dezenas:10, valor:"14,17", cotas:5 },
         ],
         "Dupla Sena": [
-          { id:"DS1", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
-          { id:"DS2", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
-          { id:"DS3", label:"01x10", jogos:1, dezenas:10, valor:42.52, cotas:20 },
-          { id:"DS4", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:50 },
+          { label:"[10x09]", games:10,dezenas:9,  valor:"68,04", cotas:50 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+          { label:"[10x08]", games:10,dezenas:8,  valor:"22,68", cotas:50 },
+          { label:"[01x10]", games:1, dezenas:10,  valor:"42,52", cotas:20 }, // centro diferente
         ],
         "Super Sete": [
-          { id:"S701", label:"07x10", jogos:7, dezenas:10, valor:56.70, cotas:5 },
-          { id:"S702", label:"05x10", jogos:5, dezenas:10, valor:54.00, cotas:3 },
-          { id:"S703", label:"04x11", jogos:4, dezenas:11, valor:51.83, cotas:5 },
-          { id:"S704", label:"10x10", jogos:10, dezenas:10, valor:21.60, cotas:10 },
+          { label:"[07x10]", games:7, dezenas:10, valor:"56,70", cotas:5 },
+          { label:"[05x10]", games:5, dezenas:10, valor:"54,00", cotas:3 },
+          { label:"[04x11]", games:4, dezenas:11, valor:"51,83", cotas:5 },
+          { label:"[10x10]", games:10,dezenas:10, valor:"21,60", cotas:10 },
         ],
         "Milionaria": [
-          { id:"MN01", label:"01x09", jogos:1, dezenas:9, valor:51.03, cotas:40 },
-          { id:"MN02", label:"05x07", jogos:5, dezenas:7, valor:18.90, cotas:15 },
-          { id:"MN03", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:20 },
-          { id:"MN04", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:9 },
+          { label:"[01x09]", games:1, dezenas:9,  valor:"51,03", cotas:40 },
+          { label:"[05x07]", games:5, dezenas:7,  valor:"18,90", cotas:15 },
+          { label:"[14x06]", games:14,dezenas:6,  valor:"12,59", cotas:20 },
+          { label:"[14x06]", games:14,dezenas:6,  valor:"12,59", cotas:9  },
         ],
         "Loteca": [
-          { id:"LT01", label:"01x26", jogos:1, dezenas:26, valor:39.36, cotas:50 },
-          { id:"LT02", label:"01x24", jogos:1, dezenas:24, valor:21.87, cotas:30 },
+          { label:"[01x26]", games:1, dezenas:26, valor:"39,36", cotas:50 },
+          { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
         ],
       },
 
       "Lotobel": {
         "Mega Sena": [
-          { id:"MS1", label:"03x10", jogos:3, dezenas:10, valor:51.03, cotas:100 },
-          { id:"MS2", label:"02x10", jogos:2, dezenas:10, valor:34.01, cotas:100 },
-          { id:"MS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:100 },
-          { id:"MS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:30 },
+          { label:"[03x10]", games:3, dezenas:10, valor:"51,03", cotas:100 },
+          { label:"[02x10]", games:2, dezenas:10, valor:"34,01", cotas:100 },
+          { label:"[10x08]", games:10, dezenas:8, valor:"22,68", cotas:100 },
+          { label:"[10x07]", games:10, dezenas:7, valor:"18,90", cotas:30 },
         ],
         "Lotofacil": [
-          { id:"LF1", label:"01x18", jogos:1, dezenas:18, valor:77.11, cotas:50 },
-          { id:"LF2", label:"10x16", jogos:10, dezenas:16, valor:25.19, cotas:30 },
-          { id:"LF3", label:"05x16", jogos:5, dezenas:16, valor:12.59, cotas:30 },
-          { id:"LF4", label:"09x15", jogos:9, dezenas:15, valor:10.63, cotas:4 },
+          { label:"[01x18]", games:1, dezenas:18, valor:"77,11", cotas:50 },
+          { label:"[10x16]", games:10, dezenas:16, valor:"25,19", cotas:30 },
+          { label:"[05x16]", games:5, dezenas:16, valor:"12,59", cotas:30 },
+          { label:"[09x15]", games:9, dezenas:15,  valor:"10,63", cotas:4 },
         ],
         "Quina": [
-          { id:"QN1", label:"01x12", jogos:1, dezenas:12, valor:64.15, cotas:50 },
-          { id:"QN2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
-          { id:"QN3", label:"07x07", jogos:7, dezenas:7, valor:12.15, cotas:49 },
-          { id:"QN4", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:20 },
+          { label:"[01x12]", games:1, dezenas:12, valor:"64,15", cotas:50 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+          { label:"[07x07]", games:7, dezenas:7,  valor:"12,15", cotas:49 },
+          { label:"[10x06]", games:10,dezenas:6,  valor:"12,14", cotas:20 },
         ],
         "Dia de Sorte": [
-          { id:"DI1", label:"01x12", jogos:1, dezenas:12, valor:44.55, cotas:60 },
-          { id:"DI2", label:"01x11", jogos:1, dezenas:11, valor:27.82, cotas:40 },
-          { id:"DI3", label:"01x10", jogos:1, dezenas:10, valor:27.00, cotas:15 },
-          { id:"DI4", label:"02x09", jogos:2, dezenas:9, valor:20.44, cotas:12 },
+          { label:"[01x12]", games:1, dezenas:12, valor:"44,55", cotas:60 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"27,82", cotas:40 },
+          { label:"[01x10]", games:1, dezenas:10, valor:"27,00", cotas:15 },
+          { label:"[02x09]", games:2, dezenas:9,  valor:"20,44", cotas:12 }, // mudança lotobel
         ],
         "Timemania": [
-          { id:"TM01", label:"15x10", jogos:15, dezenas:10, valor:14.17, cotas:5 },
+          { label:"[15x10]", games:15,dezenas:10, valor:"14,17", cotas:5 },
         ],
         "Dupla Sena": [
-          { id:"DS1", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
-          { id:"DS2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
-          { id:"DS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:50 },
-          { id:"DS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:15 },
+          { label:"[10x09]", games:10,dezenas:9,  valor:"68,04", cotas:50 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+          { label:"[10x08]", games:10,dezenas:8,  valor:"22,68", cotas:50 },
+          { label:"[10x17]", games:10,dezenas:17, valor:"18,90", cotas:15 },
         ],
         "Super Sete": [
-          { id:"S701", label:"07x10", jogos:7, dezenas:10, valor:56.70, cotas:5 },
-          { id:"S702", label:"05x10", jogos:5, dezenas:10, valor:54.00, cotas:3 },
-          { id:"S703", label:"04x11", jogos:4, dezenas:11, valor:51.83, cotas:5 },
-          { id:"S704", label:"10x10", jogos:10, dezenas:10, valor:21.60, cotas:10 },
+          { label:"[07x10]", games:7, dezenas:10, valor:"56,70", cotas:5 },
+          { label:"[05x10]", games:5, dezenas:10, valor:"54,00", cotas:3 },
+          { label:"[04x11]", games:4, dezenas:11, valor:"51,83", cotas:5 },
+          { label:"[10x10]", games:10,dezenas:10, valor:"21,60", cotas:10 },
         ],
         "Milionaria": [
-          { id:"MN01", label:"08x06", jogos:8, dezenas:6, valor:48.59, cotas:20 },
-          { id:"MN02", label:"05x07", jogos:5, dezenas:7, valor:18.90, cotas:15 },
-          { id:"MN03", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:20 },
-          { id:"MN04", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:9 },
+          { label:"[08x06]", games:8, dezenas:6,  valor:"48,59", cotas:20 },
+          { label:"[05x07]", games:5, dezenas:7,  valor:"18,90", cotas:15 },
+          { label:"[14x06]", games:14,dezenas:6,  valor:"12,59", cotas:20 },
+          { label:"[14x06]", games:14,dezenas:6,  valor:"12,59", cotas:9  },
         ],
         "Loteca": [
-          { id:"LT01", label:"01x26", jogos:1, dezenas:26, valor:39.36, cotas:50 },
-          { id:"LT02", label:"01x24", jogos:1, dezenas:24, valor:21.87, cotas:30 },
+          { label:"[01x26]", games:1, dezenas:26, valor:"39,36", cotas:50 },
+          { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
         ],
       },
 
       "Santa Tereza": {
         "Mega Sena": [
-          { id:"MS1", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:100 },
-          { id:"MS2", label:"02x10", jogos:2, dezenas:10, valor:34.01, cotas:100 },
-          { id:"MS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:100 },
-          { id:"MS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:30 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:100 },
+          { label:"[02x10]", games:2, dezenas:10, valor:"34,01", cotas:100 },
+          { label:"[10x08]", games:10, dezenas:8, valor:"22,68", cotas:100 },
+          { label:"[10x07]", games:10, dezenas:7, valor:"18,90", cotas:30 },
         ],
         "Lotofacil": [
-          { id:"LF1", label:"02x17", jogos:2, dezenas:17, valor:32.13, cotas:40 },
-          { id:"LF2", label:"10x16", jogos:10, dezenas:16, valor:25.19, cotas:30 },
-          { id:"LF3", label:"05x16", jogos:5, dezenas:16, valor:12.59, cotas:30 },
-          { id:"LF4", label:"10x15", jogos:10, dezenas:15, valor:11.81, cotas:4 },
+          { label:"[02x17]", games:2, dezenas:17, valor:"32,13", cotas:40 }, // assumido igual Boulevard
+          { label:"[10x16]", games:10, dezenas:16, valor:"25,19", cotas:30 },
+          { label:"[05x16]", games:5, dezenas:16, valor:"12,59", cotas:30 },
+          { label:"[10x15]", games:10, dezenas:15, valor:"11,81", cotas:4 },
         ],
         "Quina": [
-          { id:"QN1", label:"01x12", jogos:1, dezenas:12, valor:64.15, cotas:50 },
-          { id:"QN2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
-          { id:"QN3", label:"07x07", jogos:7, dezenas:7, valor:12.15, cotas:49 },
-          { id:"QN4", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:20 },
+          { label:"[01x12]", games:1, dezenas:12, valor:"64,15", cotas:50 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+          { label:"[07x07]", games:7, dezenas:7,  valor:"12,15", cotas:49 },
+          { label:"[10x06]", games:10,dezenas:6,  valor:"12,14", cotas:20 },
         ],
         "Dia de Sorte": [
-          // DI1 removido
-          { id:"DI2", label:"01x11", jogos:1, dezenas:11, valor:27.82, cotas:40 },
-          { id:"DI3", label:"01x10", jogos:1, dezenas:10, valor:27.00, cotas:15 },
-          { id:"DI4", label:"05x08", jogos:5, dezenas:8, valor:13.50, cotas:10 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"27,82", cotas:40 },
+          { label:"[01x10]", games:1, dezenas:10, valor:"27,00", cotas:15 },
+          { label:"[10x08]", games:10,dezenas:8,  valor:"17,99", cotas:15 },
+          { label:"[05x08]", games:5, dezenas:8,  valor:"13,50", cotas:10 }, // extra ST
         ],
         "Timemania": [
-          { id:"TM01", label:"15x10", jogos:15, dezenas:10, valor:10.12, cotas:7 },
+          { label:"[15x10]", games:15,dezenas:10, valor:"10,12", cotas:7 },
         ],
         "Dupla Sena": [
-          { id:"DS1", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
-          { id:"DS2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
-          { id:"DS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:50 },
-          { id:"DS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:15 },
+          { label:"[10x09]", games:10,dezenas:9,  valor:"68,04", cotas:50 },
+          { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+          { label:"[10x08]", games:10,dezenas:8,  valor:"22,68", cotas:50 },
+          { label:"[10x17]", games:10,dezenas:17, valor:"18,90", cotas:15 },
         ],
         "Super Sete": [
-          { id:"S701", label:"07x10", jogos:7, dezenas:10, valor:56.70, cotas:5 },
-          { id:"S702", label:"05x10", jogos:5, dezenas:10, valor:54.00, cotas:3 },
-          { id:"S703", label:"04x11", jogos:4, dezenas:11, valor:51.83, cotas:5 },
-          { id:"S704", label:"10x10", jogos:10, dezenas:10, valor:21.60, cotas:10 },
+          { label:"[07x10]", games:7, dezenas:10, valor:"56,70", cotas:5 },
+          { label:"[05x10]", games:5, dezenas:10, valor:"54,00", cotas:3 },
+          { label:"[04x11]", games:4, dezenas:11, valor:"51,83", cotas:5 },
+          { label:"[10x10]", games:10,dezenas:10, valor:"21,60", cotas:10 },
         ],
         "Milionaria": [
-          { id:"MN01", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:40 },
-          { id:"MN02", label:"05x07", jogos:5, dezenas:7, valor:18.90, cotas:15 },
-          { id:"MN03", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:20 },
-          { id:"MN04", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:9 },
+          { label:"[10x06]", games:10,dezenas:6,  valor:"12,14", cotas:40 }, // ST
+          { label:"[05x07]", games:5, dezenas:7,  valor:"18,90", cotas:15 },
+          { label:"[14x06]", games:14,dezenas:6,  valor:"12,59", cotas:20 },
+          { label:"[14x06]", games:14,dezenas:6,  valor:"12,59", cotas:9  },
         ],
         "Loteca": [
-          { id:"LT01", label:"01x26", jogos:1, dezenas:26, valor:39.36, cotas:50 },
-          { id:"LT02", label:"01x24", jogos:1, dezenas:24, valor:21.87, cotas:30 },
+          { label:"[01x26]", games:1, dezenas:26, valor:"39,36", cotas:50 },
+          { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
         ],
       },
     };
 
-    // Mapa de dias de sorteio por modalidade (0=Dom ... 6=Sáb)
+    // dias de sorteio (0=Dom,1=Seg,...6=Sab)
     const DRAW_DAYS = {
-      "Mega Sena":    [2,4,6],       // ter qui sab
-      "Timemania":    [2,4,6],       // ter qui sab
-      "Dia de Sorte": [2,4,6],       // ter qui sab
-      "Quina":        [1,2,3,4,5,6], // seg a sab
-      "Lotofacil":    [1,2,3,4,5,6], // seg a sab
-      "Dupla Sena":   [1,3,5],       // seg qua sex
-      "Super Sete":   [1,3,5],       // seg qua sex
-      "Milionaria":   [3,6],         // qua sab
-      "Loteca":       [6],           // sab
+      "Mega Sena":    [2,4,6],        // ter, qui, sab
+      "Timemania":    [2,4,6],        // ter, qui, sab
+      "Dia de Sorte": [2,4,6],        // ter, qui, sab
+      "Quina":        [1,2,3,4,5,6],  // seg a sab
+      "Lotofacil":    [1,2,3,4,5,6],  // seg a sab
+      "Dupla Sena":   [1,3,5],        // seg, qua, sex
+      "Super Sete":   [1,3,5],        // seg, qua, sex
+      "Milionaria":   [3,6],          // qua, sab
+      "Loteca":       [6],            // sab
     };
 
     const $ = (id) => document.getElementById(id);
@@ -853,11 +800,6 @@
       const cleaned = s.replace(/[R$\s]/g, "").replace(/\./g, "").replace(",", ".");
       const n = Number(cleaned);
       return Number.isFinite(n) ? n : 0;
-    }
-
-    function fmtBRL(n) {
-      const num = Number(n || 0);
-      return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     }
 
     function base64Json(obj) {
@@ -943,8 +885,7 @@
         deltaCentro: $("deltaCentro").value,
         deltaLotobel: $("deltaLotobel").value,
         deltaSantaTereza: $("deltaSantaTereza").value,
-        // atalhos
-        quickMod: localStorage.getItem("quick_mod") || ""
+        activeQuickMod: localStorage.getItem("active_quick_mod") || ""
       };
       localStorage.setItem("bolo_draft", JSON.stringify(draft));
     }
@@ -967,6 +908,7 @@
         $("deltaCentro").value = d.deltaCentro || "";
         $("deltaLotobel").value = d.deltaLotobel || "";
         $("deltaSantaTereza").value = d.deltaSantaTereza || "";
+        if (d.activeQuickMod) localStorage.setItem("active_quick_mod", d.activeQuickMod);
       } catch (e) {}
     }
 
@@ -988,6 +930,11 @@
       $("deltaLotobel").value = "";
       $("deltaSantaTereza").value = "";
       saveDraft();
+    }
+
+    function fmtBRL(n) {
+      const num = Number(n || 0);
+      return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     }
 
     function buildExistsConfirmText(base) {
@@ -1064,68 +1011,26 @@
         el.disabled = shouldDisable;
         if (shouldDisable) el.value = "";
       });
-
-      // Atualiza a zona de atalhos
-      const qt = $("quickLojaText");
-      if (qt) qt.textContent = loja ? `Loja: ${loja}` : "Loja: —";
     }
 
-    /* =========================
-       LÓGICA DE DATAS (FALLBACK)
-       ========================= */
-    function toISODate(d){
-      const dt = new Date(d);
-      const y = dt.getFullYear();
-      const m = String(dt.getMonth()+1).padStart(2,"0");
-      const day = String(dt.getDate()).padStart(2,"0");
-      return `${y}-${m}-${day}`;
-    }
-
-    function nextDrawDate(modKey, fromDate = new Date()) {
-      const days = DRAW_DAYS[modKey] || [];
-      if (!days.length) return null;
-      const start = new Date(fromDate);
-      start.setHours(12,0,0,0);
-
-      for (let i=0;i<14;i++){
-        const d = new Date(start);
-        d.setDate(start.getDate()+i);
-        if (days.includes(d.getDay())) return d;
-      }
-      return null;
-    }
-
-    function addDays(date, n){
-      const d = new Date(date);
-      d.setDate(d.getDate()+n);
-      return d;
-    }
-
-    /* =========================
-       ATALHOS: RENDER / EVENTOS
-       ========================= */
-    function safeText(s){ return String(s || ""); }
-
+    /********************************************************
+     * QUICKBAR (ATALHOS)
+     ********************************************************/
     function buildModButton(mod){
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "mod-btn";
+      btn.className = "qmod";
       btn.setAttribute("data-mod", mod.key);
 
       const ico = document.createElement("div");
-      ico.className = "mod-ico";
-
-      // Se a imagem não existir, cai no texto
+      ico.className = "ico";
       const img = document.createElement("img");
       img.src = mod.icon;
       img.alt = mod.short;
-      img.onerror = () => {
-        ico.innerHTML = `<span style="font-weight:1000;color:var(--primary);font-size:13px">${safeText(mod.fallback)}</span>`;
-      };
       ico.appendChild(img);
 
       const label = document.createElement("div");
-      label.className = "mod-label";
+      label.className = "lbl";
       label.textContent = mod.short;
 
       btn.appendChild(ico);
@@ -1133,133 +1038,174 @@
       return btn;
     }
 
-    function renderModGrid(){
-      const grid = $("modGrid");
-      if (!grid) return;
-      grid.innerHTML = "";
-      MODS.forEach(mod => {
-        const btn = buildModButton(mod);
-        btn.addEventListener("click", () => onSelectMod(mod.key));
-        grid.appendChild(btn);
-      });
-    }
-
     function setActiveModButton(modKey){
-      document.querySelectorAll(".mod-btn").forEach(b => {
+      document.querySelectorAll(".qmod").forEach(b => {
         b.classList.toggle("active", b.getAttribute("data-mod") === modKey);
       });
     }
 
-    function getSelectedLojaOrWarn(){
-      const loja = $("lojaOrigem").value.trim();
-      if (!loja){
-        setStatus("Selecione a loja de origem antes de usar atalhos.", "err", "exclamation-circle");
-        return null;
-      }
-      return loja;
+    function getShortcutsFor(loja, modalidade){
+      if (!loja || !modalidade) return [];
+      return (SHORTCUTS[loja] && SHORTCUTS[loja][modalidade]) ? SHORTCUTS[loja][modalidade] : [];
     }
 
-    function onSelectMod(modKey){
-      const loja = getSelectedLojaOrWarn();
-      if (!loja) return;
+    function fmtMoneyBR(vStr){
+      // garante "12,34"
+      const s = String(vStr || "").trim();
+      if (!s) return "";
+      if (s.includes(",")) return s;
+      // se vier "12.34"
+      if (s.includes(".")) return s.replace(".", ",");
+      return s;
+    }
 
-      localStorage.setItem("quick_mod", modKey);
+    function toISODate(d){
+      const z = new Date(d.getTime() - d.getTimezoneOffset()*60000);
+      return z.toISOString().slice(0,10);
+    }
 
-      setActiveModButton(modKey);
-      const mt = $("quickModText");
-      if (mt) mt.textContent = `Modalidade: ${modKey}`;
+    function nextDrawDate(modalidade, fromDate = new Date()){
+      const days = DRAW_DAYS[modalidade];
+      if (!days || !days.length) return null;
 
-      const chipsWrap = $("chipsWrap");
-      const chipsRow = $("chipsRow");
-      if (!chipsWrap || !chipsRow) return;
+      const start = new Date(fromDate);
+      start.setHours(0,0,0,0);
 
-      const list = (PRESETS[loja] && PRESETS[loja][modKey]) ? PRESETS[loja][modKey] : [];
-      chipsRow.innerHTML = "";
+      // procura próximo dia de sorteio (inclui amanhã em diante)
+      for (let i=0;i<14;i++){
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        const dow = d.getDay();
+        if (days.includes(dow) && i>0) return d; // i>0: pelo menos amanhã
+      }
+      // fallback: amanhã
+      const d = new Date(start);
+      d.setDate(start.getDate()+1);
+      return d;
+    }
 
-      if (!list.length){
-        chipsWrap.classList.remove("active");
-        setStatus(`Sem atalhos cadastrados para ${modKey} em ${loja}.`, "muted", "info-circle");
+    async function trySuggestConcursoFromApi(loja, modalidade){
+      // OPÇÃO: se seu Apps Script implementar action=ultimo (ou algo assim),
+      // retorna { ok:true, lastConcurso: 1234, lastDataConcurso:"2026-01-21" }
+      // Se não existir, vai falhar e a UI continua com concurso em branco.
+      try{
+        const res = await callApi("ultimo", { lojaOrigem: loja, modalidade });
+        if (!res || !res.ok) return null;
+        return res;
+      }catch(e){
+        return null;
+      }
+    }
+
+    async function applyShortcut(modKey, sc){
+      const loja = $("lojaOrigem").value.trim();
+      if (!loja) {
+        setStatus("Selecione a loja de origem antes de usar atalhos.", "err", "exclamation-circle");
         return;
       }
 
-      list.forEach(p => {
-        const chip = document.createElement("button");
-        chip.type = "button";
-        chip.className = "chip";
-        chip.setAttribute("data-id", p.id);
-        chip.innerHTML = `<span>[${safeText(p.label)}]</span><small>${fmtBRL(p.valor)} • ${p.cotas} cotas</small>`;
-        chip.addEventListener("click", () => applyPreset(loja, modKey, p));
-        chipsRow.appendChild(chip);
+      // Preenche modalidade e dados do atalho
+      $("modalidade").value = modKey;
+      $("qtdJogos").value = sc.games;
+      $("qtdDezenas").value = sc.dezenas;
+      $("valorCota").value = fmtMoneyBR(sc.valor);
+      $("cotas").value = sc.cotas;
+
+      // Datas (regra simples e rápida)
+      const today = new Date();
+      const dInicial = new Date(today);
+      dInicial.setDate(today.getDate()+1);
+
+      const dConcurso = nextDrawDate(modKey, today);
+      $("dataInicial").value = toISODate(dInicial);
+      if (dConcurso) $("dataConcurso").value = toISODate(dConcurso);
+
+      // Concurso: tenta buscar base do último no Apps Script (se existir)
+      // Regra anti-erro: se o último concurso ainda NÃO aconteceu (dataConcurso >= hoje), não soma +1.
+      if (!$("concurso").value.trim()) {
+        const last = await trySuggestConcursoFromApi(loja, modKey);
+        if (last && Number.isFinite(Number(last.lastConcurso))) {
+          let sug = Number(last.lastConcurso);
+
+          if (last.lastDataConcurso) {
+            const lastDate = new Date(last.lastDataConcurso + "T00:00:00");
+            const t0 = new Date(); t0.setHours(0,0,0,0);
+            // se o concurso "base" já passou, aí sim +1
+            if (lastDate < t0) sug = sug + 1;
+          } else {
+            // sem data, faz +1 mesmo
+            sug = sug + 1;
+          }
+
+          $("concurso").value = String(sug);
+        }
+      }
+
+      setStatus(`Atalho aplicado: ${modKey} ${sc.label}`, "ok", "check-circle");
+      saveDraft();
+    }
+
+    function renderChips(modKey){
+      const loja = $("lojaOrigem").value.trim();
+      const chips = getShortcutsFor(loja, modKey);
+      const wrap = $("chipsWrap");
+      const row = $("chipsRow");
+      row.innerHTML = "";
+
+      if (!loja || !modKey || !chips.length) {
+        wrap.classList.remove("active");
+        return;
+      }
+
+      chips.forEach(sc => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip";
+        b.textContent = sc.label;
+        b.onclick = () => applyShortcut(modKey, sc);
+        row.appendChild(b);
       });
 
-      chipsWrap.classList.add("active");
+      wrap.classList.add("active");
     }
 
-    async function suggestConcursoAndDates(modKey){
-      // 1) tenta via API (se você implementar depois no GAS)
-      try{
-        const res = await callApi("sugestaoConcurso", { modalidade: modKey });
-        if (res && res.ok && res.data){
-          const d = res.data;
-          if (d.concurso != null) $("concurso").value = String(d.concurso);
-          if (d.dataConcurso) $("dataConcurso").value = String(d.dataConcurso);
-          if (d.dataInicial) $("dataInicial").value = String(d.dataInicial);
-          return { source:"api", ok:true };
-        }
-      }catch(e){
-        // ignora e usa fallback
+    function renderQuickbar(){
+      const grid = $("modGrid");
+      grid.innerHTML = "";
+      MODS.forEach(mod => {
+        const btn = buildModButton(mod);
+        btn.onclick = () => {
+          const loja = $("lojaOrigem").value.trim();
+          if (!loja) {
+            setStatus("Selecione a loja de origem antes de usar os atalhos.", "err", "exclamation-circle");
+            return;
+          }
+          localStorage.setItem("active_quick_mod", mod.key);
+          setActiveModButton(mod.key);
+          renderChips(mod.key);
+          saveDraft();
+        };
+        grid.appendChild(btn);
+      });
+
+      const active = localStorage.getItem("active_quick_mod") || "";
+      if (active) {
+        setActiveModButton(active);
+        renderChips(active);
+      } else {
+        $("chipsWrap").classList.remove("active");
       }
-
-      // 2) fallback: datas por calendário
-      const today = new Date();
-      const di = addDays(today, 1);
-      const dc = nextDrawDate(modKey, today);
-
-      if (dc){
-        $("dataInicial").value = toISODate(di);
-        $("dataConcurso").value = toISODate(dc);
-
-        // concurso fica em branco (ou mantém o que já estava)
-        if (!$("concurso").value.trim()){
-          $("concurso").placeholder = "Sugestão via base (API) — digite";
-        }
-        return { source:"fallback", ok:true };
-      }
-
-      return { source:"none", ok:false };
     }
 
-    async function applyPreset(loja, modKey, p){
-      // Preenche campos do formulário
-      $("modalidade").value = modKey;
-      $("qtdJogos").value = String(p.jogos);
-      $("qtdDezenas").value = String(p.dezenas);
-      $("valorCota").value = String(p.valor).replace(".", ","); // visual BR
-      $("cotas").value = String(p.cotas);
-
-      // Sugere datas/concurso (API ou fallback)
-      setStatus(`Aplicando atalho ${modKey} [${p.label}]...`, "muted", "spinner fa-spin");
-      await suggestConcursoAndDates(modKey);
-
-      saveDraft();
-      setStatus(`Atalho aplicado: ${modKey} [${p.label}]. Confira concurso/datas e clique em Cadastrar.`, "ok", "check-circle");
-    }
-
-    function initQuickZone(){
-      renderModGrid();
-
-      const loja = $("lojaOrigem").value.trim();
-      const qt = $("quickLojaText");
-      if (qt) qt.textContent = loja ? `Loja: ${loja}` : "Loja: —";
-
-      const lastMod = localStorage.getItem("quick_mod") || "";
-      if (lastMod && loja && (PRESETS[loja] && PRESETS[loja][lastMod])){
-        onSelectMod(lastMod);
-      }
+    function refreshQuickbarForLoja(){
+      // quando muda loja: mantém a modalidade ativa (se houver) e só troca os chips
+      const active = localStorage.getItem("active_quick_mod") || "";
+      if (active) renderChips(active);
+      else $("chipsWrap").classList.remove("active");
     }
 
     /********************************************************
-     * ACTIONS (originais)
+     * ACTIONS
      ********************************************************/
     async function onCadastrar() {
       const btn = $("btnCadastrar");
@@ -1396,11 +1342,7 @@
       $("lojaOrigem").addEventListener("change", () => {
         updateThemeAndLogo();
         updateMovimentarUIByOrigem();
-
-        // se já havia uma modalidade selecionada, re-renderiza os chips na nova loja
-        const currentQuick = localStorage.getItem("quick_mod") || "";
-        if (currentQuick) onSelectMod(currentQuick);
-
+        refreshQuickbarForLoja();
         saveDraft();
       });
 
@@ -1410,10 +1352,7 @@
           $("lojaOrigem").value = loja;
           updateThemeAndLogo();
           updateMovimentarUIByOrigem();
-
-          const currentQuick = localStorage.getItem("quick_mod") || "";
-          if (currentQuick) onSelectMod(currentQuick);
-
+          refreshQuickbarForLoja();
           saveDraft();
         });
       });
@@ -1431,14 +1370,25 @@
         clearMov();
         setStatus("Movimentação limpa.", "muted", "broom");
       });
+
+      // se mudar modalidade manualmente, alinha quickbar
+      $("modalidade").addEventListener("change", () => {
+        const m = $("modalidade").value.trim();
+        if (!m) return;
+        localStorage.setItem("active_quick_mod", m);
+        setActiveModButton(m);
+        renderChips(m);
+        saveDraft();
+      });
     }
 
     // Init
     loadDraft();
     bind();
+    renderQuickbar();
     updateThemeAndLogo();
     updateMovimentarUIByOrigem();
-    initQuickZone();
+    refreshQuickbarForLoja();
   </script>
 
   <!-- Service Worker -->
