@@ -4,6 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Sistema de Bolões</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <style>
@@ -12,91 +17,109 @@
       --bg:#f8fafc;--card:#fff;--txt:#0f172a;--muted:#64748b;--label:#334155;--line:#e2e8f0;
       --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
       --shadow:0 10px 25px rgba(0,0,0,.08);--shadow-lg:0 20px 50px rgba(0,0,0,.12);
-      --radius:16px;--radius-sm:12px;--pad:18px;
+      --radius:16px;--radius-sm:12px;--pad:16px;
       --font:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       --transition:all .25s cubic-bezier(.4,0,.2,1);
     }
 
-    [data-theme="boulevard"]{--primary:#3b82f6;--primary-dark:#2563eb;--primary-light:#60a5fa;--secondary:#f97316;}
-    [data-theme="centro"]{--primary:#22c55e;--primary-dark:#16a34a;--primary-light:#4ade80;--secondary:#eab308;}
-    [data-theme="lotobel"]{--primary:#dc2626;--primary-dark:#b91c1c;--primary-light:#ef4444;--secondary:#d97706;}
-    [data-theme="santa-tereza"]{--primary:#9333ea;--primary-dark:#7e22ce;--primary-light:#a855f7;--secondary:#f59e0b;}
+    [data-theme="boulevard"]{--primary:#4682B4;--primary-dark:#2563eb;--primary-light:#60a5fa;--secondary:#f97316;}
+    [data-theme="centro"]{--primary:#2E8B57;--primary-dark:#16a34a;--primary-light:#4ade80;--secondary:#eab308;}
+    [data-theme="lotobel"]{--primary:#CD5C5C;--primary-dark:#b91c1c;--primary-light:#ef4444;--secondary:#d97706;}
+    [data-theme="santa-tereza"]{--primary:#483D8B;--primary-dark:#7e22ce;--primary-light:#a855f7;--secondary:#f59e0b;}
 
     *{box-sizing:border-box;margin:0;padding:0}
     body{margin:0;font-family:var(--font);color:var(--txt);background:var(--bg);min-height:100vh;transition:var(--transition)}
 
-    /* HEADER (mais baixo + barra com 4 logos) */
+    /* HEADER compacto + avatar circular */
     .header{
       background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-      color:#fff;
-      padding:12px 14px;
-      box-shadow:var(--shadow);
+      color:#fff;padding:10px 12px;box-shadow:var(--shadow);
       position:sticky;top:0;z-index:100;
     }
     .header-content{max-width:920px;margin:0 auto;display:flex;align-items:center;gap:12px}
+
+    /* Logo circular (estilo Google) */
     .logo-container{
-      width:44px;height:44px;background:#fff;border-radius:12px;padding:6px;
-      box-shadow:0 4px 12px rgba(0,0,0,.15);
+      width:58px;height:58px;background:#fff;border-radius:50%;
+      padding:0;box-shadow:0 6px 16px rgba(0,0,0,.18);
       display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto
     }
-    .logo-container img{width:100%;height:100%;object-fit:contain}
-    .header-title{flex:1;min-width:0}
-    .header-title h1{font-size:18px;font-weight:900;line-height:1.05;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .header-title p{font-size:12px;opacity:.9;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-    .brand-logos{
-      display:flex;gap:8px;align-items:center;justify-content:flex-end;flex:0 0 auto
+    .logo-container img{
+      width:122%;height:122%;
+      object-fit:cover;object-position:center;
     }
+
+    .header-title{flex:1;min-width:0}
+    .header-title h1{
+      font-size:17px;font-weight:900;line-height:1.05;margin:0 0 2px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+    }
+    .header-title p{
+      font-size:12px;opacity:.9;margin:0;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+    }
+
+    /* 4 logos topo */
+    .brand-logos{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex:0 0 auto}
     .brand-logos button{
       border:0;background:rgba(255,255,255,.14);
-      width:34px;height:34px;border-radius:12px;
-      display:grid;place-items:center;cursor:pointer;
-      transition:var(--transition)
+      width:34px;height:34px;border-radius:12px;display:grid;place-items:center;cursor:pointer;
+      transition:var(--transition);padding:0
     }
     .brand-logos button:hover{transform:translateY(-1px);background:rgba(255,255,255,.22)}
-    .brand-logos button:active{transform:translateY(0)}
-    .brand-logos img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
     .brand-logos button.active{outline:2px solid rgba(255,255,255,.55);background:rgba(255,255,255,.24)}
+    .brand-logos img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
 
-    /* CONTEÚDO */
-    .wrap{max-width:920px;margin:0 auto;padding:14px 12px 84px}
+    .wrap{max-width:920px;margin:0 auto;padding:14px 12px 88px}
+
     .card{
       background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
       box-shadow:var(--shadow);padding:var(--pad);margin:12px 0;transition:var(--transition)
     }
+    .card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
 
-    .section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--primary)}
+    .section-header{
+      display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--primary)
+    }
     .section-icon{
       width:34px;height:34px;border-radius:10px;
       background:linear-gradient(135deg,var(--primary),var(--primary-dark));
       display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex:0 0 auto
     }
-    .section-title{font-size:16px;font-weight:900;margin:0;color:var(--txt);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .section-title{
+      font-size:16px;font-weight:900;margin:0;color:var(--txt);
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap
+    }
+    .section-title.inline-title{align-items:center;}
 
-    /* GRID */
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    /* GRIDS */
+    .grid-1{display:grid;grid-template-columns:1fr;gap:12px}
+    .grid-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
+    .force-2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
 
-    /* CAMPOS */
-    .field{position:relative}
-    .field label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--label);font-weight:800;margin:0 0 6px 2px}
+    .field label{
+      display:flex;align-items:center;gap:6px;font-size:12px;color:var(--label);
+      font-weight:800;margin:0 0 6px 2px
+    }
     .field label i{color:var(--primary);font-size:13px}
     .field input,.field select{
       width:100%;font-size:16px;padding:12px 14px;border-radius:var(--radius-sm);
       border:2px solid var(--line);outline:none;background:#fff;transition:var(--transition);font-family:var(--font)
     }
     .field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,.10);transform:translateY(-1px)}
-    .field input:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed;opacity:.7}
+    .field input:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed;opacity:.75}
 
-    /* CHIP ORIGEM */
+    /* Chip origem */
     .mov-origem{
       display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
-      background:rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:900
+      background:rgba(0,0,0,.06);color:var(--txt);font-size:12px;font-weight:900;
+      border:1px solid var(--line)
     }
+    .mov-origem i{color:var(--primary)}
 
-    /* AÇÕES */
+    /* Ações */
+    .actions-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .actions-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
 
     button{
       border:0;border-radius:var(--radius-sm);
@@ -106,10 +129,13 @@
     }
     button:disabled{opacity:.55;cursor:not-allowed}
     .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 4px 12px rgba(99,102,241,.25)}
+    .btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.32)}
     .btn-dark{background:linear-gradient(135deg,#1e293b,#0f172a);color:#fff;box-shadow:0 4px 12px rgba(15,23,42,.25)}
+    .btn-dark:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,23,42,.32)}
     .btn-danger{background:linear-gradient(135deg,var(--danger),#dc2626);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,.25)}
+    .btn-danger:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(239,68,68,.32)}
     .btn-ghost{background:#fff;border:2px solid var(--line);color:var(--txt)}
-    .btn-ghost:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+    .btn-ghost:hover:not(:disabled){border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
 
     .btn-loading{pointer-events:none;opacity:.75}
     .btn-loading::after{
@@ -118,7 +144,7 @@
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* STATUS */
+    /* Status: sozinho (linha inteira) */
     .status{
       margin-top:12px;padding:12px 14px;border-radius:var(--radius-sm);
       font-size:13px;line-height:1.45;display:flex;align-items:flex-start;gap:10px
@@ -130,34 +156,177 @@
     .status.err{background:#fee2e2;border:2px solid #fca5a5;color:#991b1b}
     .status.err i{color:var(--danger)}
 
-    /* MODAL */
-    .modal-overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;
-      align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)
-    }
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
     .modal-overlay.active{display:flex}
     .modal{background:#fff;border-radius:var(--radius);padding:20px;max-width:520px;width:92%;box-shadow:0 25px 50px rgba(0,0,0,.3)}
     .modal-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-    .modal-icon{
-      width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-      font-size:22px;background:linear-gradient(135deg,var(--warning),#f59e0b);color:#fff;flex:0 0 auto
-    }
+    .modal-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(135deg,var(--warning),#f59e0b);color:#fff;flex:0 0 auto}
     .modal-title{font-size:18px;font-weight:900;color:var(--txt)}
     .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* MOBILE */
+    /* =========================
+       ZONA DE ATALHOS (NOVO)
+       ========================= */
+    .quick-card{padding:14px 14px 12px}
+    .quick-head{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-bottom:10px
+    }
+    .quick-title{
+      display:flex;align-items:center;gap:10px;
+      font-weight:900;font-size:15px
+    }
+    .quick-title i{color:var(--primary)}
+    .quick-badges{
+      display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end
+    }
+    .quick-pill{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+      background:rgba(0,0,0,.05);border:1px solid var(--line);
+      font-size:12px;font-weight:900;color:var(--txt)
+    }
+    .quick-pill i{color:var(--primary)}
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(9,minmax(0,1fr));
+      gap:8px;
+      margin-top:8px
+    }
+    .mod-btn{
+      border:2px solid var(--line);
+      background:#fff;
+      border-radius:14px;
+      min-height:46px;
+      padding:10px 8px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      cursor:pointer;
+      transition:var(--transition);
+      user-select:none;
+    }
+    .mod-btn:hover{transform:translateY(-1px);border-color:rgba(99,102,241,.45)}
+    .mod-btn.active{
+      border-color:var(--primary);
+      box-shadow:0 10px 25px rgba(0,0,0,.10);
+      transform:translateY(-1px);
+    }
+    .mod-ico{
+      width:34px;height:34px;border-radius:12px;
+      background:#fff;
+      border:1px solid var(--line);
+      box-shadow:0 6px 14px rgba(0,0,0,.08);
+      display:grid;place-items:center;
+      overflow:hidden
+    }
+    .mod-ico img{width:120%;height:120%;object-fit:cover;object-position:center}
+    .mod-label{
+      font-size:11px;font-weight:900;color:var(--txt);
+      line-height:1;
+      white-space:nowrap;
+    }
+
+    .chips-wrap{
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px dashed var(--line);
+      display:none;
+      animation:fadeIn .18s ease-out;
+    }
+    .chips-wrap.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:translateY(0)}}
+
+    .chips-row{
+      display:flex;flex-wrap:wrap;gap:8px;
+      align-items:center
+    }
+    .chip{
+      border:2px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:13px;
+      font-weight:900;
+      cursor:pointer;
+      transition:var(--transition);
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .chip:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
+    .chip small{font-size:11px;font-weight:800;color:var(--muted)}
+    .chips-hint{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;gap:8px;align-items:flex-start
+    }
+    .chips-hint i{margin-top:2px;color:var(--primary)}
+
     @media (max-width:720px){
-      :root{--pad:14px;--radius:14px;--radius-sm:12px}
-      .grid,.row2{grid-template-columns:1fr}
-      .wrap{padding:12px 10px 88px}
-      .header{padding:10px 10px}
-      .header-title h1{font-size:16px}
-      .logo-container{width:40px;height:40px}
-      .brand-logos button{width:32px;height:32px}
-      .actions-3{grid-template-columns:1fr}
-      button{font-size:16px;min-height:50px}
-      .field input,.field select{font-size:17px}
+      .quick-grid{
+        grid-template-columns:repeat(5,minmax(0,1fr));
+      }
+      .mod-btn{min-height:44px}
+      .mod-ico{width:32px;height:32px;border-radius:12px}
+      .mod-label{font-size:10px}
+    }
+    @media (max-width:380px){
+      .quick-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    }
+
+    /* ====== AJUSTES MOBILE: BOTÕES ====== */
+    @media (max-width:720px){
+      .wrap{padding:12px 10px 92px}
+      .logo-container{width:60px;height:60px}
+      .logo-container img{width:124%;height:124%}
+
+      .actions-3{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:8px;
+      }
+      .actions-3 button{
+        width:100%;
+        min-height:44px;
+        padding:10px 8px;
+        font-size:13px;
+        border-radius:12px;
+        gap:6px;
+        white-space:nowrap;
+      }
+      .actions-3 button i{font-size:13px;}
+
+      .actions{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+      }
+      .actions button{
+        width:100%;
+        min-height:46px;
+        padding:11px 10px;
+        font-size:14px;
+        border-radius:12px;
+        white-space:nowrap;
+      }
+    }
+
+    @media (max-width:380px){
+      .actions-3{gap:6px}
+      .actions-3 button{
+        min-height:42px;
+        padding:9px 6px;
+        font-size:12px;
+        border-radius:11px;
+      }
+      .actions button{
+        min-height:44px;
+        padding:10px 8px;
+        font-size:13px;
+        border-radius:11px;
+      }
     }
   </style>
 </head>
@@ -165,42 +334,78 @@
 <body>
   <header class="header">
     <div class="header-content">
-      <div class="logo-container" id="logoContainer" title="Loja selecionada">
-        <img src="" alt="Logo" id="logoImg" />
+      <div class="logo-container" title="Loja selecionada">
+        <img src="./icons/loterpraca.png" alt="Logo" id="logoImg" />
       </div>
 
       <div class="header-title">
         <h1 id="headerTitle">Sistema de Bolões</h1>
-        <p id="headerSub">Gerenciamento rápido</p>
+        <p id="headerSub">Cadastro e movimentação</p>
       </div>
 
-      <!-- 4 LOGOS SEMPRE NO TOPO (clicável) -->
       <div class="brand-logos" aria-label="Atalhos das lojas">
         <button type="button" class="brand-btn" data-loja="Boulevard" title="Boulevard">
-          <img id="brandBoulevard" alt="Boulevard">
+          <img src="./icons/boulevard.jpg" alt="Boulevard">
         </button>
         <button type="button" class="brand-btn" data-loja="Centro" title="Centro">
-          <img id="brandCentro" alt="Centro">
+          <img src="./icons/loterpraca.png" alt="Centro">
         </button>
         <button type="button" class="brand-btn" data-loja="Lotobel" title="Lotobel">
-          <img id="brandLotobel" alt="Lotobel">
+          <img src="./icons/lotobel.jpg" alt="Lotobel">
         </button>
         <button type="button" class="brand-btn" data-loja="Santa Tereza" title="Santa Tereza">
-          <img id="brandSantaTereza" alt="Santa Tereza">
+          <img src="./icons/santa-tereza.png" alt="Santa Tereza">
         </button>
       </div>
     </div>
   </header>
 
   <div class="wrap">
-    <!-- CARD: DADOS -->
+
+    <!-- =========================
+         ZONA DE ATALHOS (NOVO)
+         ========================= -->
+    <div class="card quick-card" id="quickZone">
+      <div class="quick-head">
+        <div class="quick-title">
+          <i class="fas fa-bolt"></i>
+          <span>Atalhos rápidos</span>
+        </div>
+        <div class="quick-badges">
+          <span class="quick-pill" title="Loja selecionada no cadastro">
+            <i class="fas fa-store"></i>
+            <span id="quickLojaText">Loja: —</span>
+          </span>
+          <span class="quick-pill" title="Modalidade selecionada nos atalhos">
+            <i class="fas fa-ticket"></i>
+            <span id="quickModText">Modalidade: —</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="quick-grid" id="modGrid" aria-label="Ícones das modalidades"></div>
+
+      <div class="chips-wrap" id="chipsWrap">
+        <div class="chips-row" id="chipsRow"></div>
+        <div class="chips-hint">
+          <i class="fas fa-info-circle"></i>
+          <div>
+            Clique numa <b>modalidade</b> e depois em um <b>atalho</b> para preencher o formulário.
+            O sistema também tenta sugerir <b>concurso</b> e <b>datas</b>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DADOS -->
     <div class="card">
       <div class="section-header">
         <div class="section-icon"><i class="fas fa-ticket-alt"></i></div>
         <h2 class="section-title">Dados do bolão</h2>
       </div>
 
-      <div class="grid">
+      <!-- Loja de Origem sozinho -->
+      <div class="grid-1">
         <div class="field">
           <label><i class="fas fa-store"></i> Loja de origem</label>
           <select id="lojaOrigem" required>
@@ -211,7 +416,10 @@
             <option>Santa Tereza</option>
           </select>
         </div>
+      </div>
 
+      <!-- Modalidade + Concurso -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-clover"></i> Modalidade</label>
           <select id="modalidade" required>
@@ -232,17 +440,15 @@
             <option>Virada</option>
           </select>
         </div>
-      </div>
 
-      <div class="grid" style="margin-top:12px">
         <div class="field">
           <label><i class="fas fa-hashtag"></i> Concurso</label>
           <input id="concurso" inputmode="numeric" placeholder="Ex: 2654" required />
         </div>
-        <div></div>
       </div>
 
-      <div class="row2">
+      <!-- Data inicial + Data concurso -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-calendar-day"></i> Data inicial</label>
           <input id="dataInicial" type="date" required />
@@ -253,7 +459,8 @@
         </div>
       </div>
 
-      <div class="row2">
+      <!-- Qtd de Jogos + Qtd de Dezenas -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-list-ol"></i> Qtd de Jogos</label>
           <input id="qtdJogos" inputmode="numeric" placeholder="Ex: 10" required />
@@ -264,18 +471,20 @@
         </div>
       </div>
 
-      <div class="row2">
+      <!-- Valor da cota + Qtd de Cotas -->
+      <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-money-bill-wave"></i> Valor da cota (R$)</label>
           <input id="valorCota" inputmode="decimal" placeholder="Ex: 15,00" required />
         </div>
         <div class="field">
-          <label><i class="fas fa-users"></i> Qtde de Cotas</label>
+          <label><i class="fas fa-users"></i> Qtd de Cotas</label>
           <input id="cotas" inputmode="numeric" placeholder="Ex: 50" required />
         </div>
       </div>
 
-      <div class="actions actions-3">
+      <!-- Cadastrar / Limpar / Deletar -->
+      <div class="actions-3">
         <button type="button" class="btn-primary" id="btnCadastrar">
           <i class="fas fa-check"></i><span>Cadastrar</span>
         </button>
@@ -287,18 +496,20 @@
         </button>
       </div>
 
+      <!-- Status sozinho -->
       <div id="status" class="status muted">
         <i class="fas fa-info-circle"></i>
         <span>Preencha os campos acima para cadastrar um bolão.</span>
       </div>
     </div>
 
-    <!-- CARD: MOVIMENTAR -->
+    <!-- MOVIMENTAR -->
     <div class="card">
       <div class="section-header">
         <div class="section-icon"><i class="fas fa-exchange-alt"></i></div>
-        <h2 class="section-title">
-          Movimentar (Controle)
+
+        <h2 class="section-title inline-title">
+          <span>Movimentar</span>
           <span class="mov-origem" id="movOrigemChip">
             <i class="fas fa-store"></i>
             <span id="movOrigemText">Origem: —</span>
@@ -306,7 +517,7 @@
         </h2>
       </div>
 
-      <div class="grid">
+      <div class="grid-2 force-2">
         <div class="field">
           <label><i class="fas fa-building"></i> Boulevard</label>
           <input id="deltaBoulevard" inputmode="numeric" placeholder="0" />
@@ -317,7 +528,7 @@
         </div>
       </div>
 
-      <div class="grid" style="margin-top:12px">
+      <div class="grid-2 force-2">
         <div class="field">
           <label><i class="fas fa-landmark"></i> Lotobel</label>
           <input id="deltaLotobel" inputmode="numeric" placeholder="0" />
@@ -365,15 +576,261 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbx0-Yyh7BvhHEm40Y7I_cd_G21JsKhP-osnj6yhukVnXqUYafhkammVTSLltjrexSbC/exec";
 
     const LOJA_CONFIG = {
-      "Boulevard": { logo: "https://www.genspark.ai/api/files/s/DI1CDkuk", theme: "boulevard", nome: "Boulevard" },
-      "Centro": { logo: "https://www.genspark.ai/api/files/s/KCPCbpuf", theme: "centro", nome: "Centro" },
-      "Lotobel": { logo: "https://www.genspark.ai/api/files/s/02mm2zqB", theme: "lotobel", nome: "Lotobel" },
-      "Santa Tereza": { logo: "https://www.genspark.ai/api/files/s/Z3YK0E5H", theme: "santa-tereza", nome: "Santa Tereza" }
+      "Boulevard":    { logo: "./icons/boulevard.jpg",    theme: "boulevard",    nome: "Boulevard",     position: "50% 50%" },
+      "Centro":       { logo: "./icons/loterpraca.png",   theme: "centro",       nome: "Centro",        position: "50% 42%" },
+      "Lotobel":      { logo: "./icons/lotobel.jpg",      theme: "lotobel",      nome: "Lotobel",       position: "50% 50%" },
+      "Santa Tereza": { logo: "./icons/santa-tereza.png", theme: "santa-tereza", nome: "Santa Tereza",  position: "50% 50%" }
     };
 
-    /********************************************************
-     * HELPERS
-     ********************************************************/
+    /* =========================
+       MODALIDADES / ÍCONES
+       =========================
+       - Por enquanto: usa iniciais (imagem opcional)
+       - Depois: você troca "img" por mini volante real.
+    */
+    const MODS = [
+      { key:"Mega Sena",    short:"MS", icon:"./icons/mods/ms.png", fallback:"MS" },
+      { key:"Lotofacil",    short:"LF", icon:"./icons/mods/lf.png", fallback:"LF" },
+      { key:"Quina",        short:"QN", icon:"./icons/mods/qn.png", fallback:"QN" },
+      { key:"Dia de Sorte", short:"DI", icon:"./icons/mods/di.png", fallback:"DI" },
+      { key:"Timemania",    short:"TM", icon:"./icons/mods/tm.png", fallback:"TM" },
+      { key:"Dupla Sena",   short:"DS", icon:"./icons/mods/ds.png", fallback:"DS" },
+      { key:"Super Sete",   short:"S7", icon:"./icons/mods/s7.png", fallback:"S7" },
+      { key:"Milionaria",   short:"MN", icon:"./icons/mods/mn.png", fallback:"MN" },
+      { key:"Loteca",       short:"LT", icon:"./icons/mods/lt.png", fallback:"LT" },
+    ];
+
+    /* =========================
+       ATALHOS (BASE) POR LOJA
+       =========================
+       IMPORTANTE:
+       - Mantive exatamente os dados que você validou.
+       - Se quiser reduzir/ocultar modalidades que não usam em certa loja,
+         basta deixar a lista vazia.
+    */
+    const PRESETS = {
+      "Boulevard": {
+        "Mega Sena": [
+          { id:"MS1", label:"03x10", jogos:3, dezenas:10, valor:51.03, cotas:100 },
+          { id:"MS2", label:"02x10", jogos:2, dezenas:10, valor:34.01, cotas:100 },
+          { id:"MS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:100 },
+          { id:"MS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:30 },
+        ],
+        "Lotofacil": [
+          { id:"LF1", label:"02x17", jogos:2, dezenas:17, valor:32.13, cotas:40 },
+          { id:"LF2", label:"10x16", jogos:10, dezenas:16, valor:25.19, cotas:30 },
+          { id:"LF3", label:"05x16", jogos:5, dezenas:16, valor:12.59, cotas:30 },
+          { id:"LF4", label:"10x15", jogos:10, dezenas:15, valor:11.81, cotas:4 },
+        ],
+        "Quina": [
+          { id:"QN1", label:"01x12", jogos:1, dezenas:12, valor:64.15, cotas:50 },
+          { id:"QN2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
+          { id:"QN3", label:"07x07", jogos:7, dezenas:7, valor:12.15, cotas:49 },
+          { id:"QN4", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:20 },
+        ],
+        "Dia de Sorte": [
+          { id:"DI1", label:"01x12", jogos:1, dezenas:12, valor:44.55, cotas:60 },
+          { id:"DI2", label:"01x11", jogos:1, dezenas:11, valor:27.82, cotas:40 },
+          { id:"DI3", label:"01x10", jogos:1, dezenas:10, valor:27.00, cotas:15 },
+          { id:"DI4", label:"10x08", jogos:10, dezenas:8, valor:17.99, cotas:15 },
+        ],
+        "Timemania": [
+          { id:"TM01", label:"15x10", jogos:15, dezenas:10, valor:10.12, cotas:7 },
+        ],
+        "Dupla Sena": [
+          { id:"DS1", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
+          { id:"DS2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
+          { id:"DS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:50 },
+          { id:"DS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:15 },
+        ],
+        "Super Sete": [
+          { id:"S701", label:"07x10", jogos:7, dezenas:10, valor:56.70, cotas:5 },
+          { id:"S702", label:"05x10", jogos:5, dezenas:10, valor:54.00, cotas:3 },
+          { id:"S703", label:"04x11", jogos:4, dezenas:11, valor:51.83, cotas:5 },
+          { id:"S704", label:"10x10", jogos:10, dezenas:10, valor:21.60, cotas:10 },
+        ],
+        "Milionaria": [
+          { id:"MN01", label:"01x10", jogos:1, dezenas:10, valor:48.60, cotas:35 },
+          { id:"MN02", label:"05x07", jogos:5, dezenas:7, valor:18.90, cotas:15 },
+          { id:"MN03", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:20 },
+          { id:"MN04", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:9 },
+        ],
+        "Loteca": [
+          { id:"LT01", label:"01x26", jogos:1, dezenas:26, valor:39.36, cotas:50 },
+          { id:"LT02", label:"01x24", jogos:1, dezenas:24, valor:21.87, cotas:30 },
+        ],
+      },
+
+      "Centro": {
+        "Mega Sena": [
+          { id:"MS1", label:"03x10", jogos:3, dezenas:10, valor:51.03, cotas:100 },
+          { id:"MS2", label:"02x10", jogos:2, dezenas:10, valor:34.01, cotas:100 },
+          { id:"MS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:100 },
+          { id:"MS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:30 },
+        ],
+        "Lotofacil": [
+          { id:"LF1", label:"07x17", jogos:7, dezenas:17, valor:112.44, cotas:40 },
+          { id:"LF2", label:"10x16", jogos:10, dezenas:16, valor:25.19, cotas:30 },
+          { id:"LF3", label:"05x16", jogos:5, dezenas:16, valor:12.59, cotas:30 },
+          { id:"LF4", label:"10x15", jogos:10, dezenas:15, valor:11.81, cotas:4 },
+        ],
+        "Quina": [
+          { id:"QN1", label:"01x12", jogos:1, dezenas:12, valor:64.15, cotas:50 },
+          { id:"QN2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
+          { id:"QN3", label:"07x07", jogos:7, dezenas:7, valor:12.15, cotas:49 },
+          { id:"QN4", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:20 },
+        ],
+        "Dia de Sorte": [
+          { id:"DI1", label:"01x12", jogos:1, dezenas:12, valor:44.55, cotas:60 },
+          { id:"DI2", label:"01x11", jogos:1, dezenas:11, valor:27.82, cotas:40 },
+          { id:"DI3", label:"01x10", jogos:1, dezenas:10, valor:27.00, cotas:15 },
+          { id:"DI4", label:"10x08", jogos:10, dezenas:8, valor:17.99, cotas:15 },
+        ],
+        "Timemania": [
+          { id:"TM01", label:"15x10", jogos:15, dezenas:10, valor:14.17, cotas:5 },
+        ],
+        "Dupla Sena": [
+          { id:"DS1", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
+          { id:"DS2", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
+          { id:"DS3", label:"01x10", jogos:1, dezenas:10, valor:42.52, cotas:20 },
+          { id:"DS4", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:50 },
+        ],
+        "Super Sete": [
+          { id:"S701", label:"07x10", jogos:7, dezenas:10, valor:56.70, cotas:5 },
+          { id:"S702", label:"05x10", jogos:5, dezenas:10, valor:54.00, cotas:3 },
+          { id:"S703", label:"04x11", jogos:4, dezenas:11, valor:51.83, cotas:5 },
+          { id:"S704", label:"10x10", jogos:10, dezenas:10, valor:21.60, cotas:10 },
+        ],
+        "Milionaria": [
+          { id:"MN01", label:"01x09", jogos:1, dezenas:9, valor:51.03, cotas:40 },
+          { id:"MN02", label:"05x07", jogos:5, dezenas:7, valor:18.90, cotas:15 },
+          { id:"MN03", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:20 },
+          { id:"MN04", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:9 },
+        ],
+        "Loteca": [
+          { id:"LT01", label:"01x26", jogos:1, dezenas:26, valor:39.36, cotas:50 },
+          { id:"LT02", label:"01x24", jogos:1, dezenas:24, valor:21.87, cotas:30 },
+        ],
+      },
+
+      "Lotobel": {
+        "Mega Sena": [
+          { id:"MS1", label:"03x10", jogos:3, dezenas:10, valor:51.03, cotas:100 },
+          { id:"MS2", label:"02x10", jogos:2, dezenas:10, valor:34.01, cotas:100 },
+          { id:"MS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:100 },
+          { id:"MS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:30 },
+        ],
+        "Lotofacil": [
+          { id:"LF1", label:"01x18", jogos:1, dezenas:18, valor:77.11, cotas:50 },
+          { id:"LF2", label:"10x16", jogos:10, dezenas:16, valor:25.19, cotas:30 },
+          { id:"LF3", label:"05x16", jogos:5, dezenas:16, valor:12.59, cotas:30 },
+          { id:"LF4", label:"09x15", jogos:9, dezenas:15, valor:10.63, cotas:4 },
+        ],
+        "Quina": [
+          { id:"QN1", label:"01x12", jogos:1, dezenas:12, valor:64.15, cotas:50 },
+          { id:"QN2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
+          { id:"QN3", label:"07x07", jogos:7, dezenas:7, valor:12.15, cotas:49 },
+          { id:"QN4", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:20 },
+        ],
+        "Dia de Sorte": [
+          { id:"DI1", label:"01x12", jogos:1, dezenas:12, valor:44.55, cotas:60 },
+          { id:"DI2", label:"01x11", jogos:1, dezenas:11, valor:27.82, cotas:40 },
+          { id:"DI3", label:"01x10", jogos:1, dezenas:10, valor:27.00, cotas:15 },
+          { id:"DI4", label:"02x09", jogos:2, dezenas:9, valor:20.44, cotas:12 },
+        ],
+        "Timemania": [
+          { id:"TM01", label:"15x10", jogos:15, dezenas:10, valor:14.17, cotas:5 },
+        ],
+        "Dupla Sena": [
+          { id:"DS1", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
+          { id:"DS2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
+          { id:"DS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:50 },
+          { id:"DS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:15 },
+        ],
+        "Super Sete": [
+          { id:"S701", label:"07x10", jogos:7, dezenas:10, valor:56.70, cotas:5 },
+          { id:"S702", label:"05x10", jogos:5, dezenas:10, valor:54.00, cotas:3 },
+          { id:"S703", label:"04x11", jogos:4, dezenas:11, valor:51.83, cotas:5 },
+          { id:"S704", label:"10x10", jogos:10, dezenas:10, valor:21.60, cotas:10 },
+        ],
+        "Milionaria": [
+          { id:"MN01", label:"08x06", jogos:8, dezenas:6, valor:48.59, cotas:20 },
+          { id:"MN02", label:"05x07", jogos:5, dezenas:7, valor:18.90, cotas:15 },
+          { id:"MN03", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:20 },
+          { id:"MN04", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:9 },
+        ],
+        "Loteca": [
+          { id:"LT01", label:"01x26", jogos:1, dezenas:26, valor:39.36, cotas:50 },
+          { id:"LT02", label:"01x24", jogos:1, dezenas:24, valor:21.87, cotas:30 },
+        ],
+      },
+
+      "Santa Tereza": {
+        "Mega Sena": [
+          { id:"MS1", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:100 },
+          { id:"MS2", label:"02x10", jogos:2, dezenas:10, valor:34.01, cotas:100 },
+          { id:"MS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:100 },
+          { id:"MS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:30 },
+        ],
+        "Lotofacil": [
+          { id:"LF1", label:"02x17", jogos:2, dezenas:17, valor:32.13, cotas:40 },
+          { id:"LF2", label:"10x16", jogos:10, dezenas:16, valor:25.19, cotas:30 },
+          { id:"LF3", label:"05x16", jogos:5, dezenas:16, valor:12.59, cotas:30 },
+          { id:"LF4", label:"10x15", jogos:10, dezenas:15, valor:11.81, cotas:4 },
+        ],
+        "Quina": [
+          { id:"QN1", label:"01x12", jogos:1, dezenas:12, valor:64.15, cotas:50 },
+          { id:"QN2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
+          { id:"QN3", label:"07x07", jogos:7, dezenas:7, valor:12.15, cotas:49 },
+          { id:"QN4", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:20 },
+        ],
+        "Dia de Sorte": [
+          // DI1 removido
+          { id:"DI2", label:"01x11", jogos:1, dezenas:11, valor:27.82, cotas:40 },
+          { id:"DI3", label:"01x10", jogos:1, dezenas:10, valor:27.00, cotas:15 },
+          { id:"DI4", label:"05x08", jogos:5, dezenas:8, valor:13.50, cotas:10 },
+        ],
+        "Timemania": [
+          { id:"TM01", label:"15x10", jogos:15, dezenas:10, valor:10.12, cotas:7 },
+        ],
+        "Dupla Sena": [
+          { id:"DS1", label:"10x09", jogos:10, dezenas:9, valor:68.04, cotas:50 },
+          { id:"DS2", label:"01x11", jogos:1, dezenas:11, valor:37.42, cotas:50 },
+          { id:"DS3", label:"10x08", jogos:10, dezenas:8, valor:22.68, cotas:50 },
+          { id:"DS4", label:"10x07", jogos:10, dezenas:7, valor:18.90, cotas:15 },
+        ],
+        "Super Sete": [
+          { id:"S701", label:"07x10", jogos:7, dezenas:10, valor:56.70, cotas:5 },
+          { id:"S702", label:"05x10", jogos:5, dezenas:10, valor:54.00, cotas:3 },
+          { id:"S703", label:"04x11", jogos:4, dezenas:11, valor:51.83, cotas:5 },
+          { id:"S704", label:"10x10", jogos:10, dezenas:10, valor:21.60, cotas:10 },
+        ],
+        "Milionaria": [
+          { id:"MN01", label:"10x06", jogos:10, dezenas:6, valor:12.14, cotas:40 },
+          { id:"MN02", label:"05x07", jogos:5, dezenas:7, valor:18.90, cotas:15 },
+          { id:"MN03", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:20 },
+          { id:"MN04", label:"14x06", jogos:14, dezenas:6, valor:12.59, cotas:9 },
+        ],
+        "Loteca": [
+          { id:"LT01", label:"01x26", jogos:1, dezenas:26, valor:39.36, cotas:50 },
+          { id:"LT02", label:"01x24", jogos:1, dezenas:24, valor:21.87, cotas:30 },
+        ],
+      },
+    };
+
+    // Mapa de dias de sorteio por modalidade (0=Dom ... 6=Sáb)
+    const DRAW_DAYS = {
+      "Mega Sena":    [2,4,6],       // ter qui sab
+      "Timemania":    [2,4,6],       // ter qui sab
+      "Dia de Sorte": [2,4,6],       // ter qui sab
+      "Quina":        [1,2,3,4,5,6], // seg a sab
+      "Lotofacil":    [1,2,3,4,5,6], // seg a sab
+      "Dupla Sena":   [1,3,5],       // seg qua sex
+      "Super Sete":   [1,3,5],       // seg qua sex
+      "Milionaria":   [3,6],         // qua sab
+      "Loteca":       [6],           // sab
+    };
+
     const $ = (id) => document.getElementById(id);
 
     function setStatus(msg, type = "muted", icon = "info-circle") {
@@ -396,6 +853,11 @@
       const cleaned = s.replace(/[R$\s]/g, "").replace(/\./g, "").replace(",", ".");
       const n = Number(cleaned);
       return Number.isFinite(n) ? n : 0;
+    }
+
+    function fmtBRL(n) {
+      const num = Number(n || 0);
+      return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     }
 
     function base64Json(obj) {
@@ -453,7 +915,7 @@
       if (!qtdJogos || qtdJogos <= 0) throw new Error("Qtd de Jogos deve ser > 0.");
       if (!qtdDezenas || qtdDezenas <= 0) throw new Error("Qtd de Dezenas deve ser > 0.");
       if (!valorCota || valorCota <= 0) throw new Error("Valor da cota deve ser > 0.");
-      if (exigirCotas && (!Number.isFinite(cotas) || cotas === 0)) throw new Error("Qtde de Cotas é obrigatória (≠ 0).");
+      if (exigirCotas && (!Number.isFinite(cotas) || cotas === 0)) throw new Error("Qtd de Cotas é obrigatória (≠ 0).");
 
       return { lojaOrigem, modalidade, concurso, dataInicial, dataConcurso, qtdJogos, qtdDezenas, valorCota, cotas };
     }
@@ -480,7 +942,9 @@
         deltaBoulevard: $("deltaBoulevard").value,
         deltaCentro: $("deltaCentro").value,
         deltaLotobel: $("deltaLotobel").value,
-        deltaSantaTereza: $("deltaSantaTereza").value
+        deltaSantaTereza: $("deltaSantaTereza").value,
+        // atalhos
+        quickMod: localStorage.getItem("quick_mod") || ""
       };
       localStorage.setItem("bolo_draft", JSON.stringify(draft));
     }
@@ -526,11 +990,6 @@
       saveDraft();
     }
 
-    function fmtBRL(n) {
-      const num = Number(n || 0);
-      return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-    }
-
     function buildExistsConfirmText(base) {
       return [
         `Bolão da ${base.modalidade} Concurso ${base.concurso}`,
@@ -553,24 +1012,6 @@
     }
     function closeModal() { $("modalOverlay").classList.remove("active"); }
 
-    /* 4 logos no topo */
-    function initBrandLogos() {
-      $("brandBoulevard").src = LOJA_CONFIG["Boulevard"].logo;
-      $("brandCentro").src = LOJA_CONFIG["Centro"].logo;
-      $("brandLotobel").src = LOJA_CONFIG["Lotobel"].logo;
-      $("brandSantaTereza").src = LOJA_CONFIG["Santa Tereza"].logo;
-
-      document.querySelectorAll(".brand-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const loja = btn.getAttribute("data-loja");
-          $("lojaOrigem").value = loja;
-          updateThemeAndLogo();
-          updateMovimentarUIByOrigem();
-          saveDraft();
-        });
-      });
-    }
-
     function updateBrandActive(loja) {
       document.querySelectorAll(".brand-btn").forEach(btn => {
         btn.classList.toggle("active", btn.getAttribute("data-loja") === loja);
@@ -580,21 +1021,25 @@
     function updateThemeAndLogo() {
       const loja = $("lojaOrigem").value;
       const config = LOJA_CONFIG[loja];
+      const img = $("logoImg");
 
       if (config) {
         document.body.setAttribute("data-theme", config.theme);
+        img.src = config.logo;
+        img.alt = `Logo ${config.nome}`;
+        img.style.objectPosition = config.position || "center";
 
-        $("logoImg").src = config.logo;
-        $("logoImg").alt = `Logo ${config.nome}`;
-
-        $("headerTitle").textContent = `${config.nome} • Bolões`;
-        $("headerSub").textContent = "Cadastro e movimentação";
+        $("headerTitle").textContent = `${config.nome}`;
+        $("headerSub").textContent = "Cadastro";
         updateBrandActive(loja);
       } else {
         document.body.removeAttribute("data-theme");
-        $("logoImg").src = "";
+        img.src = "./icons/loterpraca.png";
+        img.alt = "Loterpraça";
+        img.style.objectPosition = "center";
+
         $("headerTitle").textContent = "Sistema de Bolões";
-        $("headerSub").textContent = "Gerenciamento rápido";
+        $("headerSub").textContent = "Cadastro e movimentação";
         updateBrandActive("");
       }
     }
@@ -614,14 +1059,207 @@
       map.forEach(({ loja: lojaName, inputId }) => {
         const el = $(inputId);
         if (!el) return;
+
         const shouldDisable = !!loja && loja === lojaName;
         el.disabled = shouldDisable;
         if (shouldDisable) el.value = "";
       });
+
+      // Atualiza a zona de atalhos
+      const qt = $("quickLojaText");
+      if (qt) qt.textContent = loja ? `Loja: ${loja}` : "Loja: —";
+    }
+
+    /* =========================
+       LÓGICA DE DATAS (FALLBACK)
+       ========================= */
+    function toISODate(d){
+      const dt = new Date(d);
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth()+1).padStart(2,"0");
+      const day = String(dt.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function nextDrawDate(modKey, fromDate = new Date()) {
+      const days = DRAW_DAYS[modKey] || [];
+      if (!days.length) return null;
+      const start = new Date(fromDate);
+      start.setHours(12,0,0,0);
+
+      for (let i=0;i<14;i++){
+        const d = new Date(start);
+        d.setDate(start.getDate()+i);
+        if (days.includes(d.getDay())) return d;
+      }
+      return null;
+    }
+
+    function addDays(date, n){
+      const d = new Date(date);
+      d.setDate(d.getDate()+n);
+      return d;
+    }
+
+    /* =========================
+       ATALHOS: RENDER / EVENTOS
+       ========================= */
+    function safeText(s){ return String(s || ""); }
+
+    function buildModButton(mod){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "mod-btn";
+      btn.setAttribute("data-mod", mod.key);
+
+      const ico = document.createElement("div");
+      ico.className = "mod-ico";
+
+      // Se a imagem não existir, cai no texto
+      const img = document.createElement("img");
+      img.src = mod.icon;
+      img.alt = mod.short;
+      img.onerror = () => {
+        ico.innerHTML = `<span style="font-weight:1000;color:var(--primary);font-size:13px">${safeText(mod.fallback)}</span>`;
+      };
+      ico.appendChild(img);
+
+      const label = document.createElement("div");
+      label.className = "mod-label";
+      label.textContent = mod.short;
+
+      btn.appendChild(ico);
+      btn.appendChild(label);
+      return btn;
+    }
+
+    function renderModGrid(){
+      const grid = $("modGrid");
+      if (!grid) return;
+      grid.innerHTML = "";
+      MODS.forEach(mod => {
+        const btn = buildModButton(mod);
+        btn.addEventListener("click", () => onSelectMod(mod.key));
+        grid.appendChild(btn);
+      });
+    }
+
+    function setActiveModButton(modKey){
+      document.querySelectorAll(".mod-btn").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-mod") === modKey);
+      });
+    }
+
+    function getSelectedLojaOrWarn(){
+      const loja = $("lojaOrigem").value.trim();
+      if (!loja){
+        setStatus("Selecione a loja de origem antes de usar atalhos.", "err", "exclamation-circle");
+        return null;
+      }
+      return loja;
+    }
+
+    function onSelectMod(modKey){
+      const loja = getSelectedLojaOrWarn();
+      if (!loja) return;
+
+      localStorage.setItem("quick_mod", modKey);
+
+      setActiveModButton(modKey);
+      const mt = $("quickModText");
+      if (mt) mt.textContent = `Modalidade: ${modKey}`;
+
+      const chipsWrap = $("chipsWrap");
+      const chipsRow = $("chipsRow");
+      if (!chipsWrap || !chipsRow) return;
+
+      const list = (PRESETS[loja] && PRESETS[loja][modKey]) ? PRESETS[loja][modKey] : [];
+      chipsRow.innerHTML = "";
+
+      if (!list.length){
+        chipsWrap.classList.remove("active");
+        setStatus(`Sem atalhos cadastrados para ${modKey} em ${loja}.`, "muted", "info-circle");
+        return;
+      }
+
+      list.forEach(p => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip";
+        chip.setAttribute("data-id", p.id);
+        chip.innerHTML = `<span>[${safeText(p.label)}]</span><small>${fmtBRL(p.valor)} • ${p.cotas} cotas</small>`;
+        chip.addEventListener("click", () => applyPreset(loja, modKey, p));
+        chipsRow.appendChild(chip);
+      });
+
+      chipsWrap.classList.add("active");
+    }
+
+    async function suggestConcursoAndDates(modKey){
+      // 1) tenta via API (se você implementar depois no GAS)
+      try{
+        const res = await callApi("sugestaoConcurso", { modalidade: modKey });
+        if (res && res.ok && res.data){
+          const d = res.data;
+          if (d.concurso != null) $("concurso").value = String(d.concurso);
+          if (d.dataConcurso) $("dataConcurso").value = String(d.dataConcurso);
+          if (d.dataInicial) $("dataInicial").value = String(d.dataInicial);
+          return { source:"api", ok:true };
+        }
+      }catch(e){
+        // ignora e usa fallback
+      }
+
+      // 2) fallback: datas por calendário
+      const today = new Date();
+      const di = addDays(today, 1);
+      const dc = nextDrawDate(modKey, today);
+
+      if (dc){
+        $("dataInicial").value = toISODate(di);
+        $("dataConcurso").value = toISODate(dc);
+
+        // concurso fica em branco (ou mantém o que já estava)
+        if (!$("concurso").value.trim()){
+          $("concurso").placeholder = "Sugestão via base (API) — digite";
+        }
+        return { source:"fallback", ok:true };
+      }
+
+      return { source:"none", ok:false };
+    }
+
+    async function applyPreset(loja, modKey, p){
+      // Preenche campos do formulário
+      $("modalidade").value = modKey;
+      $("qtdJogos").value = String(p.jogos);
+      $("qtdDezenas").value = String(p.dezenas);
+      $("valorCota").value = String(p.valor).replace(".", ","); // visual BR
+      $("cotas").value = String(p.cotas);
+
+      // Sugere datas/concurso (API ou fallback)
+      setStatus(`Aplicando atalho ${modKey} [${p.label}]...`, "muted", "spinner fa-spin");
+      await suggestConcursoAndDates(modKey);
+
+      saveDraft();
+      setStatus(`Atalho aplicado: ${modKey} [${p.label}]. Confira concurso/datas e clique em Cadastrar.`, "ok", "check-circle");
+    }
+
+    function initQuickZone(){
+      renderModGrid();
+
+      const loja = $("lojaOrigem").value.trim();
+      const qt = $("quickLojaText");
+      if (qt) qt.textContent = loja ? `Loja: ${loja}` : "Loja: —";
+
+      const lastMod = localStorage.getItem("quick_mod") || "";
+      if (lastMod && loja && (PRESETS[loja] && PRESETS[loja][lastMod])){
+        onSelectMod(lastMod);
+      }
     }
 
     /********************************************************
-     * ACTIONS
+     * ACTIONS (originais)
      ********************************************************/
     async function onCadastrar() {
       const btn = $("btnCadastrar");
@@ -651,8 +1289,8 @@
             setButtonLoading(btn, true);
 
             const res2 = await callApi("cadastrar", { ...payload, confirmAdd: true });
-            setButtonLoading(btn, false);
 
+            setButtonLoading(btn, false);
             if (res2 && res2.ok) setStatus(res2.message || "Cotas adicionadas!", "ok", "check-circle");
             else setStatus((res2 && res2.message) ? res2.message : "Erro ao somar cotas.", "err", "exclamation-circle");
           });
@@ -665,7 +1303,6 @@
         setButtonLoading(btn, false);
         if (res && res.ok) setStatus(res.message || "Bolão cadastrado!", "ok", "check-circle");
         else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-
       } catch (err) {
         setButtonLoading(btn, false);
         setStatus(err.message || String(err), "err", "exclamation-circle");
@@ -674,14 +1311,13 @@
 
     async function onDeletar() {
       const loja = $("lojaOrigem").value;
-
       showModal(
         "Confirmar deleção",
         `Deletar o bolão em ${loja}?\n\nEssa ação não pode ser desfeita.`,
         async () => {
           const btn = $("btnDeletar");
           try {
-            setStatus("Deletando...", "muted", "spinner fa-spin");
+            setStatus("Deletando bolão...", "muted", "spinner fa-spin");
             setButtonLoading(btn, true);
 
             const base = validateBase(false);
@@ -703,7 +1339,6 @@
             setButtonLoading(btn, false);
             if (res && res.ok) setStatus(res.message || "Bolão deletado!", "ok", "check-circle");
             else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-
           } catch (err) {
             setButtonLoading(btn, false);
             setStatus(err.message || String(err), "err", "exclamation-circle");
@@ -746,16 +1381,12 @@
         setButtonLoading(btn, false);
         if (res && res.ok) { setStatus(res.message || "Movimentação feita!", "ok", "check-circle"); clearMov(); }
         else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-
       } catch (err) {
         setButtonLoading(btn, false);
         setStatus(err.message || String(err), "err", "exclamation-circle");
       }
     }
 
-    /********************************************************
-     * INIT
-     ********************************************************/
     function bind() {
       document.querySelectorAll("input,select").forEach(el => {
         el.addEventListener("change", saveDraft);
@@ -765,7 +1396,26 @@
       $("lojaOrigem").addEventListener("change", () => {
         updateThemeAndLogo();
         updateMovimentarUIByOrigem();
+
+        // se já havia uma modalidade selecionada, re-renderiza os chips na nova loja
+        const currentQuick = localStorage.getItem("quick_mod") || "";
+        if (currentQuick) onSelectMod(currentQuick);
+
         saveDraft();
+      });
+
+      document.querySelectorAll(".brand-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const loja = btn.getAttribute("data-loja");
+          $("lojaOrigem").value = loja;
+          updateThemeAndLogo();
+          updateMovimentarUIByOrigem();
+
+          const currentQuick = localStorage.getItem("quick_mod") || "";
+          if (currentQuick) onSelectMod(currentQuick);
+
+          saveDraft();
+        });
       });
 
       $("btnCadastrar").addEventListener("click", onCadastrar);
@@ -779,16 +1429,25 @@
 
       $("btnZerarMov").addEventListener("click", () => {
         clearMov();
-        setStatus("Campos de movimentação limpos.", "muted", "broom");
+        setStatus("Movimentação limpa.", "muted", "broom");
       });
     }
 
     // Init
-    initBrandLogos();
     loadDraft();
     bind();
     updateThemeAndLogo();
     updateMovimentarUIByOrigem();
+    initQuickZone();
+  </script>
+
+  <!-- Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js");
+      });
+    }
   </script>
 </body>
 </html>
