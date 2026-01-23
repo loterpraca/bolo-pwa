@@ -91,10 +91,8 @@
       display:flex;align-items:center;gap:10px;flex-wrap:wrap
     }
 
-    /* ✅ MOVIMENTAR: texto alinhado ao lado do ícone (sem “quebrar”) */
-    .section-title.inline-title{
-      align-items:center;
-    }
+    /* ✅ MOVIMENTAR: texto alinhado ao lado do ícone */
+    .section-title.inline-title{align-items:center;}
 
     /* GRIDS */
     .grid-1{display:grid;grid-template-columns:1fr;gap:12px}
@@ -172,12 +170,60 @@
     .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* Mobile fino: mantém layout, só reduz topo */
+    /* ====== AJUSTES MOBILE: BOTÕES ====== */
+    /* mantém o layout geral, mas NÃO empilha os 3 botões */
     @media (max-width:720px){
       .wrap{padding:12px 10px 92px}
       .logo-container{width:60px;height:60px}
       .logo-container img{width:124%;height:124%}
-      .actions-3{grid-template-columns:1fr} /* botões empilham no celular */
+
+      /* ✅ 3 botões: mesma linha, menores, iguais */
+      .actions-3{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:8px;
+      }
+      .actions-3 button{
+        width:100%;
+        min-height:44px;
+        padding:10px 8px;
+        font-size:13px;
+        border-radius:12px;
+        gap:6px;
+        white-space:nowrap;
+      }
+      .actions-3 button i{font-size:13px;}
+
+      /* ✅ 2 botões da movimentação: 50/50 e iguais */
+      .actions{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+      }
+      .actions button{
+        width:100%;
+        min-height:46px;
+        padding:11px 10px;
+        font-size:14px;
+        border-radius:12px;
+        white-space:nowrap;
+      }
+    }
+
+    /* celular MUITO estreito: reduz um pouco mais sem quebrar */
+    @media (max-width:380px){
+      .actions-3{gap:6px}
+      .actions-3 button{
+        min-height:42px;
+        padding:9px 6px;
+        font-size:12px;
+        border-radius:11px;
+      }
+      .actions button{
+        min-height:44px;
+        padding:10px 8px;
+        font-size:13px;
+        border-radius:11px;
+      }
     }
   </style>
 </head>
@@ -323,7 +369,6 @@
       <div class="section-header">
         <div class="section-icon"><i class="fas fa-exchange-alt"></i></div>
 
-        <!-- ✅ Texto Movimentar ao lado do ícone -->
         <h2 class="section-title inline-title">
           <span>Movimentar</span>
           <span class="mov-origem" id="movOrigemChip">
@@ -333,7 +378,6 @@
         </h2>
       </div>
 
-      <!-- Boulevard + Centro (lado a lado sempre) -->
       <div class="grid-2 force-2">
         <div class="field">
           <label><i class="fas fa-building"></i> Boulevard</label>
@@ -345,7 +389,6 @@
         </div>
       </div>
 
-      <!-- Lotobel + Santa Tereza (lado a lado sempre) -->
       <div class="grid-2 force-2">
         <div class="field">
           <label><i class="fas fa-landmark"></i> Lotobel</label>
@@ -395,7 +438,7 @@
 
     const LOJA_CONFIG = {
       "Boulevard":    { logo: "./icons/boulevard.jpg",    theme: "boulevard",    nome: "Boulevard",     position: "50% 50%" },
-      "Centro":       { logo: "./icons/loterpraca.png",   theme: "centro",       nome: "Centro",        position: "50% 42%" }, // ajuste p/ “arvorezinha”
+      "Centro":       { logo: "./icons/loterpraca.png",   theme: "centro",       nome: "Centro",        position: "50% 42%" },
       "Lotobel":      { logo: "./icons/lotobel.jpg",      theme: "lotobel",      nome: "Lotobel",       position: "50% 50%" },
       "Santa Tereza": { logo: "./icons/santa-tereza.png", theme: "santa-tereza", nome: "Santa Tereza",  position: "50% 50%" }
     };
