@@ -17,7 +17,7 @@
       --bg:#f8fafc;--card:#fff;--txt:#0f172a;--muted:#64748b;--label:#334155;--line:#e2e8f0;
       --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
       --shadow:0 10px 25px rgba(0,0,0,.08);--shadow-lg:0 20px 50px rgba(0,0,0,.12);
-      --radius:16px;--radius-sm:12px;--pad:18px;
+      --radius:16px;--radius-sm:12px;--pad:16px;
       --font:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       --transition:all .25s cubic-bezier(.4,0,.2,1);
     }
@@ -30,7 +30,7 @@
     *{box-sizing:border-box;margin:0;padding:0}
     body{margin:0;font-family:var(--font);color:var(--txt);background:var(--bg);min-height:100vh;transition:var(--transition)}
 
-    /* HEADER compacto + 4 logos */
+    /* HEADER compacto + avatar circular */
     .header{
       background:linear-gradient(135deg,var(--primary),var(--primary-dark));
       color:#fff;padding:10px 12px;box-shadow:var(--shadow);
@@ -38,22 +38,28 @@
     }
     .header-content{max-width:920px;margin:0 auto;display:flex;align-items:center;gap:12px}
 
-    /* ✅ LOGO MAIOR + CIRCULAR + CORTE (avatar estilo Google) */
+    /* Logo circular (estilo Google) */
     .logo-container{
-      width:56px;height:56px;background:#fff;border-radius:50%;
+      width:58px;height:58px;background:#fff;border-radius:50%;
       padding:0;box-shadow:0 6px 16px rgba(0,0,0,.18);
       display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto
     }
     .logo-container img{
-      width:120%;height:120%;
-      object-fit:cover;              /* preenche e corta o “mundo” */
-      object-position:center;        /* ajustável via JS */
+      width:122%;height:122%;
+      object-fit:cover;object-position:center;
     }
 
     .header-title{flex:1;min-width:0}
-    .header-title h1{font-size:18px;font-weight:900;line-height:1.05;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .header-title p{font-size:12px;opacity:.9;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .header-title h1{
+      font-size:17px;font-weight:900;line-height:1.05;margin:0 0 2px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+    }
+    .header-title p{
+      font-size:12px;opacity:.9;margin:0;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+    }
 
+    /* 4 logos topo */
     .brand-logos{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex:0 0 auto}
     .brand-logos button{
       border:0;background:rgba(255,255,255,.14);
@@ -61,18 +67,20 @@
       transition:var(--transition);padding:0
     }
     .brand-logos button:hover{transform:translateY(-1px);background:rgba(255,255,255,.22)}
-    .brand-logos button:active{transform:translateY(0)}
-    .brand-logos img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
     .brand-logos button.active{outline:2px solid rgba(255,255,255,.55);background:rgba(255,255,255,.24)}
+    .brand-logos img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
 
-    /* CONTEÚDO */
-    .wrap{max-width:920px;margin:0 auto;padding:14px 12px 84px}
+    .wrap{max-width:920px;margin:0 auto;padding:14px 12px 88px}
+
     .card{
       background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
       box-shadow:var(--shadow);padding:var(--pad);margin:12px 0;transition:var(--transition)
     }
     .card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
-    .section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--primary)}
+
+    .section-header{
+      display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--primary)
+    }
     .section-icon{
       width:34px;height:34px;border-radius:10px;
       background:linear-gradient(135deg,var(--primary),var(--primary-dark));
@@ -80,16 +88,25 @@
     }
     .section-title{
       font-size:16px;font-weight:900;margin:0;color:var(--txt);
-      display:flex;align-items:center;gap:8px;flex-wrap:wrap
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap
     }
 
-    /* GRID CONTROLADA (smartphone do jeito que você pediu) */
+    /* ✅ MOVIMENTAR: texto alinhado ao lado do ícone (sem “quebrar”) */
+    .section-title.inline-title{
+      align-items:center;
+    }
+
+    /* GRIDS */
     .grid-1{display:grid;grid-template-columns:1fr;gap:12px}
     .grid-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
 
-    /* CAMPOS */
-    .field{position:relative}
-    .field label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--label);font-weight:800;margin:0 0 6px 2px}
+    /* ✅ força 2 colunas mesmo no celular (para MOVIMENTAÇÃO) */
+    .force-2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+
+    .field label{
+      display:flex;align-items:center;gap:6px;font-size:12px;color:var(--label);
+      font-weight:800;margin:0 0 6px 2px
+    }
     .field label i{color:var(--primary);font-size:13px}
     .field input,.field select{
       width:100%;font-size:16px;padding:12px 14px;border-radius:var(--radius-sm);
@@ -98,13 +115,15 @@
     .field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,.10);transform:translateY(-1px)}
     .field input:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed;opacity:.75}
 
-    /* CHIP ORIGEM */
+    /* Chip origem */
     .mov-origem{
       display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
-      background:rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:900
+      background:rgba(0,0,0,.06);color:var(--txt);font-size:12px;font-weight:900;
+      border:1px solid var(--line)
     }
+    .mov-origem i{color:var(--primary)}
 
-    /* AÇÕES */
+    /* Ações */
     .actions-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 
@@ -131,7 +150,7 @@
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* STATUS */
+    /* Status: sozinho (linha inteira) */
     .status{
       margin-top:12px;padding:12px 14px;border-radius:var(--radius-sm);
       font-size:13px;line-height:1.45;display:flex;align-items:flex-start;gap:10px
@@ -143,7 +162,7 @@
     .status.err{background:#fee2e2;border:2px solid #fca5a5;color:#991b1b}
     .status.err i{color:var(--danger)}
 
-    /* MODAL */
+    /* Modal */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
     .modal-overlay.active{display:flex}
     .modal{background:#fff;border-radius:var(--radius);padding:20px;max-width:520px;width:92%;box-shadow:0 25px 50px rgba(0,0,0,.3)}
@@ -153,23 +172,12 @@
     .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* MOBILE */
+    /* Mobile fino: mantém layout, só reduz topo */
     @media (max-width:720px){
-      :root{--pad:14px;--radius:14px;--radius-sm:12px}
-      .wrap{padding:12px 10px 88px}
-      .header{padding:10px 10px}
-      .header-title h1{font-size:16px}
-      .brand-logos button{width:32px;height:32px}
-      button{font-size:15px;min-height:48px}
-      .field input,.field select{font-size:16px}
-
-      /* ✅ logo ainda mais “perfil” no mobile */
+      .wrap{padding:12px 10px 92px}
       .logo-container{width:60px;height:60px}
-      .logo-container img{width:122%;height:122%}
-    }
-    @media (max-width:360px){
-      .grid-2{grid-template-columns:1fr}
-      .actions-3{grid-template-columns:1fr}
+      .logo-container img{width:124%;height:124%}
+      .actions-3{grid-template-columns:1fr} /* botões empilham no celular */
     }
   </style>
 </head>
@@ -186,33 +194,32 @@
         <p id="headerSub">Cadastro e movimentação</p>
       </div>
 
-      <!-- 4 ícones (logos) no topo -->
       <div class="brand-logos" aria-label="Atalhos das lojas">
         <button type="button" class="brand-btn" data-loja="Boulevard" title="Boulevard">
-          <img id="brandBoulevard" src="./icons/boulevard.jpg" alt="Boulevard">
+          <img src="./icons/boulevard.jpg" alt="Boulevard">
         </button>
         <button type="button" class="brand-btn" data-loja="Centro" title="Centro">
-          <img id="brandCentro" src="./icons/loterpraca.png" alt="Centro">
+          <img src="./icons/loterpraca.png" alt="Centro">
         </button>
         <button type="button" class="brand-btn" data-loja="Lotobel" title="Lotobel">
-          <img id="brandLotobel" src="./icons/lotobel.jpg" alt="Lotobel">
+          <img src="./icons/lotobel.jpg" alt="Lotobel">
         </button>
         <button type="button" class="brand-btn" data-loja="Santa Tereza" title="Santa Tereza">
-          <img id="brandSantaTereza" src="./icons/santa-tereza.png" alt="Santa Tereza">
+          <img src="./icons/santa-tereza.png" alt="Santa Tereza">
         </button>
       </div>
     </div>
   </header>
 
   <div class="wrap">
-    <!-- CARD: DADOS -->
+    <!-- DADOS -->
     <div class="card">
       <div class="section-header">
         <div class="section-icon"><i class="fas fa-ticket-alt"></i></div>
         <h2 class="section-title">Dados do bolão</h2>
       </div>
 
-      <!-- Loja de origem: ocupa linha inteira -->
+      <!-- Loja de Origem sozinho -->
       <div class="grid-1">
         <div class="field">
           <label><i class="fas fa-store"></i> Loja de origem</label>
@@ -255,14 +262,14 @@
         </div>
       </div>
 
-      <!-- Data inicial + Data final -->
+      <!-- Data inicial + Data concurso -->
       <div class="grid-2">
         <div class="field">
           <label><i class="fas fa-calendar-day"></i> Data inicial</label>
           <input id="dataInicial" type="date" required />
         </div>
         <div class="field">
-          <label><i class="fas fa-calendar-check"></i> Data final</label>
+          <label><i class="fas fa-calendar-check"></i> Data do concurso</label>
           <input id="dataConcurso" type="date" required />
         </div>
       </div>
@@ -291,7 +298,7 @@
         </div>
       </div>
 
-      <!-- Botões -->
+      <!-- Cadastrar / Limpar / Deletar -->
       <div class="actions-3">
         <button type="button" class="btn-primary" id="btnCadastrar">
           <i class="fas fa-check"></i><span>Cadastrar</span>
@@ -304,18 +311,21 @@
         </button>
       </div>
 
+      <!-- Status sozinho -->
       <div id="status" class="status muted">
         <i class="fas fa-info-circle"></i>
         <span>Preencha os campos acima para cadastrar um bolão.</span>
       </div>
     </div>
 
-    <!-- CARD: MOVIMENTAR -->
+    <!-- MOVIMENTAR -->
     <div class="card">
       <div class="section-header">
         <div class="section-icon"><i class="fas fa-exchange-alt"></i></div>
-        <h2 class="section-title">
-          Movimentar (Controle)
+
+        <!-- ✅ Texto Movimentar ao lado do ícone -->
+        <h2 class="section-title inline-title">
+          <span>Movimentar</span>
           <span class="mov-origem" id="movOrigemChip">
             <i class="fas fa-store"></i>
             <span id="movOrigemText">Origem: —</span>
@@ -323,8 +333,8 @@
         </h2>
       </div>
 
-      <!-- Boulevard + Centro -->
-      <div class="grid-2">
+      <!-- Boulevard + Centro (lado a lado sempre) -->
+      <div class="grid-2 force-2">
         <div class="field">
           <label><i class="fas fa-building"></i> Boulevard</label>
           <input id="deltaBoulevard" inputmode="numeric" placeholder="0" />
@@ -335,8 +345,8 @@
         </div>
       </div>
 
-      <!-- Lotobel + Santa Tereza -->
-      <div class="grid-2">
+      <!-- Lotobel + Santa Tereza (lado a lado sempre) -->
+      <div class="grid-2 force-2">
         <div class="field">
           <label><i class="fas fa-landmark"></i> Lotobel</label>
           <input id="deltaLotobel" inputmode="numeric" placeholder="0" />
@@ -383,18 +393,13 @@
      ********************************************************/
     const API_URL = "https://script.google.com/macros/s/AKfycbx0-Yyh7BvhHEm40Y7I_cd_G21JsKhP-osnj6yhukVnXqUYafhkammVTSLltjrexSbC/exec";
 
-    // ✅ nomes exatos dos arquivos em /icons
-    // position = ajuste fino do recorte (avatar estilo Google)
     const LOJA_CONFIG = {
-      "Boulevard":    { logo: "./icons/boulevard.jpg",     theme: "boulevard",    nome: "Boulevard",     position: "50% 50%" },
-      "Centro":       { logo: "./icons/loterpraca.png",    theme: "centro",       nome: "Centro",        position: "50% 42%" },
-      "Lotobel":      { logo: "./icons/lotobel.jpg",       theme: "lotobel",      nome: "Lotobel",       position: "50% 50%" },
-      "Santa Tereza": { logo: "./icons/santa-tereza.png",  theme: "santa-tereza", nome: "Santa Tereza",  position: "50% 50%" }
+      "Boulevard":    { logo: "./icons/boulevard.jpg",    theme: "boulevard",    nome: "Boulevard",     position: "50% 50%" },
+      "Centro":       { logo: "./icons/loterpraca.png",   theme: "centro",       nome: "Centro",        position: "50% 42%" }, // ajuste p/ “arvorezinha”
+      "Lotobel":      { logo: "./icons/lotobel.jpg",      theme: "lotobel",      nome: "Lotobel",       position: "50% 50%" },
+      "Santa Tereza": { logo: "./icons/santa-tereza.png", theme: "santa-tereza", nome: "Santa Tereza",  position: "50% 50%" }
     };
 
-    /********************************************************
-     * HELPERS
-     ********************************************************/
     const $ = (id) => document.getElementById(id);
 
     function setStatus(msg, type = "muted", icon = "info-circle") {
@@ -470,7 +475,7 @@
       if (!modalidade) throw new Error("Modalidade é obrigatória.");
       if (!concurso) throw new Error("Concurso é obrigatório.");
       if (!dataInicial) throw new Error("Data inicial é obrigatória.");
-      if (!dataConcurso) throw new Error("Data final é obrigatória.");
+      if (!dataConcurso) throw new Error("Data do concurso é obrigatória.");
       if (!qtdJogos || qtdJogos <= 0) throw new Error("Qtd de Jogos deve ser > 0.");
       if (!qtdDezenas || qtdDezenas <= 0) throw new Error("Qtd de Dezenas deve ser > 0.");
       if (!valorCota || valorCota <= 0) throw new Error("Valor da cota deve ser > 0.");
@@ -572,7 +577,6 @@
       $("modalCancel").onclick = () => closeModal();
       $("modalOverlay").onclick = (e) => { if (e.target === $("modalOverlay")) closeModal(); };
     }
-
     function closeModal() { $("modalOverlay").classList.remove("active"); }
 
     function updateBrandActive(loja) {
@@ -581,7 +585,6 @@
       });
     }
 
-    // ✅ Atualiza tema + logo + recorte (object-position)
     function updateThemeAndLogo() {
       const loja = $("lojaOrigem").value;
       const config = LOJA_CONFIG[loja];
@@ -589,7 +592,6 @@
 
       if (config) {
         document.body.setAttribute("data-theme", config.theme);
-
         img.src = config.logo;
         img.alt = `Logo ${config.nome}`;
         img.style.objectPosition = config.position || "center";
@@ -599,7 +601,6 @@
         updateBrandActive(loja);
       } else {
         document.body.removeAttribute("data-theme");
-
         img.src = "./icons/loterpraca.png";
         img.alt = "Loterpraça";
         img.style.objectPosition = "center";
@@ -794,7 +795,7 @@
 
       $("btnZerarMov").addEventListener("click", () => {
         clearMov();
-        setStatus("Campos de movimentação limpos.", "muted", "broom");
+        setStatus("Movimentação limpa.", "muted", "broom");
       });
     }
 
@@ -805,7 +806,7 @@
     updateMovimentarUIByOrigem();
   </script>
 
-  <!-- Registrar Service Worker (se você estiver usando) -->
+  <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
