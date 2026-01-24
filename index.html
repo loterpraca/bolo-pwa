@@ -220,59 +220,98 @@
 }
 
 /* imagem ocupa tudo */
-qmod > img{
+/* =========================
+   ZONA DE ATALHOS (1 LINHA)
+   ========================= */
+
+.quickbar{
+  padding:6px;
+  margin:10px 0 12px;
+  overflow:hidden;
+}
+
+/* 1 linha: colunas automáticas, com scroll se precisar */
+.quickbar-grid{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(58px, 1fr); /* tenta dividir igualmente; se faltar espaço, rola */
+  gap:8px;
+  height:54px;
+  align-items:stretch;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.quickbar-grid::-webkit-scrollbar{display:none}
+
+/* tile no tamanho da barra (NÃO vira quadrado gigante) */
+.qmod{
+  position:relative;
+  height:54px;
+  width:100%;
+  border:2px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+  padding:0;
+  margin:0;
+  overflow:hidden;
+  cursor:pointer;
+  transition:var(--transition);
+
+  /* mata herança do button global */
+  min-height:0;
+  display:block;
+}
+
+.qmod:hover{ transform:translateY(-1px); }
+.qmod.active{
+  border-color:var(--primary);
+  box-shadow:0 8px 18px rgba(0,0,0,.10);
+}
+
+/* AQUI está o pulo do gato: PNG tem muito vazio -> fazemos zoom controlado */
+.qmod > img{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
+  object-fit:contain;
 
-  object-fit:contain;     /* não corta */
-  padding:6%;             /* remove “respiro” excessivo */
-  transform:scale(2.35);  /* <<< fator ideal p/ seus PNGs */
+  /* controla o “respiro” e aumenta o desenho */
+  padding:6px;
+  transform:scale(2.25);           /* ideal pro seu pacote de ícones */
   transform-origin:center;
 
   display:block;
   pointer-events:none;
 }
 
-/* ✅ chips voltam a funcionar */
-.quickchips{ display:none; margin-top:10px; }
-.quickchips.active{ display:block; }
+/* chips */
+.quickchips{display:none; margin-top:10px;}
+.quickchips.active{display:block}
 
-.chips-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-
+.chips-row{display:flex;flex-wrap:wrap;gap:8px}
 .chip{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
+  display:inline-flex;align-items:center;justify-content:center;
   border:1px solid var(--line);
-  background:#fff;
-  border-radius:999px;
-  padding:8px 12px;
-  font-size:12px;
-  font-weight:900;
-  cursor:pointer;
-  transition:var(--transition);
+  background:#fff;border-radius:999px;
+  padding:8px 12px;font-size:12px;font-weight:900;
+  cursor:pointer;transition:var(--transition);
 }
-.chip:hover{
-  border-color:var(--primary);
-  color:var(--primary);
-  transform:translateY(-1px);
+.chip:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
+
+/* ajustes finos */
+@media (max-width:420px){
+  .quickbar-grid{ height:50px; grid-auto-columns:minmax(54px, 1fr); }
+  .qmod{ height:50px; }
+  .qmod > img{ transform:scale(2.45); padding:5px; }
+}
+@media (min-width:760px){
+  .quickbar-grid{ height:58px; grid-auto-columns:minmax(62px, 1fr); }
+  .qmod{ height:58px; }
+  .qmod > img{ transform:scale(2.05); padding:7px; }
 }
 
-/* telas médias: 5 colunas */
-@media (min-width:520px){
-  .quickbar-grid{ grid-template-columns:repeat(5, minmax(0, 1fr)); }
-}
-
-/* telas grandes: 9 colunas (fica uma linha cheia) */
-@media (min-width:900px){
-  .quickbar-grid{ grid-template-columns:repeat(9, minmax(0, 1fr)); }
-}
   </style>
 </head>
 
