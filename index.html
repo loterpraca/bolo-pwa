@@ -203,6 +203,7 @@
 
     /* tile */
  .qmod{
+  display: block;          /* 🔴 chave do problema */
   width: 66px;
   height: 44px;
   flex: 0 0 auto;
@@ -216,11 +217,8 @@
 
   overflow: hidden;
   cursor: pointer;
-  transition: 0.2s ease;
-
-  position: relative; /* ✅ FALTAVA ISSO */
+  position: relative;
 }
-
    .qmod:hover{
   transform: translateY(-1px);
 }
