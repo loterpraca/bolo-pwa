@@ -220,12 +220,17 @@
 }
 
 /* imagem ocupa tudo */
-.qmod > img{
+qmod > img{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
-  object-fit:cover;       /* fica “cheio” */
+
+  object-fit:contain;     /* não corta */
+  padding:6%;             /* remove “respiro” excessivo */
+  transform:scale(2.35);  /* <<< fator ideal p/ seus PNGs */
+  transform-origin:center;
+
   display:block;
   pointer-events:none;
 }
