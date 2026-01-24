@@ -174,51 +174,54 @@
        ZONA DE ATALHOS (COMPACTA – 1 LINHA)
        ========================= */
     .quickbar{
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 2px;
-  margin: 10px 0 12px;
+  padding:2px;
+  margin:10px 0 12px;
+  overflow:hidden; /* impede crescer visualmente */
 }
 
     /* evita estilos globais do button vazarem */
-    .quickbar button{
-      all: unset;
-      box-sizing: border-box;
-      font-family: var(--font);
-    }
+
+
+.qmod, .chip{
+  all: unset;
+  box-sizing: border-box;
+  font-family: var(--font);
+}
 
     /* 1 linha horizontal com scroll */
-   .quickbar-grid{
+  .quickbar-grid{
   display:flex;
-  gap: 2px;
+  gap:2px;
   overflow-x:auto;
   overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
-  padding: 1px;
+  padding:1px;
   scrollbar-width:none;
+
+  align-items:stretch;   /* 🔥 força altura igual */
+  height:44px;           /* 🔥 impede crescer */
 }
 .quickbar-grid::-webkit-scrollbar{display:none}
 
     /* tile */
- .qmod{
-  display: block;          /* 🔴 chave do problema */
-  width: 66px;
-  height: 44px;
-  flex: 0 0 auto;
+.qmod{
+  display:block;         /* obrigatório */
+  position:relative;     /* obrigatório pro img absolute */
 
-  padding: 0;
-  margin: 0;
+  width:66px;
+  height:44px;
+  flex:0 0 66px;         /* 🔥 trava largura no flex */
+  margin:0;
+  padding:0;
 
-  background: transparent;
-  border: 0;
-  border-radius: 10px;
+  background:transparent;
+  border:0;              /* sem moldura branca */
+  border-radius:10px;
 
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
+  overflow:hidden;
+  cursor:pointer;
 }
+
    .qmod:hover{
   transform: translateY(-1px);
 }
@@ -229,21 +232,17 @@
 
     /* imagem 100% */
     .qmod > img{
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;   /* 🔥 preenche tudo */
-  object-position: center;
-
-  margin: 0;
-  padding: 0;
-  display: block;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+  pointer-events:none;
 }
 
-    .quickchips{margin-top:8px;display:none}
+    .quickchips{display:none !important;}
     .quickchips.active{display:block}
 
     .chips-row{
@@ -253,16 +252,17 @@
     }
 
     .chip{
-      border:1px solid var(--line);
-      background:#fff;
-      border-radius:999px;
-      padding:7px 10px;
-      font-size:12px;
-      font-weight:900;
-      cursor:pointer;
-      transition:var(--transition);
-    }
-
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
     .chip:hover{
       border-color:var(--primary);
       color:var(--primary);
