@@ -10,9 +10,9 @@ const ASSETS = [
   "/bolo-pwa/icons/icon-512.png",
 
   // ✅ Logos da interface (as 4 que você citou)
-  "/bolo-pwa/icons/boulevard.jpg",
+  "/bolo-pwa/icons/boulevard.png",
   "/bolo-pwa/icons/loterpraca.png",
-  "/bolo-pwa/icons/lotobel.jpg",
+  "/bolo-pwa/icons/lotobel.png",
   "/bolo-pwa/icons/santa-tereza.png"
 ];
 
