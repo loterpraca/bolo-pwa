@@ -170,104 +170,104 @@
     .modal-body{color:var(--muted);line-height:1.55;margin-bottom:16px;white-space:pre-line;font-size:14px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end}
 
-    /* =========================
-       ZONA DE ATALHOS (COMPACTA – 1 LINHA)
-       ========================= */
-    .quickbar{
-  padding:2px;
+   /* =========================
+   ZONA DE ATALHOS (9 atalhos preenchendo a largura)
+   ========================= */
+.quickbar{
+  padding:10px;
   margin:10px 0 12px;
-  overflow:hidden; /* impede crescer visualmente */
+  border-radius:16px;
+  background:rgba(255,255,255,.6);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
 }
 
-    /* evita estilos globais do button vazarem */
-
-
-    /* 1 linha horizontal com scroll */
-  .quickbar-grid{
-  display: flex;
-  gap: 2px;
-  height: 44px;
-  align-items: stretch;
-  overflow-x: auto;
+/* vira GRID (3x3 no celular) */
+.quickbar-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:10px;
+  align-items:stretch;
 }
-.quickbar-grid::-webkit-scrollbar{display:none}
 
-    /* tile */
+/* cada tile ocupa a célula toda */
 .qmod{
-  display: block;
-  position: relative;
+  position:relative;
+  width:100%;
+  aspect-ratio: 1 / 1;      /* quadrado perfeito */
+  height:auto;
 
-  width: 66px;
-  height: 44px;
-  flex: 0 0 66px;
+  margin:0;
+  padding:0;
 
-  margin: 0;
-  padding: 0;
+  border-radius:14px;
+  border:2px solid var(--line);
+  background:#fff;
 
-  background: transparent;
-  border: 0;
-  border-radius: 10px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:var(--transition);
 
-  overflow: hidden;
-  cursor: pointer;
+  /* mata herança do button global */
+  min-height:0;
+  display:block;
 }
 
-   .qmod:hover{
-  transform: translateY(-1px);
-}
-
+.qmod:hover{ transform:translateY(-1px); border-color:rgba(99,102,241,.45); }
 .qmod.active{
-  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  border-color:var(--primary);
+  box-shadow:0 10px 18px rgba(0,0,0,.10);
 }
 
-    /* imagem 100% */
-   .qmod > img{
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-  display: block;
-  pointer-events: none;
+/* imagem ocupa tudo */
+.qmod > img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;       /* fica “cheio” */
+  display:block;
+  pointer-events:none;
 }
 
-    .quickchips{display:none !important;}
-    .quickchips.active{display:block}
+/* ✅ chips voltam a funcionar */
+.quickchips{ display:none; margin-top:10px; }
+.quickchips.active{ display:block; }
 
-    .chips-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-    }
+.chips-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
 
-    .chip{
+.chip{
   display:inline-flex;
   align-items:center;
   justify-content:center;
   border:1px solid var(--line);
   background:#fff;
   border-radius:999px;
-  padding:7px 10px;
+  padding:8px 12px;
   font-size:12px;
   font-weight:900;
   cursor:pointer;
+  transition:var(--transition);
 }
-    .chip:hover{
-      border-color:var(--primary);
-      color:var(--primary);
-      transform:translateY(-1px);
-    }
+.chip:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+  transform:translateY(-1px);
+}
 
-    @media (max-width:380px){
-      .quickbar{padding:5px}
-      .quickbar-grid{gap:5px}
-      .qmod{width:58px;height:40px;border-radius:13px}
-    }
-    @media (min-width:760px){
-      .qmod{width:72px;height:46px}
-    }
+/* telas médias: 5 colunas */
+@media (min-width:520px){
+  .quickbar-grid{ grid-template-columns:repeat(5, minmax(0, 1fr)); }
+}
+
+/* telas grandes: 9 colunas (fica uma linha cheia) */
+@media (min-width:900px){
+  .quickbar-grid{ grid-template-columns:repeat(9, minmax(0, 1fr)); }
+}
   </style>
 </head>
 
