@@ -182,44 +182,34 @@
     /* evita estilos globais do button vazarem */
 
 
-.qmod, .chip{
-  all: unset;
-  box-sizing: border-box;
-  font-family: var(--font);
-}
-
     /* 1 linha horizontal com scroll */
   .quickbar-grid{
-  display:flex;
-  gap:2px;
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  padding:1px;
-  scrollbar-width:none;
-
-  align-items:stretch;   /* 🔥 força altura igual */
-  height:44px;           /* 🔥 impede crescer */
+  display: flex;
+  gap: 2px;
+  height: 44px;
+  align-items: stretch;
+  overflow-x: auto;
 }
 .quickbar-grid::-webkit-scrollbar{display:none}
 
     /* tile */
 .qmod{
-  display:block;         /* obrigatório */
-  position:relative;     /* obrigatório pro img absolute */
+  display: block;
+  position: relative;
 
-  width:66px;
-  height:44px;
-  flex:0 0 66px;         /* 🔥 trava largura no flex */
-  margin:0;
-  padding:0;
+  width: 66px;
+  height: 44px;
+  flex: 0 0 66px;
 
-  background:transparent;
-  border:0;              /* sem moldura branca */
-  border-radius:10px;
+  margin: 0;
+  padding: 0;
 
-  overflow:hidden;
-  cursor:pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+
+  overflow: hidden;
+  cursor: pointer;
 }
 
    .qmod:hover{
@@ -231,15 +221,16 @@
 }
 
     /* imagem 100% */
-    .qmod > img{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:block;
-  object-fit:cover;
-  object-position:center;
-  pointer-events:none;
+   .qmod > img{
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
 }
 
     .quickchips{display:none !important;}
