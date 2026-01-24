@@ -174,13 +174,13 @@
        ZONA DE ATALHOS (COMPACTA – 1 LINHA)
        ========================= */
     .quickbar{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:6px;
-      margin:10px 0 12px;
-    }
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2px;
+  margin: 10px 0 12px;
+}
 
     /* evita estilos globais do button vazarem */
     .quickbar button{
@@ -190,52 +190,56 @@
     }
 
     /* 1 linha horizontal com scroll */
-    .quickbar-grid{
-      display:flex;
-      gap:6px;
-      overflow-x:auto;
-      overflow-y:hidden;
-      -webkit-overflow-scrolling:touch;
-      padding:2px;
-      scrollbar-width:none;
-    }
-    .quickbar-grid::-webkit-scrollbar{display:none}
+   .quickbar-grid{
+  display:flex;
+  gap: 2px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding: 1px;
+  scrollbar-width:none;
+}
+.quickbar-grid::-webkit-scrollbar{display:none}
 
     /* tile */
     .qmod{
-      border:1px solid var(--line);
-      background:#fff;
-      border-radius:14px;
-      padding:0;
-      width:66px;
-      height:44px;
-      flex:0 0 auto;
-      overflow:hidden;
-      cursor:pointer;
-      transition:var(--transition);
-      position:relative;
-    }
+  width: 66px;
+  height: 44px;
+  flex: 0 0 auto;
 
-    .qmod:hover{
-      transform:translateY(-1px);
-      border-color:rgba(99,102,241,.45);
-    }
+  padding: 0;
+  margin: 0;
 
-    .qmod.active{
-      border-color:var(--primary);
-      box-shadow:0 6px 14px rgba(0,0,0,.12);
-    }
+  background: transparent;
+  border: 0.5px solid rgba(0,0,0,.10); /* borda mínima */
+  border-radius: 10px;
+
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+   .qmod:hover{
+  transform: translateY(-1px);
+}
+
+.qmod.active{
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
 
     /* imagem 100% */
     .qmod > img{
-      width:100%;
-      height:100%;
-      display:block;
-      object-fit:cover;
-      object-position:center;
-      pointer-events:none;
-      user-select:none;
-    }
+  width: 100%;
+  height: 100%;
+  display: block;
+
+  object-fit: cover;
+  object-position: center;
+
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
 
     .quickchips{margin-top:8px;display:none}
     .quickchips.active{display:block}
