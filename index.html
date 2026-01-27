@@ -457,7 +457,6 @@
     };
 
     // Ícones (arquivos que você vai subir em ./icons/)
-    // OBS: você escreveu "timenania.jpg". Se o arquivo for "timemania.jpg", troca aqui.
     const MODS = [
       { key:"Mega Sena",    short:"MS", icon:"./icons/mega-sena.png" },
       { key:"Lotofacil",    short:"LF", icon:"./icons/lotofacil.png" },
@@ -468,6 +467,7 @@
       { key:"Super Sete",   short:"S7", icon:"./icons/super-sete.png" },
       { key:"Milionaria",   short:"MN", icon:"./icons/milionaria.png" },
       { key:"Loteca",       short:"LT", icon:"./icons/loteca.png" },
+      { key:"Federal", short:"FD", icon:"./icons/federal.png" },
     ];
 
     // Atalhos por loja + modalidade
@@ -523,6 +523,13 @@
           { label:"[01x26]", games:1, dezenas:26, valor:"39,36", cotas:50 },
           { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
         ],
+        "Federal": [
+          { label:"[10x04]", games:01, dezenas:4, valor:"4,00", cotas:10 },
+          { label:"[10x10]", games:01, dezenas:10, valor:"10,00", cotas:10 },
+          { label:"[E.NML]", games:10, dezenas:4, valor:"32,10", cotas:1 },
+          { label:"[E.ESP]", games:10, dezenas:10, valor:"80,40", cotas:1 },
+],
+      
       },
 
       "Centro": {
@@ -574,6 +581,12 @@
         "Loteca": [
           { label:"[01x26]", games:1, dezenas:26, valor:"39,36", cotas:50 },
           { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
+        ],
+        "Federal": [
+          { label:"[10x04]", games:01, dezenas:4, valor:"4,00", cotas:10 },
+          { label:"[10x10]", games:01, dezenas:10, valor:"10,00", cotas:10 },
+          { label:"[E.NML]", games:10, dezenas:4, valor:"32,10", cotas:1 },
+          { label:"[E.ESP]", games:10, dezenas:10, valor:"80,40", cotas:1 },
         ],
       },
 
@@ -627,6 +640,12 @@
           { label:"[01x26]", games:1, dezenas:26, valor:"39,36", cotas:50 },
           { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
         ],
+        "Federal": [
+          { label:"[10x04]", games:01, dezenas:4, valor:"4,00", cotas:10 },
+          { label:"[10x10]", games:01, dezenas:10, valor:"10,00", cotas:10 },
+          { label:"[E.NML]", games:10, dezenas:4, valor:"32,10", cotas:1 },
+          { label:"[E.ESP]", games:10, dezenas:10, valor:"80,40", cotas:1 },
+        ],
       },
 
       "Santa Tereza": {
@@ -679,6 +698,13 @@
           { label:"[01x26]", games:1, dezenas:26, valor:"39,36", cotas:50 },
           { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
         ],
+        "Federal": [
+          { label:"[10x04]", games:01, dezenas:4, valor:"4,00", cotas:10 },
+          { label:"[10x10]", games:01, dezenas:10, valor:"10,00", cotas:10 },
+          { label:"[E.NML]", games:10, dezenas:4, valor:"32,10", cotas:1 },
+          { label:"[E.ESP]", games:10, dezenas:10, valor:"80,40", cotas:1 },
+        ],
+        
       },
     };
 
@@ -693,6 +719,7 @@
       "Super Sete":   [1,3,5],        // seg, qua, sex
       "Milionaria":   [3,6],          // qua, sab
       "Loteca":       [6],            // sab
+      "Federal":      [3, 6],         // qua, sab
     };
 
     const $ = (id) => document.getElementById(id);
