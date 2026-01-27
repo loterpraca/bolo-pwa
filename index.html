@@ -206,64 +206,11 @@
       display:block;
       pointer-events:none;
   }
-    
-    .quickchips{display:none; margin-top:10px;} 
-    .quickchips.active{display:block} 
-    /* =========================
-   CHIPS = MESMO TILE DOS ÍCONES (qmod), 20% MENORES
-   ========================= */
-
-/* linha de chips com scroll horizontal (igual quickbar) */
-.chips-row{
-  display:flex;
-  gap:6px;
-  align-items:stretch;
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  padding-bottom:2px;
-}
-.chips-row::-webkit-scrollbar{display:none}
-
-/* chip reaproveitando o qmod */
-.chip.qmod{
-  position:relative;
-  height:31px;            /* ~20% menor que 39px */
-  width:45px;             /* ~20% menor que 56px */
-  min-width:45px;
-  flex:0 0 45px;
-  flex-shrink:0;
-
-  border:2px solid var(--line);
-  border-radius:11px;
-  background:#fff;
-  padding:0;
-  margin:0;
-  overflow:hidden;
-  cursor:pointer;
-  transition:var(--transition);
-  display:block;
-
-  /* mata herança global do button */
-  min-height:0;
-}
-
-.chip.qmod:hover{ transform:translateY(-1px); }
-.chip.qmod.active{
-  border-color:var(--primary);
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-}
-
-/* imagem do chip */
-/* =========================
-   CHIPS (ATALHOS) — tile com imagem + badge
-   ========================= */
-
+    /* ===== CHIPS (ATALHOS) — tile com imagem + badge ===== */
 .quickchips{display:none; margin-top:8px;}
 .quickchips.active{display:block}
 
-/* linha com scroll (igual a quickbar) */
-.chips-row{
+.quickchips .chips-row{
   display:flex;
   gap:6px;
   align-items:stretch;
@@ -272,51 +219,43 @@
   -webkit-overflow-scrolling:touch;
   padding-bottom:2px;
 }
-.chips-row::-webkit-scrollbar{display:none}
+.quickchips .chips-row::-webkit-scrollbar{display:none}
 
-/* botão do chip vira tile (NÃO usa .qmod) */
-.chip-tile{
-  all: unset;                 /* mata herança do button global */
+.quickchips .chip-tile{
+  all: unset;
   box-sizing:border-box;
   position:relative;
-
-  height:31px;                /* ~20% menor que o tile principal */
+  height:31px;
   width:45px;
   min-width:45px;
   flex:0 0 45px;
-
   border:2px solid var(--line);
   border-radius:11px;
   background:#fff;
   overflow:hidden;
-
   cursor:pointer;
   transition:var(--transition);
   display:block;
 }
 
-.chip-tile:hover{ transform:translateY(-1px); border-color:rgba(99,102,241,.45); }
-.chip-tile.active{
-  border-color:var(--primary);
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-}
+.quickchips .chip-tile:hover{ transform:translateY(-1px); border-color:rgba(99,102,241,.45); }
+.quickchips .chip-tile.active{ border-color:var(--primary); box-shadow:0 4px 10px rgba(0,0,0,.08); }
 
-/* imagem do chip (preenche o tile) */
-.chip-tile > img{
+.quickchips .chip-tile > img{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   object-fit:contain;
-  padding:2px;                /* ajuste fino */
-  transform:scale(1.15);      /* “zoom” leve pra ocupar mais */
+  padding:2px;
+  transform:scale(1.15);
   transform-origin:center;
   display:block;
   pointer-events:none;
+  z-index:1;
 }
 
-/* badge com o texto do atalho */
-.chip-badge{
+.quickchips .chip-badge{
   position:absolute;
   left:3px;
   bottom:3px;
@@ -329,9 +268,9 @@
   line-height:1;
   color:var(--txt);
   pointer-events:none;
+  z-index:2;
 }
-
-  
+ 
     / @media (max-width:420px){ 
       .qmod{height:40px;width:57px;min-width:57px;flex-basis:57px} 
       .qmod > img{transform:scale(1.22);padding:0px} } 
