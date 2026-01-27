@@ -194,7 +194,7 @@
     .qmod.active{ border-color:var(--primary); 
                  box-shadow:0 8px 18px rgba(0,0,0,.10); } 
     
-    .qmod > img{
+    .qmod.qmod-icon > img{
       position:absolute;
       inset:0;
       width:100%;
@@ -255,14 +255,61 @@
 }
 
 /* imagem do chip */
-.chip.qmod > img{
+/* =========================
+   CHIPS (ATALHOS) — tile com imagem + badge
+   ========================= */
+
+.quickchips{display:none; margin-top:8px;}
+.quickchips.active{display:block}
+
+/* linha com scroll (igual a quickbar) */
+.chips-row{
+  display:flex;
+  gap:6px;
+  align-items:stretch;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:2px;
+}
+.chips-row::-webkit-scrollbar{display:none}
+
+/* botão do chip vira tile (NÃO usa .qmod) */
+.chip-tile{
+  all: unset;                 /* mata herança do button global */
+  box-sizing:border-box;
+  position:relative;
+
+  height:31px;                /* ~20% menor que o tile principal */
+  width:45px;
+  min-width:45px;
+  flex:0 0 45px;
+
+  border:2px solid var(--line);
+  border-radius:11px;
+  background:#fff;
+  overflow:hidden;
+
+  cursor:pointer;
+  transition:var(--transition);
+  display:block;
+}
+
+.chip-tile:hover{ transform:translateY(-1px); border-color:rgba(99,102,241,.45); }
+.chip-tile.active{
+  border-color:var(--primary);
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+
+/* imagem do chip (preenche o tile) */
+.chip-tile > img{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   object-fit:contain;
-  padding:4px;
-  transform:scale(1.00);
+  padding:2px;                /* ajuste fino */
+  transform:scale(1.15);      /* “zoom” leve pra ocupar mais */
   transform-origin:center;
   display:block;
   pointer-events:none;
@@ -283,6 +330,7 @@
   color:var(--txt);
   pointer-events:none;
 }
+
   
     / @media (max-width:420px){ 
       .qmod{height:40px;width:57px;min-width:57px;flex-basis:57px} 
@@ -1154,7 +1202,7 @@
   const loja = $("lojaOrigem").value.trim();
   const chips = getShortcutsFor(loja, modKey);
   const wrap = $("chipsWrap");
-  const row  = $("chipsRow");
+  const row = $("chipsRow");
   row.innerHTML = "";
 
   if (!loja || !modKey || !chips.length) {
@@ -1162,21 +1210,26 @@
     return;
   }
 
-  const baseIcon = getModIconByKey(modKey);
+  // pega o ícone base da modalidade (mesmo do topo)
+  const modObj = MODS.find(m => m.key === modKey);
+  const baseIcon = modObj ? modObj.icon : "";
 
   chips.forEach(sc => {
     const b = document.createElement("button");
     b.type = "button";
-    b.className = "qmod chip"; // ✅ usa o mesmo tile do ícone
+    b.className = "chip-tile";
     b.title = `${modKey} ${sc.label}`;
 
-    const img = document.createElement("img");
-    img.src = baseIcon;        // ✅ imagem base da modalidade (igual ícone)
-    img.alt = modKey;
-    img.loading = "lazy";
-    b.appendChild(img);
+    // imagem base (por enquanto: ícone da modalidade)
+    if (baseIcon) {
+      const img = document.createElement("img");
+      img.src = baseIcon;
+      img.alt = modKey;
+      img.loading = "lazy";
+      b.appendChild(img);
+    }
 
-    // ✅ badge do texto do atalho
+    // badge com o texto do atalho
     const badge = document.createElement("span");
     badge.className = "chip-badge";
     badge.textContent = sc.label;
@@ -1188,6 +1241,7 @@
 
   wrap.classList.add("active");
 }
+
     function renderQuickbar(){
       const grid = $("modGrid");
       grid.innerHTML = "";
