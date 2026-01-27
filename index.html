@@ -209,24 +209,81 @@
     
     .quickchips{display:none; margin-top:10px;} 
     .quickchips.active{display:block} 
-    .chips-row{display:flex;flex-wrap:wrap;gap:8px} 
-    .chip{
-      height:39px;
-      min-width:56px;
-      padding:0 8px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border:2px solid var(--line);
-      border-radius:14px;
-      background:#fff;
-      font-size:11px;
-      font-weight:900;
-      cursor:pointer;
-      transition:var(--transition);
+    /* =========================
+   CHIPS = MESMO TILE DOS ÍCONES (qmod), 20% MENORES
+   ========================= */
+
+/* linha de chips com scroll horizontal (igual quickbar) */
+.chips-row{
+  display:flex;
+  gap:6px;
+  align-items:stretch;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:2px;
 }
-    .chip:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)} 
-    
+.chips-row::-webkit-scrollbar{display:none}
+
+/* chip reaproveitando o qmod */
+.chip.qmod{
+  position:relative;
+  height:31px;            /* ~20% menor que 39px */
+  width:45px;             /* ~20% menor que 56px */
+  min-width:45px;
+  flex:0 0 45px;
+  flex-shrink:0;
+
+  border:2px solid var(--line);
+  border-radius:11px;
+  background:#fff;
+  padding:0;
+  margin:0;
+  overflow:hidden;
+  cursor:pointer;
+  transition:var(--transition);
+  display:block;
+
+  /* mata herança global do button */
+  min-height:0;
+}
+
+.chip.qmod:hover{ transform:translateY(-1px); }
+.chip.qmod.active{
+  border-color:var(--primary);
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+
+/* imagem do chip */
+.chip.qmod > img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:4px;
+  transform:scale(1.00);
+  transform-origin:center;
+  display:block;
+  pointer-events:none;
+}
+
+/* badge com o texto do atalho */
+.chip-badge{
+  position:absolute;
+  left:3px;
+  bottom:3px;
+  padding:2px 5px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,.12);
+  background:rgba(255,255,255,.92);
+  font-size:9px;
+  font-weight:900;
+  line-height:1;
+  color:var(--txt);
+  pointer-events:none;
+}
+  
     / @media (max-width:420px){ 
       .qmod{height:40px;width:57px;min-width:57px;flex-basis:57px} 
       .qmod > img{transform:scale(1.22);padding:0px} } 
@@ -1087,32 +1144,50 @@
 
       setStatus(`Atalho aplicado: ${modKey} ${sc.label}`, "ok", "check-circle");
       saveDraft();
+      
     }
-
+    function getModIconByKey(modKey){
+    const m = MODS.find(x => x.key === modKey);
+    return m ? m.icon : "";
+  }
     function renderChips(modKey){
-      const loja = $("lojaOrigem").value.trim();
-      const chips = getShortcutsFor(loja, modKey);
-      const wrap = $("chipsWrap");
-      const row = $("chipsRow");
-      row.innerHTML = "";
+  const loja = $("lojaOrigem").value.trim();
+  const chips = getShortcutsFor(loja, modKey);
+  const wrap = $("chipsWrap");
+  const row  = $("chipsRow");
+  row.innerHTML = "";
 
-      if (!loja || !modKey || !chips.length) {
-        wrap.classList.remove("active");
-        return;
-      }
+  if (!loja || !modKey || !chips.length) {
+    wrap.classList.remove("active");
+    return;
+  }
 
-      chips.forEach(sc => {
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "chip";
-        b.textContent = sc.label;
-        b.onclick = () => applyShortcut(modKey, sc);
-        row.appendChild(b);
-      });
+  const baseIcon = getModIconByKey(modKey);
 
-      wrap.classList.add("active");
-    }
+  chips.forEach(sc => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "qmod chip"; // ✅ usa o mesmo tile do ícone
+    b.title = `${modKey} ${sc.label}`;
 
+    const img = document.createElement("img");
+    img.src = baseIcon;        // ✅ imagem base da modalidade (igual ícone)
+    img.alt = modKey;
+    img.loading = "lazy";
+    b.appendChild(img);
+
+    // ✅ badge do texto do atalho
+    const badge = document.createElement("span");
+    badge.className = "chip-badge";
+    badge.textContent = sc.label;
+    b.appendChild(badge);
+
+    b.onclick = () => applyShortcut(modKey, sc);
+    row.appendChild(b);
+  });
+
+  wrap.classList.add("active");
+}
     function renderQuickbar(){
       const grid = $("modGrid");
       grid.innerHTML = "";
