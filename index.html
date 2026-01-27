@@ -210,15 +210,21 @@
     .quickchips{display:none; margin-top:10px;} 
     .quickchips.active{display:block} 
     .chips-row{display:flex;flex-wrap:wrap;gap:8px} 
-    .chip{ display:inline-flex;
-          align-items:center;
-          justify-content:center; 
-          border:1px solid var(--line); 
-          background:#fff;border-radius:999px;
-          padding:1px 2px;font-size:10px;
-          font-weight:900; 
-          cursor:pointer;
-          transition:var(--transition); } 
+    .chip{
+      height:39px;
+      min-width:56px;
+      padding:0 8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      font-size:11px;
+      font-weight:900;
+      cursor:pointer;
+      transition:var(--transition);
+}
     .chip:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)} 
     
     / @media (max-width:420px){ 
