@@ -1,4 +1,4 @@
-const CACHE_NAME = "bolo-pwa-v113"; // suba a versão sempre que mexer em assets
+const CACHE_NAME = "bolo-pwa-v114"; // suba a versão sempre que mexer em assets
 
 const ASSETS = [
   "/bolo-pwa/",
