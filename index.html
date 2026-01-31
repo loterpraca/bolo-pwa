@@ -880,10 +880,31 @@ function buildExistsConfirmText(base){
     }
 
     async function callApi(action, payloadObj) {
-      const payload = base64Json(payloadObj || {});
-      const url = `${API_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(payload)}`;
-      return await jsonp(url);
-    }
+  const cb = "cb_" + Math.floor(Math.random() * 100000);
+  const payload = base64Json(payloadObj || {});
+  const url = `${API_URL}?action=${encodeURIComponent(action)}&callback=${cb}&payload=${encodeURIComponent(payload)}`;
+  return await jsonp(url, cb);
+}
+
+function base64Json(obj) {
+  const json = JSON.stringify(obj);
+  return btoa(unescape(encodeURIComponent(json)));
+}
+
+function jsonp(url, cb) {
+  return new Promise((resolve, reject) => {
+    window[cb] = (res) => {
+      delete window[cb];
+      resolve(res);
+    };
+
+    const script = document.createElement("script");
+    script.src = url;
+    script.onerror = () => reject(new Error("Erro ao carregar JSONP."));
+    document.body.appendChild(script);
+  });
+}
+
 
     function validateBase(exigirCotas = true) {
       const lojaOrigem = $("lojaOrigem").value.trim();
