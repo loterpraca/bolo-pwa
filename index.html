@@ -429,18 +429,33 @@
     </div>
 
     <!-- MOVIMENTAR -->
-    <div class="card">
-      <div class="section-header">
-        <div class="section-icon"><i class="fas fa-exchange-alt"></i></div>
+<div class="card">
+  <div class="section-header">
+    <div class="section-icon"><i class="fas fa-exchange-alt"></i></div>
 
-        <h2 class="section-title inline-title">
-          <span>Movimentar</span>
-          <span class="mov-origem" id="movOrigemChip">
-            <i class="fas fa-store"></i>
-            <span id="movOrigemText">Origem: —</span>
-          </span>
-        </h2>
+    <h2 class="section-title inline-title" style="display: flex; align-items: center; gap: 12px;">
+      <span>Movimentar</span>
+
+      <div style="display: flex; align-items: center; gap: 8px; margin-left: 16px;">
+        <span class="mov-origem" id="movOrigemChip">
+          <i class="fas fa-store"></i>
+          <span id="movOrigemText">Origem: —</span>
+        </span>
+
+        <button
+          type="button"
+          id="btnBuscarControle"
+          onclick="buscarControle()"
+          class="btn-ghost"
+          title="Buscar dados no Controle"
+          style="padding: 4px 10px; font-size: 14px; cursor: pointer;"
+        >
+          🔍 Buscar
+        </button>
       </div>
+    </h2>
+  </div>
+
 
       <div class="grid-2 force-2">
         <div class="field">
