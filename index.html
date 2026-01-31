@@ -1401,30 +1401,26 @@ if (prev !== next) {
   }
 }
 async function buscarControle() {
-  try {
-    const loja = $("lojaOrigem").value.trim();
-    const modalidade = $("modalidade").value.trim();
-    const concurso = $("concurso").value.trim();
-    const valorCota = parseBRMoneyToNumber($("valorCota").value);
+  const loja = document.getElementById("lojaOrigem").value.trim();
+  const modalidade = document.getElementById("modalidade").value.trim();
+  const concurso = document.getElementById("concurso").value.trim();
+  const valorCota = parseBRMoneyToNumber(document.getElementById("valorCota").value);
 
-    if (!loja || !modalidade || !concurso || !valorCota) {
-      alert("Preencha Origem, Modalidade, Concurso e Valor da Cota para buscar.");
-      return;
-    }
-
-    const payload = { lojaOrigem: loja, modalidade, concurso, valorCota };
-    const res = await callApi("buscarControle", payload);
-
-    if (!res.ok) {
-      alert("Erro ao buscar controle: " + res.message);
-      return;
-    }
-
-    const html = formatarPopupControle(res.data);
-    showModal("📋 Dados do Controle", html, () => {});
-  } catch (err) {
-    alert("Erro: " + err.message);
+  if (!loja || !modalidade || !concurso || !valorCota) {
+    alert("Preencha Origem, Modalidade, Concurso e Valor da Cota para buscar.");
+    return;
   }
+
+  const payload = { lojaOrigem: loja, modalidade, concurso, valorCota };
+  const res = await callApi("buscarControle", payload);
+
+  if (!res.ok) {
+    alert("Erro ao buscar controle: " + res.message);
+    return;
+  }
+
+  const html = formatarPopupControle(res.data);
+  showModal("📋 Dados do Controle", html, () => {});
 }
 
 function formatarPopupControle(data) {
