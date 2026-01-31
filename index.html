@@ -279,6 +279,98 @@
       .qmod{height:49px;width:69px;min-width:69px;flex-basis:69px} 
       .qmod > img{transform:scale(1.22);padding:0px} }
 
+/* ===== MODAL – ÍCONES INLINE DISCRETOS ===== */
+/* ===== MODAL – CARDS INTERNOS (BONITO) ===== */
+.modal-body .box{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px 12px;
+  background:#fff;
+  margin:10px 0;
+  box-shadow:0 6px 16px rgba(0,0,0,.06);
+}
+.modal-body .box-title{
+  font-size:11px;
+  font-weight:900;
+  color:var(--label);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.modal-body .row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:6px 0;
+  border-top:1px dashed rgba(0,0,0,.08);
+}
+.modal-body .row:first-of-type{border-top:0}
+.modal-body .big{
+  font-size:15px;
+  font-weight:900;
+  color:var(--txt);
+  line-height:1.1;
+  margin-bottom:2px;
+}
+
+.modal-body .delta-pos{color:#15803d;font-weight:900}
+.modal-body .delta-neg{color:#b91c1c;font-weight:900}
+.modal-body .delta-zero{color:var(--muted);font-weight:800}
+
+    
+.modal-body .mod-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* ícone da modalidade – só um pouco maior que o texto */
+.modal-body .mod-icon{
+  width:24px;
+  height:24px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  flex:0 0 auto;
+}
+
+.modal-body .mod-icon img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/* ícone da loja – bem pequeno */
+.modal-body .store-inline{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+  color:var(--muted);
+}
+
+.modal-body .store-icon{
+  width:16px;
+  height:16px;
+  border-radius:4px;
+  border:1px solid var(--line);
+  background:#fff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.modal-body .store-icon img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+    
   </style>
 </head>
 
@@ -781,6 +873,140 @@
       const n = Number(cleaned);
       return Number.isFinite(n) ? n : 0;
     }
+function getModIcon(modKey){
+  const m = MODS.find(x => x.key === modKey);
+  return m ? m.icon : "";
+}
+
+function getLojaIcon(loja){
+  return LOJA_CONFIG[loja]?.logo || "";
+}
+function buildMovConfirmHTML(base, deltas){
+  const modIcon  = getModIcon(base.modalidade);
+  const lojaIcon = getLojaIcon(base.lojaOrigem);
+
+  const destinos = [
+    { nome:"Boulevard",    v:deltas.deltaBoulevard },
+    { nome:"Centro",       v:deltas.deltaCentro },
+    { nome:"Lotobel",      v:deltas.deltaLotobel },
+    { nome:"Santa Tereza", v:deltas.deltaSantaTereza },
+  ].filter(x => x.nome !== base.lojaOrigem); // não mostra a própria origem
+
+  const linhaDestino = (d) => {
+    const cls =
+      d.v > 0 ? "delta-pos" :
+      d.v < 0 ? "delta-neg" :
+                "delta-zero";
+    const sinal = d.v > 0 ? "+" : "";
+    return `
+      <div class="row">
+        <span>${d.nome}</span>
+        <span class="${cls}">${sinal}${d.v}</span>
+      </div>
+    `;
+  };
+
+  return `
+    <div class="box">
+      <div class="box-title">Origem</div>
+      <div class="store-inline">
+        ${lojaIcon ? `
+          <span class="store-icon">
+            <img src="${lojaIcon}" alt="${base.lojaOrigem}">
+          </span>
+        ` : ""}
+        <strong>${base.lojaOrigem}</strong>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Bolão</div>
+
+      <div class="mod-head">
+        ${modIcon ? `
+          <span class="mod-icon">
+            <img src="${modIcon}" alt="${base.modalidade}">
+          </span>
+        ` : ""}
+
+        <div>
+          <div class="big">${base.modalidade}</div>
+          <div class="store-inline">
+            ${lojaIcon ? `
+              <span class="store-icon">
+                <img src="${lojaIcon}" alt="${base.lojaOrigem}">
+              </span>
+            ` : ""}
+            <span>Concurso ${base.concurso}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Destinos</div>
+      ${destinos.map(linhaDestino).join("")}
+    </div>
+
+    <div class="box">
+      <div class="box-title">Confirmação</div>
+      <strong>Deseja confirmar esta movimentação?</strong>
+    </div>
+  `;
+}
+function buildCadConfirmHTML(base){
+  const modIcon  = getModIcon(base.modalidade);
+  const lojaIcon = getLojaIcon(base.lojaOrigem);
+
+  const linha = (label, value) => `
+    <div class="row">
+      <span>${label}</span>
+      <strong>${value}</strong>
+    </div>
+  `;
+
+  return `
+    <div class="box">
+      <div class="box-title">Origem</div>
+      <div class="store-inline">
+        ${lojaIcon ? `<span class="store-icon"><img src="${lojaIcon}" alt="${base.lojaOrigem}"></span>` : ""}
+        <strong>${base.lojaOrigem}</strong>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Bolão</div>
+      <div class="mod-head">
+        ${modIcon ? `<span class="mod-icon"><img src="${modIcon}" alt="${base.modalidade}"></span>` : ""}
+        <div>
+          <div class="big">${base.modalidade}</div>
+          <div class="store-inline">
+            <span>Concurso ${base.concurso}</span>
+          </div>
+        </div>
+      </div>
+      ${linha("Qtd de Jogos", base.qtdJogos)}
+      ${linha("Qtd de Dezenas", base.qtdDezenas)}
+      ${linha("Data Inicial", base.dataInicial)}
+      ${linha("Data do Concurso", base.dataConcurso)}
+      ${linha("Qtd de Cotas", base.cotas)}
+      ${linha("Valor da Cota", fmtBRL(base.valorCota))}
+    </div>
+
+    <div class="box">
+      <div class="box-title">Confirmação</div>
+      <strong>Deseja confirmar este cadastramento?</strong>
+    </div>
+  `;
+}
+
+function buildExistsConfirmHTML(base){
+  const html = buildCadConfirmHTML(base);
+  return html.replace(
+    "Deseja confirmar este cadastramento?",
+    `Já existe. <br><br><strong>Adicionar ${base.cotas} cotas nesse bolão?</strong>`
+  );
+}
 
     function base64Json(obj) {
       const json = JSON.stringify(obj);
@@ -936,7 +1162,7 @@
 
     function showModal(title, body, onConfirm) {
       $("modalTitle").textContent = title;
-      $("modalBody").textContent = body;
+      $("modalBody").innerHTML = body;
       $("modalOverlay").classList.add("active");
 
       $("modalConfirm").onclick = () => { closeModal(); onConfirm(); };
@@ -1163,12 +1389,15 @@ if (prev !== next) {
      * ACTIONS
      ********************************************************/
     async function onCadastrar() {
-      const btn = $("btnCadastrar");
+  const btn = $("btnCadastrar");
+  try {
+    const base = validateBase(true);
+
+    showModal("Confirmar cadastramento", buildCadConfirmHTML(base), async () => {
       try {
         setStatus("Enviando dados...", "muted", "spinner fa-spin");
         setButtonLoading(btn, true);
 
-        const base = validateBase(true);
         const payload = {
           lojaOrigem: base.lojaOrigem,
           modalidade: base.modalidade,
@@ -1185,7 +1414,9 @@ if (prev !== next) {
         const res = await callApi("cadastrar", payload);
 
         if (res && res.code === "EXISTS") {
-          showModal("Bolão já existe", buildExistsConfirmText(base), async () => {
+          setButtonLoading(btn, false);
+
+          showModal("Bolão já existe", buildExistsConfirmHTML(base), async () => {
             setStatus("Adicionando cotas...", "muted", "spinner fa-spin");
             setButtonLoading(btn, true);
 
@@ -1196,7 +1427,6 @@ if (prev !== next) {
             else setStatus((res2 && res2.message) ? res2.message : "Erro ao somar cotas.", "err", "exclamation-circle");
           });
 
-          setButtonLoading(btn, false);
           setStatus("Aguardando confirmação...", "muted", "clock");
           return;
         }
@@ -1204,11 +1434,19 @@ if (prev !== next) {
         setButtonLoading(btn, false);
         if (res && res.ok) setStatus(res.message || "Bolão cadastrado!", "ok", "check-circle");
         else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-      } catch (err) {
+
+      } catch (err2) {
         setButtonLoading(btn, false);
-        setStatus(err.message || String(err), "err", "exclamation-circle");
+        setStatus(err2.message || String(err2), "err", "exclamation-circle");
       }
-    }
+    });
+
+  } catch (err) {
+    setButtonLoading(btn, false);
+    setStatus(err.message || String(err), "err", "exclamation-circle");
+  }
+}
+
 
     async function onDeletar() {
       const loja = $("lojaOrigem").value;
