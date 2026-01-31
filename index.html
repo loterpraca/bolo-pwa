@@ -790,7 +790,7 @@ function buildCadConfirmText(base){
   return [
     `ORIGEM: ${base.lojaOrigem}`,
     `BOLAO: ${base.modalidade} | CONC: ${base.concurso}`,
-    `PERIODO: ${base.dataInicial} → ${base.dataConcurso}`,
+    `PERÍODO: ${formatDateBR(base.dataInicial)} → ${formatDateBR(base.dataConcurso)}`,
     `JOGOS: ${base.qtdJogos} | DEZENAS: ${base.qtdDezenas}`,
     `COTAS: ${base.cotas} | COTA: ${fmtBRL(base.valorCota)}`,
     `CONFIRMA?`
@@ -970,6 +970,14 @@ function buildExistsConfirmText(base){
       $("deltaSantaTereza").value = "";
       saveDraft();
     }
+function formatDateBR(dateStr) {
+  const d = new Date(dateStr);
+  if (isNaN(d)) return "?";
+  const dia = String(d.getDate()).padStart(2, "0");
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const ano = d.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
 
     function fmtBRL(n) {
       const num = Number(n || 0);
