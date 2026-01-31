@@ -891,6 +891,12 @@
         if (d.activeQuickMod) localStorage.setItem("active_quick_mod", d.activeQuickMod);
       } catch (e) {}
     }
+    
+    function clearConcursoDatas() {
+      $("concurso").value = "";
+      $("dataInicial").value = "";
+      $("dataConcurso").value = "";
+    }
 
     function clearMain() {
       $("modalidade").value = "";
@@ -1110,16 +1116,30 @@
       MODS.forEach(mod => {
         const btn = buildModButton(mod);
         btn.onclick = () => {
-          const loja = $("lojaOrigem").value.trim();
-          if (!loja) {
-            setStatus("Selecione a loja de origem antes de usar os atalhos.", "err", "exclamation-circle");
-            return;
-          }
-          localStorage.setItem("active_quick_mod", mod.key);
-          setActiveModButton(mod.key);
-          renderChips(mod.key);
-          saveDraft();
-        };
+  const loja = $("lojaOrigem").value.trim();
+  if (!loja) {
+    setStatus("Selecione a loja de origem antes de usar os atalhos.", "err", "exclamation-circle");
+    return;
+  }
+
+  const prev = localStorage.getItem("active_quick_mod") || "";
+const next = mod.key;
+
+if (prev !== next) {
+  clearConcursoDatas(); // ✅ limpa sempre que a modalidade mudar
+}
+
+
+    localStorage.setItem("active_quick_mod", next);
+    setActiveModButton(next);
+    renderChips(next);
+
+    // (opcional) já seta o select de modalidade junto com o quickbar
+    $("modalidade").value = next;
+
+    saveDraft();
+};
+
         grid.appendChild(btn);
       });
 
@@ -1308,14 +1328,22 @@
 
       // se mudar modalidade manualmente, alinha quickbar
       $("modalidade").addEventListener("change", () => {
-        const m = $("modalidade").value.trim();
-        if (!m) return;
-        localStorage.setItem("active_quick_mod", m);
-        setActiveModButton(m);
-        renderChips(m);
-        saveDraft();
-      });
-    }
+  const m = $("modalidade").value.trim();
+  if (!m) return;
+
+  const prev = localStorage.getItem("active_quick_mod") || "";
+
+if (prev !== m) {
+  clearConcursoDatas(); // ✅ limpa sempre que a modalidade mudar
+}
+
+
+  localStorage.setItem("active_quick_mod", m);
+  setActiveModButton(m);
+  renderChips(m);
+  saveDraft();
+});
+}
 
     // Init
     loadDraft();
