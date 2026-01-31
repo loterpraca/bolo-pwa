@@ -1400,7 +1400,60 @@ if (prev !== next) {
     setStatus(err.message || String(err), "err", "exclamation-circle");
   }
 }
-function validateMov() {
+async function buscarControle() {
+  try {
+    const loja = $("lojaOrigem").value.trim();
+    const modalidade = $("modalidade").value.trim();
+    const concurso = $("concurso").value.trim();
+    const valorCota = parseBRMoneyToNumber($("valorCota").value);
+
+    if (!loja || !modalidade || !concurso || !valorCota) {
+      alert("Preencha Origem, Modalidade, Concurso e Valor da Cota para buscar.");
+      return;
+    }
+
+    const payload = { lojaOrigem: loja, modalidade, concurso, valorCota };
+    const res = await callApi("buscarControle", payload);
+
+    if (!res.ok) {
+      alert("Erro ao buscar controle: " + res.message);
+      return;
+    }
+
+    const html = formatarPopupControle(res.data);
+    showModal("📋 Dados do Controle", html, () => {});
+  } catch (err) {
+    alert("Erro: " + err.message);
+  }
+}
+
+function formatarPopupControle(data) {
+  return [
+    `📍 Origem: ${data.origem}`,
+    `🎯 Modalidade: ${data.modalidade}`,
+    `# Concurso: ${data.concurso}`,
+    `🗓️ Início: ${formatDateBR(data.dtInicial)}`,
+    `🎟️ Concurso: ${formatDateBR(data.dtConcurso)}`,
+    `💰 Cota: R$ ${data.valorCota.toFixed(2).replace(".", ",")}`,
+    ``,
+    `🎯 Quantidade de cotas por destino:`,
+    `  🏢 Boulevard: ${data.qtdBoulevard}`,
+    `  🏬 Centro: ${data.qtdCentro}`,
+    `  🏪 Lotobel: ${data.qtdLotobel}`,
+    `  🏠 Santa Tereza: ${data.qtdSantaTereza}`,
+    ``,
+    `🕓 Última alteração: ${formatDateTimeBR(data.carimbo)}`
+  ].join("\n");
+}
+
+function formatDateTimeBR(dateStr) {
+  const d = new Date(dateStr);
+  if (isNaN(d)) return "-";
+  return `${formatDateBR(dateStr)} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+    
+  function validateMov() {
   const lojaOrigem = $("lojaOrigem").value.trim();
   const modalidade = $("modalidade").value.trim();
   const concurso = $("concurso").value.trim();
@@ -1480,6 +1533,8 @@ if (prev !== m) {
     updateThemeAndLogo();
     updateMovimentarUIByOrigem();
     refreshQuickbarForLoja();
+
+    
   </script>
 
   <!-- Service Worker -->
