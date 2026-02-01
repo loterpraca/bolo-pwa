@@ -1000,27 +1000,26 @@ function formatDateBR(dateStr) {
       ].join("\n");
     }
 
-    function showModal(title, body, onConfirm, isHtml = false) {
+   function showModal(title, body, onConfirm, opts = {}) {
   const modal = $("modalOverlay");
   const btnCancel = $("modalCancel");
   const btnConfirm = $("modalConfirm");
 
   $("modalTitle").innerText = title;
 
-  // ✅ aqui é a diferença
-  if (isHtml) $("modalBody").innerHTML = body;
-  else $("modalBody").innerText = body;
-
-  if (btnCancel) {
-    btnCancel.onclick = () => modal.classList.remove("active");
+  // 🔒 CONTROLE AQUI
+  if (opts.html === true) {
+    $("modalBody").innerHTML = body;
+  } else {
+    $("modalBody").innerText = body; // 🔑 texto puro
   }
 
   if (!onConfirm) {
-    if (btnCancel) btnCancel.style.setProperty("display", "none", "important");
+    btnCancel.style.display = "none";
     btnConfirm.innerText = "OK";
     btnConfirm.onclick = () => modal.classList.remove("active");
   } else {
-    if (btnCancel) btnCancel.style.setProperty("display", "flex", "important");
+    btnCancel.style.display = "flex";
     btnConfirm.innerText = "Confirmar";
     btnConfirm.onclick = async () => {
       modal.classList.remove("active");
@@ -1030,6 +1029,7 @@ function formatDateBR(dateStr) {
 
   modal.classList.add("active");
 }
+
 function stripEq(s){ return String(s||"").replace(/^=/,"").trim(); }
 
 function exprHtml(exprReal, atualNum){
@@ -1413,7 +1413,7 @@ if (prev !== next) {
     setButtonLoading(btn, true);
     setStatus("Verificando saldos para movimentação...", "muted", "spinner fa-spin");
 
-    // ✅ Busca no Controle (mesma chave: origem + modalidade + concurso + valorCota)
+    // Busca no Controle (triplo estável)
     const pBusca = {
       lojaOrigem: base.lojaOrigem,
       modalidade: base.modalidade,
@@ -1428,36 +1428,33 @@ if (prev !== next) {
       const resBusca = await callApi("buscarControle", pBusca);
       if (resBusca && resBusca.ok && resBusca.data) dataAtual = resBusca.data;
     } catch (e) {
-      // se falhar a busca, seguimos com zerado (não trava movimentação)
-      dataAtual = null;
+      dataAtual = null; // não trava
     }
 
-    // ✅ Se não existir ainda no Controle, monta zerado (com expr vazia)
-    const saldosParaCalculo = dataAtual || {
-      origem: base.lojaOrigem,
-      modalidade: base.modalidade,
-      concurso: base.concurso,
-      dtInicial: base.dataInicial,
-      dtConcurso: base.dataConcurso,
-      valorCota: base.valorCota,
+    // ✅ garante dtInicial/dtConcurso SEMPRE (mesmo vindo do backend ou zerado)
+    const saldosParaCalculo = {
+      origem: (dataAtual && dataAtual.origem) ? dataAtual.origem : base.lojaOrigem,
+      modalidade: (dataAtual && dataAtual.modalidade) ? dataAtual.modalidade : base.modalidade,
+      concurso: (dataAtual && dataAtual.concurso) ? dataAtual.concurso : base.concurso,
 
-      qtdBoulevard: 0,
-      qtdCentro: 0,
-      qtdLotobel: 0,
-      qtdSantaTereza: 0,
+      // datas (prioriza o Controle, senão usa o form)
+      dtInicial: (dataAtual && dataAtual.dtInicial) ? dataAtual.dtInicial : base.dataInicial,
+      dtConcurso: (dataAtual && dataAtual.dtConcurso) ? dataAtual.dtConcurso : base.dataConcurso,
 
-      exprBoulevard: "",
-      exprCentro: "",
-      exprLotobel: "",
-      exprSantaTereza: ""
+      valorCota: (dataAtual && typeof dataAtual.valorCota === "number") ? dataAtual.valorCota : base.valorCota,
+
+      qtdBoulevard: (dataAtual && Number.isFinite(dataAtual.qtdBoulevard)) ? dataAtual.qtdBoulevard : 0,
+      qtdCentro: (dataAtual && Number.isFinite(dataAtual.qtdCentro)) ? dataAtual.qtdCentro : 0,
+      qtdLotobel: (dataAtual && Number.isFinite(dataAtual.qtdLotobel)) ? dataAtual.qtdLotobel : 0,
+      qtdSantaTereza: (dataAtual && Number.isFinite(dataAtual.qtdSantaTereza)) ? dataAtual.qtdSantaTereza : 0
     };
 
     setButtonLoading(btn, false);
 
-    // ✅ Modal HTML com delta colorido + expressão real
+    // ✅ VOLTA pro modal texto (igual buscar) usando sua função antiga
     showModal(
       "Confirmar Movimentação",
-      formatarConfirmacaoMovHtml(saldosParaCalculo, deltas),
+      formatarConfirmacaoMov(saldosParaCalculo, deltas),
       async () => {
         try {
           setStatus("Gravando alteração...", "muted", "spinner fa-spin");
@@ -1483,8 +1480,7 @@ if (prev !== next) {
           setButtonLoading(btn, false);
           setStatus(e.message || String(e), "err");
         }
-      },
-      true // ✅ isHtml
+      }
     );
 
   } catch (err) {
@@ -1595,14 +1591,12 @@ function formatarConfirmacaoMovHtml(data, deltas){
 
     
 function formatarConfirmacaoMov(data, deltas) {
-  // Função interna para o cálculo DE -> PARA
   const montarLinhaCalculo = (label, atual, delta) => {
     const mov = Number(delta || 0);
     if (mov === 0) return `${label}: ${atual} (sem alteração)`;
-    
+
     const final = atual + mov;
     const sinal = mov > 0 ? "+" : "";
-    // Exemplo: 🏢 Boulevard: 10 [+5] ➔ 15
     return `${label}: ${atual} [${sinal}${mov}] ➔ ${final}`;
   };
 
@@ -1610,18 +1604,24 @@ function formatarConfirmacaoMov(data, deltas) {
     `📍 Origem: ${data.origem}`,
     `🎯 Modalidade: ${data.modalidade}`,
     `# Concurso: ${data.concurso}`,
+
+    // ✅ AQUI: datas
+    `🗓️ Início: ${formatDateBR(data.dtInicial)}`,
+    `🎟️ Concurso: ${formatDateBR(data.dtConcurso)}`,
+
     `💰 Cota: R$ ${data.valorCota.toFixed(2).replace(".", ",")}`,
     ``,
     `📊 CONFERÊNCIA DE MOVIMENTAÇÃO:`,
     `(Atual [Mov] ➔ Final)`,
-    montarLinhaCalculo("  🏢 Boulevard", data.qtdBoulevard, deltas.deltaBoulevard),
-    montarLinhaCalculo("  🏬 Centro", data.qtdCentro, deltas.deltaCentro),
-    montarLinhaCalculo("  🏪 Lotobel", data.qtdLotobel, deltas.deltaLotobel),
-    montarLinhaCalculo("  🏠 Santa Tereza", data.qtdSantaTereza, deltas.deltaSantaTereza),
+    montarLinhaCalculo("  🏢 Boulevard", data.qtdBoulevard, deltas.deltaBoulevard),
+    montarLinhaCalculo("  🏬 Centro", data.qtdCentro, deltas.deltaCentro),
+    montarLinhaCalculo("  🏪 Lotobel", data.qtdLotobel, deltas.deltaLotobel),
+    montarLinhaCalculo("  🏠 Santa Tereza", data.qtdSantaTereza, deltas.deltaSantaTereza),
     ``,
     `⚠️ Confirma a atualização desses valores?`
   ].join("\n");
 }
+
  function formatarNaoEncontrado(p) {
   const linhas = [
     `❌ BOLÃO NÃO ENCONTRADO`,
