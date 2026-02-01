@@ -891,35 +891,7 @@ function buildCadConfirmText(base){
     });
   }
 
-
-
-    function validateBase(exigirCotas = true) {
-      const lojaOrigem = $("lojaOrigem").value.trim();
-      const modalidade = $("modalidade").value.trim();
-      const concurso = $("concurso").value.trim();
-
-      const dataInicial = $("dataInicial").value;
-      const dataConcurso = $("dataConcurso").value;
-
-      const qtdJogos = Number(onlyDigits($("qtdJogos").value));
-      const qtdDezenas = Number(onlyDigits($("qtdDezenas").value));
-
-      const valorCota = parseBRMoneyToNumber($("valorCota").value);
-      const cotas = Number(onlyDigits($("cotas").value));
-
-      if (!lojaOrigem) throw new Error("Loja de origem é obrigatória.");
-      if (!modalidade) throw new Error("Modalidade é obrigatória.");
-      if (!concurso) throw new Error("Concurso é obrigatório.");
-      if (!dataInicial) throw new Error("Data inicial é obrigatória.");
-      if (!dataConcurso) throw new Error("Data do concurso é obrigatória.");
-      if (!qtdJogos || qtdJogos <= 0) throw new Error("Qtd de Jogos deve ser > 0.");
-      if (!qtdDezenas || qtdDezenas <= 0) throw new Error("Qtd de Dezenas deve ser > 0.");
-      if (!valorCota || valorCota <= 0) throw new Error("Valor da cota deve ser > 0.");
-      if (exigirCotas && (!Number.isFinite(cotas) || cotas === 0)) throw new Error("Qtd de Cotas é obrigatória (≠ 0).");
-
-      return { lojaOrigem, modalidade, concurso, dataInicial, dataConcurso, qtdJogos, qtdDezenas, valorCota, cotas };
-    }
-
+   
     function getMovDeltas() {
       const deltaBoulevard = Number(onlyDigits($("deltaBoulevard").value || "0")) || 0;
       const deltaCentro = Number(onlyDigits($("deltaCentro").value || "0")) || 0;
@@ -1154,17 +1126,27 @@ function formatDateBR(dateStr) {
       return (SHORTCUTS[loja] && SHORTCUTS[loja][modalidade]) ? SHORTCUTS[loja][modalidade] : [];
     }
 
-    function fmtMoneyBR(vStr){
-      // garante "12,34"
-      const s = String(vStr || "").trim();
-      if (!s) return "";
-      if (s.includes(",")) return s;
-      // se vier "12.34"
-      if (s.includes(".")) return s.replace(".", ",");
-      return s;
-    }
+    function fmtMoneyBR(v) {
+  // SEMPRE retorna string "183,60"
+  if (v === null || v === undefined || v === "") return "0,00";
 
-        
+  let s = String(v).trim();
+
+  // Se já vier no formato BR correto
+  if (/^\d+,\d{2}$/.test(s)) return s;
+
+  // Se vier Number ou "183.6"
+  const n = Number(
+    s
+      .replace(/[R$\s]/g, "")
+      .replace(/\./g, "")
+      .replace(",", ".")
+  );
+
+  if (!Number.isFinite(n)) return "0,00";
+  return n.toFixed(2).replace(".", ",");
+}
+       
    async function applyShortcut(modKey, sc){
   const loja = $("lojaOrigem").value.trim();
   if (!loja) {
@@ -1304,7 +1286,7 @@ if (prev !== next) {
           qtdJogos: base.qtdJogos,
           qtdDezenas: base.qtdDezenas,
           cotas: base.cotas,
-          valorCota: base.valorCota
+          valorCota: $("valorCota").value.trim()
         };
 
         saveDraft();
@@ -1367,7 +1349,8 @@ if (prev !== next) {
               qtdJogos: Number(onlyDigits($("qtdJogos").value)) || 1,
               qtdDezenas: Number(onlyDigits($("qtdDezenas").value)) || 1,
               cotas: -999,
-              valorCota: base.valorCota
+              valorCota: $("valorCota").value.trim()
+
             };
 
             saveDraft();
@@ -1446,7 +1429,7 @@ if (prev !== next) {
 }
 
 async function buscarControle() {
-  const p = validateMov(); // Pega os dados atuais do formulário
+  const p = validateBuscarControle(); // ✅ só o triplo + origem
   const btn = $("btnBuscarControle");
   
   setStatus("Buscando no sistema...", "muted", "spinner fa-spin");
@@ -1548,21 +1531,30 @@ function formatarConfirmacaoMov(data, deltas) {
   ].join("\n");
 }
  function formatarNaoEncontrado(p) {
-  return [
+  const linhas = [
     `❌ BOLÃO NÃO ENCONTRADO`,
     `--------------------------------------`,
     `Verifique se os dados abaixo estão corretos:`,
     ``,
     `📍 Origem: ${p.lojaOrigem}`,
     `🎯 Modalidade: ${p.modalidade}`,
-    `# Concurso: ${p.concurso}`,
-    `🗓️ Início: ${formatDateBR(p.dataInicial)}`,
-    `🎟️ Concurso: ${formatDateBR(p.dataConcurso)}`,
-    `💰 Cota: R$ ${p.valorCota}`,
-    ``,
-    `💡 Se os dados acima estiverem certos, este é um novo bolão e será registrado na primeira movimentação.`
-  ].join("\n");
-}   
+    `# Concurso: ${p.concurso}`
+  ];
+
+  // ✅ datas primeiro (se existirem)
+  if (p.dataInicial || p.dataConcurso) {
+    linhas.push(`🗓️ Início (form): ${formatDateBR(p.dataInicial)}`);
+    linhas.push(`🎟️ Concurso (form): ${formatDateBR(p.dataConcurso)}`);
+  }
+
+  // ✅ valor da cota depois
+  linhas.push(`💰 Cota: ${fmtBRL(p.valorCota)}`);
+  linhas.push(``);
+  linhas.push(`💡 Se estiver certo, este bolão ainda não existe na planilha (vai aparecer ao cadastrar ou na primeira movimentação).`);
+
+  return linhas.join("\n");
+}
+
 function formatDateTimeBR(dateStr) {
   if (!dateStr) return "-";
   const d = new Date(dateStr);
@@ -1573,7 +1565,32 @@ function formatDateTimeBR(dateStr) {
   return `${formatDateBR(dateStr)} ${hh}:${mm}`;
 }
 
+ function validateBase(exigirCotas = true) {
+      const lojaOrigem = $("lojaOrigem").value.trim();
+      const modalidade = $("modalidade").value.trim();
+      const concurso = $("concurso").value.trim();
 
+      const dataInicial = $("dataInicial").value;
+      const dataConcurso = $("dataConcurso").value;
+
+      const qtdJogos = Number(onlyDigits($("qtdJogos").value));
+      const qtdDezenas = Number(onlyDigits($("qtdDezenas").value));
+
+      const valorCota = parseBRMoneyToNumber($("valorCota").value);
+      const cotas = Number(onlyDigits($("cotas").value));
+
+      if (!lojaOrigem) throw new Error("Loja de origem é obrigatória.");
+      if (!modalidade) throw new Error("Modalidade é obrigatória.");
+      if (!concurso) throw new Error("Concurso é obrigatório.");
+      if (!dataInicial) throw new Error("Data inicial é obrigatória.");
+      if (!dataConcurso) throw new Error("Data do concurso é obrigatória.");
+      if (!qtdJogos || qtdJogos <= 0) throw new Error("Qtd de Jogos deve ser > 0.");
+      if (!qtdDezenas || qtdDezenas <= 0) throw new Error("Qtd de Dezenas deve ser > 0.");
+      if (!valorCota || valorCota <= 0) throw new Error("Valor da cota deve ser > 0.");
+      if (exigirCotas && (!Number.isFinite(cotas) || cotas === 0)) throw new Error("Qtd de Cotas é obrigatória (≠ 0).");
+
+      return { lojaOrigem, modalidade, concurso, dataInicial, dataConcurso, qtdJogos, qtdDezenas, valorCota, cotas };
+    }
     
   function validateMov() {
   // usa a mesma base do cadastro, mas sem exigir cotas
@@ -1588,9 +1605,28 @@ function formatDateTimeBR(dateStr) {
     dataConcurso: base.dataConcurso,
     qtdJogos: base.qtdJogos,
     qtdDezenas: base.qtdDezenas,
-    valorCota: base.valorCota
+    valorCota: base.valorCota // ✅ número, estável
   };
 }
+function validateBuscarControle() {
+  const lojaOrigem = $("lojaOrigem").value.trim();
+  const modalidade = $("modalidade").value.trim();
+  const concurso   = $("concurso").value.replace(/[^\d]/g, "").trim();
+  const valorCota  = parseBRMoneyToNumber($("valorCota").value); // number estável
+
+  // ✅ obrigatórios (para achar)
+  if (!lojaOrigem) throw new Error("Loja de origem é obrigatória.");
+  if (!modalidade) throw new Error("Modalidade é obrigatória.");
+  if (!concurso)   throw new Error("Concurso é obrigatório.");
+  if (!valorCota || valorCota <= 0) throw new Error("Valor da cota deve ser > 0.");
+
+  // ✅ opcionais (só para exibir quando não encontrar)
+  const dataInicial = $("dataInicial").value || "";
+  const dataConcurso = $("dataConcurso").value || "";
+
+  return { lojaOrigem, modalidade, concurso, valorCota, dataInicial, dataConcurso };
+}
+
 
 
     function bind() {
