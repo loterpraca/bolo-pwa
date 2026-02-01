@@ -1386,97 +1386,92 @@ if (prev !== next) {
 
     async function onMovimentar() {
   const btn = $("btnMovimentar");
-
   try {
     const base = validateMov();
     const deltas = getMovDeltas();
 
+    // Validação de segurança: precisa ter algum valor para mover
     if (!deltas.deltaBoulevard && !deltas.deltaCentro && !deltas.deltaLotobel && !deltas.deltaSantaTereza) {
-      throw new Error("Informe pelo menos um destino com valor diferente de zero.");
+      throw new Error("Informe pelo menos um valor de destino.");
     }
 
-    setStatus("Consultando saldos...", "muted", "spinner fa-spin");
     setButtonLoading(btn, true);
+    setStatus("Verificando saldos para movimentação...", "muted", "spinner fa-spin");
+
+    const dataAtual = await consultarDadosPlanilha(base);
     
-    const resBusca = await callApi("buscarControle", base);
-    
-    // ✅ CORREÇÃO: Garantir que o objeto tenha dtInicial e dtConcurso para o preview
-    const saldosAtuais = (resBusca && resBusca.ok) ? resBusca.data : { 
-      origem: base.lojaOrigem,
-      modalidade: base.modalidade,
-      concurso: base.concurso,
-      dtInicial: base.dataInicial,  // De 'dataInicial' para 'dtInicial'
-      dtConcurso: base.dataConcurso, // De 'dataConcurso' para 'dtConcurso'
-      valorCota: parseFloat(String(base.valorCota).replace(',', '.')),
-      qtdBoulevard: 0, qtdCentro: 0, qtdLotobel: 0, qtdSantaTereza: 0 
+    // Se não existir, cria um objeto "zerado" para o cálculo da escadinha não quebrar
+    const saldosParaCalculo = dataAtual || {
+      origem: base.lojaOrigem, modalidade: base.modalidade, concurso: base.concurso,
+      dtInicial: base.dataInicial, dtConcurso: base.dataConcurso,
+      valorCota: base.valorCota,
+      qtdBoulevard: 0, qtdCentro: 0, qtdLotobel: 0, qtdSantaTereza: 0
     };
-    
+
     setButtonLoading(btn, false);
 
+    // ABRE O MODAL DE AÇÃO (Com a função de gravar no 3º parâmetro)
     showModal(
       "Confirmar Movimentação",
-      formatarConfirmacaoMov(saldosAtuais, deltas), 
+      formatarConfirmacaoMov(saldosParaCalculo, deltas),
       async () => {
         try {
-          setStatus("Enviando movimentação...", "muted", "spinner fa-spin");
+          setStatus("Gravando alteração...", "muted", "spinner fa-spin");
           setButtonLoading(btn, true);
 
-          // ✅ CORREÇÃO: Payload com os nomes exatos que a planilha espera
           const payload = { 
-            ...base, 
-            ...deltas,
-            dtInicial: base.dataInicial, 
-            dtConcurso: base.dataConcurso 
+            ...base, ...deltas, 
+            dtInicial: base.dataInicial, dtConcurso: base.dataConcurso 
           };
 
-          saveDraft();
           const res = await callApi("movimentar", payload);
           setButtonLoading(btn, false);
 
           if (res && res.ok) {
-            setStatus(res.message || "Movimentação feita!", "ok", "check-circle");
+            setStatus("Planilha atualizada!", "ok", "check-double");
             clearMov();
           } else {
-            setStatus(res?.message || "Erro na gravação.", "err", "exclamation-circle");
+            setStatus(res.message || "Erro ao gravar.", "err");
           }
-        } catch (err2) {
+        } catch (e) {
           setButtonLoading(btn, false);
-          setStatus(err2.message || String(err2), "err", "exclamation-circle");
+          setStatus(e.message, "err");
         }
       }
     );
   } catch (err) {
     setButtonLoading(btn, false);
-    setStatus(err.message || String(err), "err", "exclamation-circle");
+    setStatus(err.message, "err");
   }
 }
 
- async function buscarControle() {
-  const p = validateMov(); // Use a sua função padrão de validar/obter dados
+async function buscarControle() {
+  const p = validateMov(); // Pega os dados atuais do formulário
   const btn = $("btnBuscarControle");
   
-  setStatus("Buscando...", "muted", "spinner fa-spin");
+  setStatus("Buscando no sistema...", "muted", "spinner fa-spin");
   setButtonLoading(btn, true);
 
   try {
     const res = await callApi("buscarControle", p);
-    
-    if (res.ok) {
-      // ✅ Usa o seu formatador original que já mostra todas as lojas
+    setButtonLoading(btn, false);
+
+    if (res && res.ok) {
+      // ✅ CASO ENCONTRADO: Mostra os dados que estão na planilha
       const texto = formatarPopupControle(res.data);
-      showModal("🔍 Saldo Atual no Controle", texto, null); 
+      showModal("🔍 Dados Encontrados", texto, null);
       setStatus("Busca concluída.", "ok", "check");
     } else {
-      // ✅ Caso não exista, avisa de forma simples
-      showModal("✨ Novo Bolão", `Este bolão ainda não existe no Controle para ${p.lojaOrigem}.\nEle será criado ao movimentar.`, null);
-      setStatus("Bolão não encontrado.", "muted", "info-circle");
+      // ❌ CASO NÃO ENCONTRADO: Mostra o "espelho" do que foi digitado
+      const textoErro = formatarNaoEncontrado(p);
+      showModal("⚠️ Atenção", textoErro, null);
+      setStatus("Bolão não localizado.", "muted", "info-circle");
     }
   } catch (err) {
-    setStatus(err.message, "err", "exclamation-triangle");
-  } finally {
     setButtonLoading(btn, false);
+    setStatus("Erro: " + err.message, "err", "exclamation-triangle");
   }
-}   
+}
 // Função auxiliar para montar o HTML de consulta limpo
 function gerarHtmlConsultaUnica(d) {
   const lojas = ["Boulevard", "Centro", "Lotobel", "Santa Tereza"];
@@ -1552,7 +1547,22 @@ function formatarConfirmacaoMov(data, deltas) {
     `⚠️ Confirma a atualização desses valores?`
   ].join("\n");
 }
-    
+ function formatarNaoEncontrado(p) {
+  return [
+    `❌ BOLÃO NÃO ENCONTRADO`,
+    `--------------------------------------`,
+    `Verifique se os dados abaixo estão corretos:`,
+    ``,
+    `📍 Origem: ${p.lojaOrigem}`,
+    `🎯 Modalidade: ${p.modalidade}`,
+    `# Concurso: ${p.concurso}`,
+    `🗓️ Início: ${formatDateBR(p.dataInicial)}`,
+    `🎟️ Concurso: ${formatDateBR(p.dataConcurso)}`,
+    `💰 Cota: R$ ${p.valorCota}`,
+    ``,
+    `💡 Se os dados acima estiverem certos, este é um novo bolão e será registrado na primeira movimentação.`
+  ].join("\n");
+}   
 function formatDateTimeBR(dateStr) {
   if (!dateStr) return "-";
   const d = new Date(dateStr);
