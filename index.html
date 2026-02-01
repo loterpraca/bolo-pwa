@@ -1033,25 +1033,38 @@ function formatDateBR(dateStr) {
   const btnCancel = $("modalCancel");
   const btnConfirm = $("modalConfirm");
 
+  // Preenche o conteúdo
   $("modalTitle").innerText = title;
   $("modalBody").innerText = body;
 
-  // SE onConfirm for null (como na Busca), vira modo "Apenas OK"
-  if (!onConfirm) {
-    if (btnCancel) btnCancel.style.setProperty("display", "none", "important"); 
-    btnConfirm.innerText = "OK";
-    btnConfirm.onclick = () => modal.classList.remove("active");
-  } 
-  // SE onConfirm existir (como na Movimentação), vira modo "Confirmação"
-  else {
-    if (btnCancel) btnCancel.style.setProperty("display", "flex", "important");
-    btnConfirm.innerText = "Confirmar";
-    btnConfirm.onclick = async () => {
+  // 1. SEMPRE define o que o cancelar faz (fechar)
+  if (btnCancel) {
+    btnCancel.onclick = () => {
       modal.classList.remove("active");
-      await onConfirm();
     };
   }
 
+  // 2. Lógica condicional (Busca vs Movimentação)
+  if (!onConfirm) {
+    // MODO BUSCA (Apenas botão OK)
+    if (btnCancel) btnCancel.style.setProperty("display", "none", "important");
+    btnConfirm.innerText = "OK";
+    btnConfirm.onclick = () => {
+      modal.classList.remove("active");
+    };
+  } else {
+    // MODO MOVIMENTAÇÃO (Confirmar e Cancelar)
+    if (btnCancel) btnCancel.style.setProperty("display", "flex", "important");
+    btnConfirm.innerText = "Confirmar";
+    
+    // IMPORTANTE: Definimos o clique para fechar E depois rodar a função
+    btnConfirm.onclick = async () => {
+      modal.classList.remove("active"); // Fecha o modal primeiro
+      await onConfirm(); // Executa o bloco de código que você colou acima
+    };
+  }
+
+  // Abre o modal
   modal.classList.add("active");
 }
 
