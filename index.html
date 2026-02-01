@@ -1361,51 +1361,53 @@ if (prev !== next) {
     const base = validateMov();
     const deltas = getMovDeltas();
 
-    if (
-      !deltas.deltaBoulevard &&
-      !deltas.deltaCentro &&
-      !deltas.deltaLotobel &&
-      !deltas.deltaSantaTereza
-    ) {
+    // Validação inicial
+    if (!deltas.deltaBoulevard && !deltas.deltaCentro && !deltas.deltaLotobel && !deltas.deltaSantaTereza) {
       throw new Error("Informe pelo menos um destino com valor diferente de zero.");
     }
 
+    // --- 1. BUSCA O SALDO ATUAL PARA O PREVIEW ---
+    setStatus("Consultando saldos...", "muted", "spinner fa-spin");
+    setButtonLoading(btn, true);
+    
+    const resBusca = await callApi("buscarControle", base);
+    
+    // Se não encontrar (res.ok false), montamos um objeto zerado para a "Escadinha" funcionar
+    const saldosAtuais = (resBusca && resBusca.ok) ? resBusca.data : { 
+      origem: base.lojaOrigem,
+      modalidade: base.modalidade,
+      concurso: base.concurso,
+      valorCota: parseFloat(String(base.valorCota).replace(',', '.')),
+      qtdBoulevard: 0, 
+      qtdCentro: 0, 
+      qtdLotobel: 0, 
+      qtdSantaTereza: 0 
+    };
+    
+    setButtonLoading(btn, false);
+    setStatus("Aguardando confirmação...", "muted", "info-circle");
+    // ------------------------------------------
+
+    // --- 2. MOSTRA O MODAL COM A FORMATAÇÃO DE LISTA ---
     showModal(
-      "Confirmar movimentação",
-      buildMovConfirmText(base, deltas),
+      "Confirmar Movimentação",
+      formatarConfirmacaoMov(saldosAtuais, deltas), // Usa a função de strings que incluímos
       async () => {
         try {
           setStatus("Enviando movimentação...", "muted", "spinner fa-spin");
           setButtonLoading(btn, true);
 
-          const payload = {
-            lojaOrigem: base.lojaOrigem,
-            modalidade: base.modalidade,
-            concurso: base.concurso,
-
-            dataInicial: base.dataInicial,
-            dataConcurso: base.dataConcurso,
-            qtdJogos: base.qtdJogos,
-            qtdDezenas: base.qtdDezenas,
-
-            valorCota: base.valorCota,
-
-            deltaBoulevard: deltas.deltaBoulevard,
-            deltaCentro: deltas.deltaCentro,
-            deltaLotobel: deltas.deltaLotobel,
-            deltaSantaTereza: deltas.deltaSantaTereza
-          };
+          const payload = { ...base, ...deltas };
 
           saveDraft();
           const res = await callApi("movimentar", payload);
-
           setButtonLoading(btn, false);
 
           if (res && res.ok) {
             setStatus(res.message || "Movimentação feita!", "ok", "check-circle");
-            clearMov();
+            clearMov(); // Limpa os campos de delta para evitar cliques duplos
           } else {
-            setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
+            setStatus((res && res.message) ? res.message : "Erro na gravação.", "err", "exclamation-circle");
           }
         } catch (err2) {
           setButtonLoading(btn, false);
@@ -1418,32 +1420,68 @@ if (prev !== next) {
     setStatus(err.message || String(err), "err", "exclamation-circle");
   }
 }
-
-          
+      
 
 async function buscarControle() {
-  const loja = document.getElementById("lojaOrigem").value.trim();
-  const modalidade = document.getElementById("modalidade").value.trim();
-  const concurso = document.getElementById("concurso").value.trim();
-  const valorCota = parseBRMoneyToNumber(document.getElementById("valorCota").value);
-
-  if (!loja || !modalidade || !concurso || !valorCota) {
-    alert("Preencha Origem, Modalidade, Concurso e Valor da Cota para buscar.");
+  const p = obterDadosFormulario();
+  const btn = document.getElementById("btnBuscarControle");
+  
+  if (!p.lojaOrigem || !p.modalidade || !p.concurso || !p.valorCota) {
+    exibirStatus("⚠️ Preencha Loja, Modalidade, Concurso e Valor para buscar.", "err");
     return;
   }
 
-  const payload = { lojaOrigem: loja, modalidade, concurso, valorCota };
-  const res = await callApi("buscarControle", payload);
-
-  if (!res.ok) {
-    alert("Erro ao buscar controle: " + res.message);
-    return;
+  setLoading(btn, true);
+  try {
+    const res = await callApi("buscarControle", p);
+    
+    if (res.ok) {
+      // ✅ Se achou, abre o modal informativo com botão único "OK"
+      const html = gerarHtmlConsultaUnica(res.data);
+      abrirModalInformativo("🔍 Saldo Atual no Controle", html);
+      exibirStatus("Busca concluída.", "ok");
+    } else {
+      // ✅ Se não achou (res.ok === false), avisa que é um bolão novo
+      abrirModalInformativo("✨ Novo Bolão", 
+        `<div style="text-align:center; padding:20px;">
+          <i class="fas fa-magic" style="font-size:40px; color:var(--primary); margin-bottom:15px;"></i>
+          <p>Este bolão ainda não existe no Controle para a origem <b>${p.lojaOrigem}</b>.</p>
+          <p style="font-size:13px; color:#666; margin-top:10px;">Você pode iniciar a movimentação normalmente.</p>
+          <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">OK, VAMOS NESSA</button>
+        </div>`
+      );
+      exibirStatus("Bolão não encontrado (será criado ao movimentar).", "muted");
+    }
+  } catch (err) {
+    exibirStatus(err.message, "err");
+  } finally {
+    setLoading(btn, false);
   }
-
-  const html = formatarPopupControle(res.data);
-  showModal("📋 Dados do Controle", html, () => {});
 }
 
+// Função auxiliar para montar o HTML de consulta limpo
+function gerarHtmlConsultaUnica(d) {
+  const lojas = ["Boulevard", "Centro", "Lotobel", "Santa Tereza"];
+  let listaSaldos = "";
+
+  lojas.forEach(l => {
+    const campo = "qtd" + l.replace(" ", "");
+    const saldo = d[campo] || 0;
+    listaSaldos += `
+      <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #f0f0f0; align-items:center;">
+        <span style="font-weight:bold; color:#555;">${l}</span>
+        <span style="font-size:16px; color:var(--txt); font-weight:700;">${saldo} <small style="font-weight:normal; font-size:11px; color:#888;">cotas</small></span>
+      </div>`;
+  });
+
+  return `
+    <div style="width:100%; max-width:320px; margin:0 auto;">
+      <div style="background:#fdfdfd; border:1px solid #eee; border-radius:10px; margin-bottom:15px; overflow:hidden;">
+        ${listaSaldos}
+      </div>
+      <button onclick="closeModal()" style="width:100%; padding:14px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:15px;">FECHAR</button>
+    </div>`;
+}
 function formatarPopupControle(data) {
   // Função auxiliar para montar a linha com aviso de múltiplos registros
   const montarLinha = (label, valor, count) => {
@@ -1468,7 +1506,35 @@ function formatarPopupControle(data) {
     `🕓 Última alteração: ${formatDateTimeBR(data.carimbo)}`
   ].join("\n");
 }
+function formatarConfirmacaoMov(data, deltas) {
+  // Função interna para o cálculo DE -> PARA
+  const montarLinhaCalculo = (label, atual, delta) => {
+    const mov = Number(delta || 0);
+    if (mov === 0) return `${label}: ${atual} (sem alteração)`;
+    
+    const final = atual + mov;
+    const sinal = mov > 0 ? "+" : "";
+    // Exemplo: 🏢 Boulevard: 10 [+5] ➔ 15
+    return `${label}: ${atual} [${sinal}${mov}] ➔ ${final}`;
+  };
 
+  return [
+    `📍 Origem: ${data.origem}`,
+    `🎯 Modalidade: ${data.modalidade}`,
+    `# Concurso: ${data.concurso}`,
+    `💰 Cota: R$ ${data.valorCota.toFixed(2).replace(".", ",")}`,
+    ``,
+    `📊 CONFERÊNCIA DE MOVIMENTAÇÃO:`,
+    `(Atual [Mov] ➔ Final)`,
+    montarLinhaCalculo("  🏢 Boulevard", data.qtdBoulevard, deltas.deltaBoulevard),
+    montarLinhaCalculo("  🏬 Centro", data.qtdCentro, deltas.deltaCentro),
+    montarLinhaCalculo("  🏪 Lotobel", data.qtdLotobel, deltas.deltaLotobel),
+    montarLinhaCalculo("  🏠 Santa Tereza", data.qtdSantaTereza, deltas.deltaSantaTereza),
+    ``,
+    `⚠️ Confirma a atualização desses valores?`
+  ].join("\n");
+}
+    
 function formatDateTimeBR(dateStr) {
   if (!dateStr) return "-";
   const d = new Date(dateStr);
