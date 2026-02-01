@@ -1445,6 +1445,12 @@ async function buscarControle() {
 }
 
 function formatarPopupControle(data) {
+  // Função auxiliar para montar a linha com aviso de múltiplos registros
+  const montarLinha = (label, valor, count) => {
+    let aviso = count > 1 ? ` ⚠️ (${count} registros)` : "";
+    return `${label}: ${valor}${aviso}`;
+  };
+
   return [
     `📍 Origem: ${data.origem}`,
     `🎯 Modalidade: ${data.modalidade}`,
@@ -1454,10 +1460,10 @@ function formatarPopupControle(data) {
     `💰 Cota: R$ ${data.valorCota.toFixed(2).replace(".", ",")}`,
     ``,
     `🎯 Quantidade de cotas por destino:`,
-    `  🏢 Boulevard: ${data.qtdBoulevard}`,
-    `  🏬 Centro: ${data.qtdCentro}`,
-    `  🏪 Lotobel: ${data.qtdLotobel}`,
-    `  🏠 Santa Tereza: ${data.qtdSantaTereza}`,
+    montarLinha("  🏢 Boulevard", data.qtdBoulevard, data.countBoulevard),
+    montarLinha("  🏬 Centro", data.qtdCentro, data.countCentro),
+    montarLinha("  🏪 Lotobel", data.qtdLotobel, data.countLotobel),
+    montarLinha("  🏠 Santa Tereza", data.qtdSantaTereza, data.countSantaTereza),
     ``,
     `🕓 Última alteração: ${formatDateTimeBR(data.carimbo)}`
   ].join("\n");
