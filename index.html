@@ -1000,44 +1000,72 @@ function formatDateBR(dateStr) {
       ].join("\n");
     }
 
-   function showModal(title, body, onConfirm, opts = {}) {
-  const modal = $("modalOverlay");
+  function showModal(title, body, onConfirm) {
+  const overlay = $("modalOverlay");
+  const modalBox = overlay.querySelector(".modal");
   const btnCancel = $("modalCancel");
   const btnConfirm = $("modalConfirm");
 
   $("modalTitle").innerText = title;
+  $("modalBody").innerText = body; // ✅ texto puro
 
-  // 🔒 CONTROLE AQUI
-  if (opts.html === true) {
-    $("modalBody").innerHTML = body;
-  } else {
-    $("modalBody").innerText = body; // 🔑 texto puro
-  }
+  // limpa handlers antigos
+  btnCancel.onclick = null;
+  btnConfirm.onclick = null;
+  overlay.onclick = null;
+  if (modalBox) modalBox.onclick = null;
+
+  // clicar fora cancela
+  overlay.onclick = () => overlay.classList.remove("active");
+  if (modalBox) modalBox.onclick = (e) => e.stopPropagation();
 
   if (!onConfirm) {
     btnCancel.style.display = "none";
     btnConfirm.innerText = "OK";
-    btnConfirm.onclick = () => modal.classList.remove("active");
+    btnConfirm.onclick = () => overlay.classList.remove("active");
   } else {
     btnCancel.style.display = "flex";
     btnConfirm.innerText = "Confirmar";
-    btnConfirm.onclick = async () => {
-      modal.classList.remove("active");
+
+    btnCancel.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      overlay.classList.remove("active");
+    };
+
+    btnConfirm.onclick = async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      overlay.classList.remove("active");
       await onConfirm();
     };
   }
 
-  modal.classList.add("active");
+  overlay.classList.add("active");
 }
+
 
 function stripEq(s){ return String(s||"").replace(/^=/,"").trim(); }
-
-function exprHtml(exprReal, atualNum){
+    
+function baseExprOrNumber(exprReal, atualNum){
   const expr = stripEq(exprReal);
-  const base = expr ? expr : String(Number(atualNum || 0));
-  return `<span style="color:#0f172a; font-weight:900;">${base}</span>`;
+  return expr ? expr : String(Number(atualNum || 0));
 }
 
+function montarLinhaCalculo(label, atual, formulaReal, delta) {
+  const mov = Number(delta || 0);
+  const atualNum = Number(atual || 0);
+
+  const base = baseExprOrNumber(formulaReal, atualNum);
+
+  if (mov === 0) return `${label}: ${base} (sem alteração)`;
+
+  const sinal = mov > 0 ? "+" : "";           // para mostrar [+3]
+  const final = atualNum + mov;
+
+  // exemplo: "5-2+4 [+3] -> 10"
+  return `${label}: ${base} [${sinal}${mov}] ➔ ${final}`;
+}
 function fmtDeltaColored(mov){
   const n = Number(mov || 0);
   if (n === 0) return `<span style="color:#0f172a; font-weight:900;">0</span>`;
@@ -1446,7 +1474,11 @@ if (prev !== next) {
       qtdBoulevard: (dataAtual && Number.isFinite(dataAtual.qtdBoulevard)) ? dataAtual.qtdBoulevard : 0,
       qtdCentro: (dataAtual && Number.isFinite(dataAtual.qtdCentro)) ? dataAtual.qtdCentro : 0,
       qtdLotobel: (dataAtual && Number.isFinite(dataAtual.qtdLotobel)) ? dataAtual.qtdLotobel : 0,
-      qtdSantaTereza: (dataAtual && Number.isFinite(dataAtual.qtdSantaTereza)) ? dataAtual.qtdSantaTereza : 0
+      qtdSantaTereza: (dataAtual && Number.isFinite(dataAtual.qtdSantaTereza)) ? dataAtual.qtdSantaTereza : 0,
+      formulaBoulevard: (dataAtual && dataAtual.formulaBoulevard) ? dataAtual.formulaBoulevard : "",
+      formulaCentro: (dataAtual && dataAtual.formulaCentro) ? dataAtual.formulaCentro : "",
+      formulaLotobel: (dataAtual && dataAtual.formulaLotobel) ? dataAtual.formulaLotobel : "",
+      formulaSantaTereza: (dataAtual && dataAtual.formulaSantaTereza) ? dataAtual.formulaSantaTereza : "",
     };
 
     setButtonLoading(btn, false);
@@ -1564,59 +1596,22 @@ function formatarPopupControle(data) {
     `🕓 Última alteração: ${formatDateTimeBR(data.carimbo)}`
   ].join("\n");
 }
-function formatarConfirmacaoMovHtml(data, deltas){
-  const bloco = [];
-
-  bloco.push(`
-    <div style="margin-bottom:10px;">
-      <div style="font-weight:900; color:#0f172a;">📍 Origem: ${data.origem}</div>
-      <div style="color:#334155; font-weight:800;">🎯 ${data.modalidade} | #${data.concurso}</div>
-      <div style="color:#334155; font-weight:800;">💰 Cota: R$ ${Number(data.valorCota||0).toFixed(2).replace(".", ",")}</div>
-    </div>
-  `);
-
-  bloco.push(`<div style="border:1px solid rgba(0,0,0,.08); border-radius:12px; padding:10px 12px;">`);
-
-  bloco.push(linhaMovHtml("🏢 Boulevard", data.qtdBoulevard, data.exprBoulevard, deltas.deltaBoulevard));
-  bloco.push(linhaMovHtml("🏬 Centro", data.qtdCentro, data.exprCentro, deltas.deltaCentro));
-  bloco.push(linhaMovHtml("🏪 Lotobel", data.qtdLotobel, data.exprLotobel, deltas.deltaLotobel));
-  bloco.push(linhaMovHtml("🏠 Santa Tereza", data.qtdSantaTereza, data.exprSantaTereza, deltas.deltaSantaTereza));
-
-  bloco.push(`</div>`);
-
-  bloco.push(`<div style="margin-top:12px; color:#334155; font-weight:900;">⚠️ Confirma a atualização desses valores?</div>`);
-
-  return bloco.join("");
-}
-
     
 function formatarConfirmacaoMov(data, deltas) {
-  const montarLinhaCalculo = (label, atual, delta) => {
-    const mov = Number(delta || 0);
-    if (mov === 0) return `${label}: ${atual} (sem alteração)`;
-
-    const final = atual + mov;
-    const sinal = mov > 0 ? "+" : "";
-    return `${label}: ${atual} [${sinal}${mov}] ➔ ${final}`;
-  };
-
   return [
     `📍 Origem: ${data.origem}`,
     `🎯 Modalidade: ${data.modalidade}`,
     `# Concurso: ${data.concurso}`,
-
-    // ✅ AQUI: datas
     `🗓️ Início: ${formatDateBR(data.dtInicial)}`,
     `🎟️ Concurso: ${formatDateBR(data.dtConcurso)}`,
-
-    `💰 Cota: R$ ${data.valorCota.toFixed(2).replace(".", ",")}`,
+    `💰 Cota: R$ ${Number(data.valorCota||0).toFixed(2).replace(".", ",")}`,
     ``,
     `📊 CONFERÊNCIA DE MOVIMENTAÇÃO:`,
-    `(Atual [Mov] ➔ Final)`,
-    montarLinhaCalculo("  🏢 Boulevard", data.qtdBoulevard, deltas.deltaBoulevard),
-    montarLinhaCalculo("  🏬 Centro", data.qtdCentro, deltas.deltaCentro),
-    montarLinhaCalculo("  🏪 Lotobel", data.qtdLotobel, deltas.deltaLotobel),
-    montarLinhaCalculo("  🏠 Santa Tereza", data.qtdSantaTereza, deltas.deltaSantaTereza),
+    `(Expressão [Mov] ➔ Final)`,
+    montarLinhaCalculo("  🏢 Boulevard",    data.qtdBoulevard,    data.formulaBoulevard,    deltas.deltaBoulevard),
+    montarLinhaCalculo("  🏬 Centro",       data.qtdCentro,       data.formulaCentro,       deltas.deltaCentro),
+    montarLinhaCalculo("  🏪 Lotobel",      data.qtdLotobel,      data.formulaLotobel,      deltas.deltaLotobel),
+    montarLinhaCalculo("  🏠 Santa Tereza", data.qtdSantaTereza,  data.formulaSantaTereza,  deltas.deltaSantaTereza),
     ``,
     `⚠️ Confirma a atualização desses valores?`
   ].join("\n");
