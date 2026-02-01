@@ -1436,11 +1436,11 @@ if (prev !== next) {
 
    async function onMovimentar() {
   const btn = $("btnMovimentar");
+
   try {
     const base = validateMov();
     const deltas = getMovDeltas();
 
-    // Segurança: precisa ter pelo menos 1 destino
     if (!deltas.deltaBoulevard && !deltas.deltaCentro && !deltas.deltaLotobel && !deltas.deltaSantaTereza) {
       throw new Error("Informe pelo menos um valor de destino.");
     }
@@ -1448,7 +1448,6 @@ if (prev !== next) {
     setButtonLoading(btn, true);
     setStatus("Verificando saldos para movimentação...", "muted", "spinner fa-spin");
 
-    // Busca no Controle (triplo estável)
     const pBusca = {
       lojaOrigem: base.lojaOrigem,
       modalidade: base.modalidade,
@@ -1465,18 +1464,17 @@ if (prev !== next) {
       console.log("buscarControle DATA:", resBusca?.data);
       console.log("qtdBoulevard:", resBusca?.data?.qtdBoulevard);
       console.log("formulaBoulevard:", resBusca?.data?.formulaBoulevard);
+
       if (resBusca && resBusca.ok && resBusca.data) dataAtual = resBusca.data;
     } catch (e) {
-      dataAtual = null; // não trava
+      dataAtual = null;
     }
 
-    // ✅ garante dtInicial/dtConcurso SEMPRE (mesmo vindo do backend ou zerado)
     const saldosParaCalculo = {
       origem: (dataAtual && dataAtual.origem) ? dataAtual.origem : base.lojaOrigem,
       modalidade: (dataAtual && dataAtual.modalidade) ? dataAtual.modalidade : base.modalidade,
       concurso: (dataAtual && dataAtual.concurso) ? dataAtual.concurso : base.concurso,
 
-      // datas (prioriza o Controle, senão usa o form)
       dtInicial: (dataAtual && dataAtual.dtInicial) ? dataAtual.dtInicial : base.dataInicial,
       dtConcurso: (dataAtual && dataAtual.dtConcurso) ? dataAtual.dtConcurso : base.dataConcurso,
 
@@ -1486,53 +1484,57 @@ if (prev !== next) {
       qtdCentro: (dataAtual && Number.isFinite(dataAtual.qtdCentro)) ? dataAtual.qtdCentro : 0,
       qtdLotobel: (dataAtual && Number.isFinite(dataAtual.qtdLotobel)) ? dataAtual.qtdLotobel : 0,
       qtdSantaTereza: (dataAtual && Number.isFinite(dataAtual.qtdSantaTereza)) ? dataAtual.qtdSantaTereza : 0,
+
       formulaBoulevard: (dataAtual && dataAtual.formulaBoulevard) ? dataAtual.formulaBoulevard : "",
       formulaCentro: (dataAtual && dataAtual.formulaCentro) ? dataAtual.formulaCentro : "",
       formulaLotobel: (dataAtual && dataAtual.formulaLotobel) ? dataAtual.formulaLotobel : "",
       formulaSantaTereza: (dataAtual && dataAtual.formulaSantaTereza) ? dataAtual.formulaSantaTereza : "",
     };
 
-   setButtonLoading(btn, false);
-
-// ✅ Modal com CONFIRMAR + CANCELAR (resetando status)
-showModal(
-  "Confirmar Movimentação",
-  formatarConfirmacaoMov(saldosParaCalculo, deltas),
-
-  // ✅ CONFIRMAR (igual ao seu)
-  async () => {
-    try {
-      setStatus("Gravando alteração...", "muted", "spinner fa-spin");
-      setButtonLoading(btn, true);
-
-      const payload = {
-        ...base,
-        ...deltas,
-        dtInicial: base.dataInicial,
-        dtConcurso: base.dataConcurso
-      };
-
-      const res = await callApi("movimentar", payload);
-      setButtonLoading(btn, false);
-
-      if (res && res.ok) {
-        setStatus("Planilha atualizada!", "ok", "check-double");
-        clearMov();
-      } else {
-        setStatus((res && res.message) ? res.message : "Erro ao gravar.", "err");
-      }
-    } catch (e) {
-      setButtonLoading(btn, false);
-      setStatus(e.message || String(e), "err");
-    }
-  },
-
-  // ❌ CANCELAR (novo — ESSENCIAL)
-  () => {
     setButtonLoading(btn, false);
-    setStatus("Movimentação cancelada.", "muted", "ban");
+
+    showModal(
+      "Confirmar Movimentação",
+      formatarConfirmacaoMov(saldosParaCalculo, deltas),
+
+      async () => {
+        try {
+          setStatus("Gravando alteração...", "muted", "spinner fa-spin");
+          setButtonLoading(btn, true);
+
+          const payload = {
+            ...base,
+            ...deltas,
+            dtInicial: base.dataInicial,
+            dtConcurso: base.dataConcurso
+          };
+
+          const res = await callApi("movimentar", payload);
+          setButtonLoading(btn, false);
+
+          if (res && res.ok) {
+            setStatus("Planilha atualizada!", "ok", "check-double");
+            clearMov();
+          } else {
+            setStatus((res && res.message) ? res.message : "Erro ao gravar.", "err", "exclamation-circle");
+          }
+        } catch (e) {
+          setButtonLoading(btn, false);
+          setStatus(e.message || String(e), "err", "exclamation-circle");
+        }
+      },
+
+      () => {
+        setButtonLoading(btn, false);
+        setStatus("Movimentação cancelada.", "muted", "ban");
+      }
+    );
+
+  } catch (err) {
+    setButtonLoading(btn, false);
+    setStatus(err.message || String(err), "err", "exclamation-circle");
   }
-);
+}
 
 
 async function buscarControle() {
