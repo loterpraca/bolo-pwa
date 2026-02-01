@@ -1391,43 +1391,43 @@ if (prev !== next) {
     const base = validateMov();
     const deltas = getMovDeltas();
 
-    // Validação inicial
     if (!deltas.deltaBoulevard && !deltas.deltaCentro && !deltas.deltaLotobel && !deltas.deltaSantaTereza) {
       throw new Error("Informe pelo menos um destino com valor diferente de zero.");
     }
 
-    // --- 1. BUSCA O SALDO ATUAL PARA O PREVIEW ---
     setStatus("Consultando saldos...", "muted", "spinner fa-spin");
     setButtonLoading(btn, true);
     
     const resBusca = await callApi("buscarControle", base);
     
-    // Se não encontrar (res.ok false), montamos um objeto zerado para a "Escadinha" funcionar
+    // ✅ CORREÇÃO: Garantir que o objeto tenha dtInicial e dtConcurso para o preview
     const saldosAtuais = (resBusca && resBusca.ok) ? resBusca.data : { 
       origem: base.lojaOrigem,
       modalidade: base.modalidade,
       concurso: base.concurso,
+      dtInicial: base.dataInicial,  // De 'dataInicial' para 'dtInicial'
+      dtConcurso: base.dataConcurso, // De 'dataConcurso' para 'dtConcurso'
       valorCota: parseFloat(String(base.valorCota).replace(',', '.')),
-      qtdBoulevard: 0, 
-      qtdCentro: 0, 
-      qtdLotobel: 0, 
-      qtdSantaTereza: 0 
+      qtdBoulevard: 0, qtdCentro: 0, qtdLotobel: 0, qtdSantaTereza: 0 
     };
     
     setButtonLoading(btn, false);
-    setStatus("Aguardando confirmação...", "muted", "info-circle");
-    // ------------------------------------------
 
-    // --- 2. MOSTRA O MODAL COM A FORMATAÇÃO DE LISTA ---
     showModal(
       "Confirmar Movimentação",
-      formatarConfirmacaoMov(saldosAtuais, deltas), // Usa a função de strings que incluímos
+      formatarConfirmacaoMov(saldosAtuais, deltas), 
       async () => {
         try {
           setStatus("Enviando movimentação...", "muted", "spinner fa-spin");
           setButtonLoading(btn, true);
 
-          const payload = { ...base, ...deltas };
+          // ✅ CORREÇÃO: Payload com os nomes exatos que a planilha espera
+          const payload = { 
+            ...base, 
+            ...deltas,
+            dtInicial: base.dataInicial, 
+            dtConcurso: base.dataConcurso 
+          };
 
           saveDraft();
           const res = await callApi("movimentar", payload);
@@ -1435,9 +1435,9 @@ if (prev !== next) {
 
           if (res && res.ok) {
             setStatus(res.message || "Movimentação feita!", "ok", "check-circle");
-            clearMov(); // Limpa os campos de delta para evitar cliques duplos
+            clearMov();
           } else {
-            setStatus((res && res.message) ? res.message : "Erro na gravação.", "err", "exclamation-circle");
+            setStatus(res?.message || "Erro na gravação.", "err", "exclamation-circle");
           }
         } catch (err2) {
           setButtonLoading(btn, false);
@@ -1450,45 +1450,33 @@ if (prev !== next) {
     setStatus(err.message || String(err), "err", "exclamation-circle");
   }
 }
-      
 
-async function buscarControle() {
-  const p = obterDadosFormulario();
-  const btn = document.getElementById("btnBuscarControle");
+ async function buscarControle() {
+  const p = validateMov(); // Use a sua função padrão de validar/obter dados
+  const btn = $("btnBuscarControle");
   
-  if (!p.lojaOrigem || !p.modalidade || !p.concurso || !p.valorCota) {
-    exibirStatus("⚠️ Preencha Loja, Modalidade, Concurso e Valor para buscar.", "err");
-    return;
-  }
+  setStatus("Buscando...", "muted", "spinner fa-spin");
+  setButtonLoading(btn, true);
 
-  setLoading(btn, true);
   try {
     const res = await callApi("buscarControle", p);
     
     if (res.ok) {
-      // ✅ Se achou, abre o modal informativo com botão único "OK"
-      const html = gerarHtmlConsultaUnica(res.data);
-      abrirModalInformativo("🔍 Saldo Atual no Controle", html);
-      exibirStatus("Busca concluída.", "ok");
+      // ✅ Usa o seu formatador original que já mostra todas as lojas
+      const texto = formatarPopupControle(res.data);
+      showModal("🔍 Saldo Atual no Controle", texto, null); 
+      setStatus("Busca concluída.", "ok", "check");
     } else {
-      // ✅ Se não achou (res.ok === false), avisa que é um bolão novo
-      abrirModalInformativo("✨ Novo Bolão", 
-        `<div style="text-align:center; padding:20px;">
-          <i class="fas fa-magic" style="font-size:40px; color:var(--primary); margin-bottom:15px;"></i>
-          <p>Este bolão ainda não existe no Controle para a origem <b>${p.lojaOrigem}</b>.</p>
-          <p style="font-size:13px; color:#666; margin-top:10px;">Você pode iniciar a movimentação normalmente.</p>
-          <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">OK, VAMOS NESSA</button>
-        </div>`
-      );
-      exibirStatus("Bolão não encontrado (será criado ao movimentar).", "muted");
+      // ✅ Caso não exista, avisa de forma simples
+      showModal("✨ Novo Bolão", `Este bolão ainda não existe no Controle para ${p.lojaOrigem}.\nEle será criado ao movimentar.`, null);
+      setStatus("Bolão não encontrado.", "muted", "info-circle");
     }
   } catch (err) {
-    exibirStatus(err.message, "err");
+    setStatus(err.message, "err", "exclamation-triangle");
   } finally {
-    setLoading(btn, false);
+    setButtonLoading(btn, false);
   }
-}
-
+}   
 // Função auxiliar para montar o HTML de consulta limpo
 function gerarHtmlConsultaUnica(d) {
   const lojas = ["Boulevard", "Centro", "Lotobel", "Santa Tereza"];
