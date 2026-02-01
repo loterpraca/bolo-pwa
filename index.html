@@ -1000,14 +1000,14 @@ function formatDateBR(dateStr) {
       ].join("\n");
     }
 
-  function showModal(title, body, onConfirm) {
+  function showModal(title, body, onConfirm, onCancel) {
   const overlay = $("modalOverlay");
   const modalBox = overlay.querySelector(".modal");
   const btnCancel = $("modalCancel");
   const btnConfirm = $("modalConfirm");
 
   $("modalTitle").innerText = title;
-  $("modalBody").innerText = body; // ✅ texto puro
+  $("modalBody").innerText = body; // texto puro
 
   // limpa handlers antigos
   btnCancel.onclick = null;
@@ -1015,14 +1015,21 @@ function formatDateBR(dateStr) {
   overlay.onclick = null;
   if (modalBox) modalBox.onclick = null;
 
-  // clicar fora cancela
-  overlay.onclick = () => overlay.classList.remove("active");
+  const fechar = () => overlay.classList.remove("active");
+
+  const cancelar = () => {
+    fechar();
+    if (typeof onCancel === "function") onCancel();
+  };
+
+  // clicar fora cancela (ANTES era só fechar)
+  overlay.onclick = cancelar;
   if (modalBox) modalBox.onclick = (e) => e.stopPropagation();
 
   if (!onConfirm) {
     btnCancel.style.display = "none";
     btnConfirm.innerText = "OK";
-    btnConfirm.onclick = () => overlay.classList.remove("active");
+    btnConfirm.onclick = () => fechar();
   } else {
     btnCancel.style.display = "flex";
     btnConfirm.innerText = "Confirmar";
@@ -1030,13 +1037,13 @@ function formatDateBR(dateStr) {
     btnCancel.onclick = (e) => {
       e.preventDefault();
       e.stopPropagation();
-      overlay.classList.remove("active");
+      cancelar();
     };
 
     btnConfirm.onclick = async (e) => {
       e.preventDefault();
       e.stopPropagation();
-      overlay.classList.remove("active");
+      fechar();
       await onConfirm();
     };
   }
@@ -1454,6 +1461,10 @@ if (prev !== next) {
     let dataAtual = null;
     try {
       const resBusca = await callApi("buscarControle", pBusca);
+      console.log("buscarControle RAW:", resBusca);
+      console.log("buscarControle DATA:", resBusca?.data);
+      console.log("qtdBoulevard:", resBusca?.data?.qtdBoulevard);
+      console.log("formulaBoulevard:", resBusca?.data?.formulaBoulevard);
       if (resBusca && resBusca.ok && resBusca.data) dataAtual = resBusca.data;
     } catch (e) {
       dataAtual = null; // não trava
@@ -1481,45 +1492,47 @@ if (prev !== next) {
       formulaSantaTereza: (dataAtual && dataAtual.formulaSantaTereza) ? dataAtual.formulaSantaTereza : "",
     };
 
-    setButtonLoading(btn, false);
+   setButtonLoading(btn, false);
 
-    // ✅ VOLTA pro modal texto (igual buscar) usando sua função antiga
-    showModal(
-      "Confirmar Movimentação",
-      formatarConfirmacaoMov(saldosParaCalculo, deltas),
-      async () => {
-        try {
-          setStatus("Gravando alteração...", "muted", "spinner fa-spin");
-          setButtonLoading(btn, true);
+// ✅ Modal com CONFIRMAR + CANCELAR (resetando status)
+showModal(
+  "Confirmar Movimentação",
+  formatarConfirmacaoMov(saldosParaCalculo, deltas),
 
-          const payload = {
-            ...base,
-            ...deltas,
-            dtInicial: base.dataInicial,
-            dtConcurso: base.dataConcurso
-          };
+  // ✅ CONFIRMAR (igual ao seu)
+  async () => {
+    try {
+      setStatus("Gravando alteração...", "muted", "spinner fa-spin");
+      setButtonLoading(btn, true);
 
-          const res = await callApi("movimentar", payload);
-          setButtonLoading(btn, false);
+      const payload = {
+        ...base,
+        ...deltas,
+        dtInicial: base.dataInicial,
+        dtConcurso: base.dataConcurso
+      };
 
-          if (res && res.ok) {
-            setStatus("Planilha atualizada!", "ok", "check-double");
-            clearMov();
-          } else {
-            setStatus((res && res.message) ? res.message : "Erro ao gravar.", "err");
-          }
-        } catch (e) {
-          setButtonLoading(btn, false);
-          setStatus(e.message || String(e), "err");
-        }
+      const res = await callApi("movimentar", payload);
+      setButtonLoading(btn, false);
+
+      if (res && res.ok) {
+        setStatus("Planilha atualizada!", "ok", "check-double");
+        clearMov();
+      } else {
+        setStatus((res && res.message) ? res.message : "Erro ao gravar.", "err");
       }
-    );
+    } catch (e) {
+      setButtonLoading(btn, false);
+      setStatus(e.message || String(e), "err");
+    }
+  },
 
-  } catch (err) {
+  // ❌ CANCELAR (novo — ESSENCIAL)
+  () => {
     setButtonLoading(btn, false);
-    setStatus(err.message || String(err), "err");
+    setStatus("Movimentação cancelada.", "muted", "ban");
   }
-}
+);
 
 
 async function buscarControle() {
