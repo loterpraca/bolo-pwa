@@ -1028,14 +1028,31 @@ function formatDateBR(dateStr) {
       ].join("\n");
     }
 
-    function showModal(title, bodyText, onConfirm) {
-  $("modalTitle").textContent = title;
-  $("modalBody").textContent = bodyText; // ✅ texto puro
-  $("modalOverlay").classList.add("active");
+    function showModal(title, body, onConfirm) {
+  const modal = $("modalOverlay");
+  const btnCancel = $("modalCancel");
+  const btnConfirm = $("modalConfirm");
 
-  $("modalConfirm").onclick = () => { closeModal(); onConfirm(); };
-  $("modalCancel").onclick = () => closeModal();
-  $("modalOverlay").onclick = (e) => { if (e.target === $("modalOverlay")) closeModal(); };
+  $("modalTitle").innerText = title;
+  $("modalBody").innerText = body;
+
+  // SE onConfirm for null (como na Busca), vira modo "Apenas OK"
+  if (!onConfirm) {
+    if (btnCancel) btnCancel.style.setProperty("display", "none", "important"); 
+    btnConfirm.innerText = "OK";
+    btnConfirm.onclick = () => modal.classList.remove("active");
+  } 
+  // SE onConfirm existir (como na Movimentação), vira modo "Confirmação"
+  else {
+    if (btnCancel) btnCancel.style.setProperty("display", "flex", "important");
+    btnConfirm.innerText = "Confirmar";
+    btnConfirm.onclick = async () => {
+      modal.classList.remove("active");
+      await onConfirm();
+    };
+  }
+
+  modal.classList.add("active");
 }
 
     function closeModal() { $("modalOverlay").classList.remove("active"); }
