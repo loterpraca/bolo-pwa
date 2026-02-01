@@ -1000,45 +1000,77 @@ function formatDateBR(dateStr) {
       ].join("\n");
     }
 
-    function showModal(title, body, onConfirm) {
+    function showModal(title, body, onConfirm, isHtml = false) {
   const modal = $("modalOverlay");
   const btnCancel = $("modalCancel");
   const btnConfirm = $("modalConfirm");
 
-  // Preenche o conteúdo
   $("modalTitle").innerText = title;
-  $("modalBody").innerText = body;
 
-  // 1. SEMPRE define o que o cancelar faz (fechar)
+  // ✅ aqui é a diferença
+  if (isHtml) $("modalBody").innerHTML = body;
+  else $("modalBody").innerText = body;
+
   if (btnCancel) {
-    btnCancel.onclick = () => {
-      modal.classList.remove("active");
-    };
+    btnCancel.onclick = () => modal.classList.remove("active");
   }
 
-  // 2. Lógica condicional (Busca vs Movimentação)
   if (!onConfirm) {
-    // MODO BUSCA (Apenas botão OK)
     if (btnCancel) btnCancel.style.setProperty("display", "none", "important");
     btnConfirm.innerText = "OK";
-    btnConfirm.onclick = () => {
-      modal.classList.remove("active");
-    };
+    btnConfirm.onclick = () => modal.classList.remove("active");
   } else {
-    // MODO MOVIMENTAÇÃO (Confirmar e Cancelar)
     if (btnCancel) btnCancel.style.setProperty("display", "flex", "important");
     btnConfirm.innerText = "Confirmar";
-    
-    // IMPORTANTE: Definimos o clique para fechar E depois rodar a função
     btnConfirm.onclick = async () => {
-      modal.classList.remove("active"); // Fecha o modal primeiro
-      await onConfirm(); // Executa o bloco de código que você colou acima
+      modal.classList.remove("active");
+      await onConfirm();
     };
   }
 
-  // Abre o modal
   modal.classList.add("active");
 }
+function stripEq(s){ return String(s||"").replace(/^=/,"").trim(); }
+
+function exprHtml(exprReal, atualNum){
+  const expr = stripEq(exprReal);
+  const base = expr ? expr : String(Number(atualNum || 0));
+  return `<span style="color:#0f172a; font-weight:900;">${base}</span>`;
+}
+
+function fmtDeltaColored(mov){
+  const n = Number(mov || 0);
+  if (n === 0) return `<span style="color:#0f172a; font-weight:900;">0</span>`;
+  const cor = n > 0 ? "#16a34a" : "#dc2626";
+  const sinal = n > 0 ? "+" : "";
+  return `<span style="color:${cor}; font-weight:900;">${sinal}${n}</span>`;
+}
+
+function linhaMovHtml(nome, atualNum, exprReal, delta){
+  const mov = Number(delta || 0);
+  const atual = Number(atualNum || 0);
+  const final = atual + mov;
+
+  const baseHtml = exprHtml(exprReal, atualNum);
+  const deltaHtml = fmtDeltaColored(mov);
+
+  const exprComDelta =
+    mov === 0 ? baseHtml :
+    (mov > 0
+      ? `${baseHtml} <span style="color:#0f172a; font-weight:900;">+</span> ${deltaHtml}`
+      : `${baseHtml} ${deltaHtml}`);
+
+  return `
+    <div style="display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid rgba(0,0,0,.06);">
+      <div style="font-weight:900; color:#334155;">${nome}</div>
+      <div style="text-align:right;">
+        <div style="font-size:14px; line-height:1.2;">${exprComDelta}</div>
+        <div style="font-size:12px; color:#64748b; margin-top:2px;">➔ <span style="font-weight:900; color:#0f172a;">${final}</span></div>
+      </div>
+    </div>
+  `;
+}
+
 
     function closeModal() { $("modalOverlay").classList.remove("active"); }
 
@@ -1367,13 +1399,13 @@ if (prev !== next) {
       );
     }
 
-    async function onMovimentar() {
+   async function onMovimentar() {
   const btn = $("btnMovimentar");
   try {
     const base = validateMov();
     const deltas = getMovDeltas();
 
-    // Validação de segurança: precisa ter algum valor para mover
+    // Segurança: precisa ter pelo menos 1 destino
     if (!deltas.deltaBoulevard && !deltas.deltaCentro && !deltas.deltaLotobel && !deltas.deltaSantaTereza) {
       throw new Error("Informe pelo menos um valor de destino.");
     }
@@ -1381,30 +1413,61 @@ if (prev !== next) {
     setButtonLoading(btn, true);
     setStatus("Verificando saldos para movimentação...", "muted", "spinner fa-spin");
 
-    const dataAtual = await consultarDadosPlanilha(base);
-    
-    // Se não existir, cria um objeto "zerado" para o cálculo da escadinha não quebrar
-    const saldosParaCalculo = dataAtual || {
-      origem: base.lojaOrigem, modalidade: base.modalidade, concurso: base.concurso,
-      dtInicial: base.dataInicial, dtConcurso: base.dataConcurso,
+    // ✅ Busca no Controle (mesma chave: origem + modalidade + concurso + valorCota)
+    const pBusca = {
+      lojaOrigem: base.lojaOrigem,
+      modalidade: base.modalidade,
+      concurso: String(base.concurso).replace(/[^\d]/g, "").trim(),
       valorCota: base.valorCota,
-      qtdBoulevard: 0, qtdCentro: 0, qtdLotobel: 0, qtdSantaTereza: 0
+      dataInicial: base.dataInicial || "",
+      dataConcurso: base.dataConcurso || ""
+    };
+
+    let dataAtual = null;
+    try {
+      const resBusca = await callApi("buscarControle", pBusca);
+      if (resBusca && resBusca.ok && resBusca.data) dataAtual = resBusca.data;
+    } catch (e) {
+      // se falhar a busca, seguimos com zerado (não trava movimentação)
+      dataAtual = null;
+    }
+
+    // ✅ Se não existir ainda no Controle, monta zerado (com expr vazia)
+    const saldosParaCalculo = dataAtual || {
+      origem: base.lojaOrigem,
+      modalidade: base.modalidade,
+      concurso: base.concurso,
+      dtInicial: base.dataInicial,
+      dtConcurso: base.dataConcurso,
+      valorCota: base.valorCota,
+
+      qtdBoulevard: 0,
+      qtdCentro: 0,
+      qtdLotobel: 0,
+      qtdSantaTereza: 0,
+
+      exprBoulevard: "",
+      exprCentro: "",
+      exprLotobel: "",
+      exprSantaTereza: ""
     };
 
     setButtonLoading(btn, false);
 
-    // ABRE O MODAL DE AÇÃO (Com a função de gravar no 3º parâmetro)
+    // ✅ Modal HTML com delta colorido + expressão real
     showModal(
       "Confirmar Movimentação",
-      formatarConfirmacaoMov(saldosParaCalculo, deltas),
+      formatarConfirmacaoMovHtml(saldosParaCalculo, deltas),
       async () => {
         try {
           setStatus("Gravando alteração...", "muted", "spinner fa-spin");
           setButtonLoading(btn, true);
 
-          const payload = { 
-            ...base, ...deltas, 
-            dtInicial: base.dataInicial, dtConcurso: base.dataConcurso 
+          const payload = {
+            ...base,
+            ...deltas,
+            dtInicial: base.dataInicial,
+            dtConcurso: base.dataConcurso
           };
 
           const res = await callApi("movimentar", payload);
@@ -1414,19 +1477,22 @@ if (prev !== next) {
             setStatus("Planilha atualizada!", "ok", "check-double");
             clearMov();
           } else {
-            setStatus(res.message || "Erro ao gravar.", "err");
+            setStatus((res && res.message) ? res.message : "Erro ao gravar.", "err");
           }
         } catch (e) {
           setButtonLoading(btn, false);
-          setStatus(e.message, "err");
+          setStatus(e.message || String(e), "err");
         }
-      }
+      },
+      true // ✅ isHtml
     );
+
   } catch (err) {
     setButtonLoading(btn, false);
-    setStatus(err.message, "err");
+    setStatus(err.message || String(err), "err");
   }
 }
+
 
 async function buscarControle() {
   const p = validateBuscarControle(); // ✅ só o triplo + origem
@@ -1502,6 +1568,32 @@ function formatarPopupControle(data) {
     `🕓 Última alteração: ${formatDateTimeBR(data.carimbo)}`
   ].join("\n");
 }
+function formatarConfirmacaoMovHtml(data, deltas){
+  const bloco = [];
+
+  bloco.push(`
+    <div style="margin-bottom:10px;">
+      <div style="font-weight:900; color:#0f172a;">📍 Origem: ${data.origem}</div>
+      <div style="color:#334155; font-weight:800;">🎯 ${data.modalidade} | #${data.concurso}</div>
+      <div style="color:#334155; font-weight:800;">💰 Cota: R$ ${Number(data.valorCota||0).toFixed(2).replace(".", ",")}</div>
+    </div>
+  `);
+
+  bloco.push(`<div style="border:1px solid rgba(0,0,0,.08); border-radius:12px; padding:10px 12px;">`);
+
+  bloco.push(linhaMovHtml("🏢 Boulevard", data.qtdBoulevard, data.exprBoulevard, deltas.deltaBoulevard));
+  bloco.push(linhaMovHtml("🏬 Centro", data.qtdCentro, data.exprCentro, deltas.deltaCentro));
+  bloco.push(linhaMovHtml("🏪 Lotobel", data.qtdLotobel, data.exprLotobel, deltas.deltaLotobel));
+  bloco.push(linhaMovHtml("🏠 Santa Tereza", data.qtdSantaTereza, data.exprSantaTereza, deltas.deltaSantaTereza));
+
+  bloco.push(`</div>`);
+
+  bloco.push(`<div style="margin-top:12px; color:#334155; font-weight:900;">⚠️ Confirma a atualização desses valores?</div>`);
+
+  return bloco.join("");
+}
+
+    
 function formatarConfirmacaoMov(data, deltas) {
   // Função interna para o cálculo DE -> PARA
   const montarLinhaCalculo = (label, atual, delta) => {
@@ -1627,6 +1719,22 @@ function validateBuscarControle() {
   return { lojaOrigem, modalidade, concurso, valorCota, dataInicial, dataConcurso };
 }
 
+async function consultarDadosPlanilha(base){
+  // busca só o que o backend precisa
+  const payload = {
+    lojaOrigem: base.lojaOrigem,
+    modalidade: base.modalidade,
+    concurso: base.concurso,
+    valorCota: base.valorCota,   // number estável
+    // datas opcionais só pra exibir se não encontrar (você já quis isso)
+    dataInicial: base.dataInicial || "",
+    dataConcurso: base.dataConcurso || ""
+  };
+
+  const res = await callApi("buscarControle", payload);
+  if (res && res.ok && res.data) return res.data;
+  return null;
+}
 
 
     function bind() {
