@@ -1434,136 +1434,136 @@ if (prev !== next) {
       );
     }
 
-   async function onMovimentar() {
-  const btn = $("btnMovimentar");
-
-  try {
-    const base = validateMov();
-    const deltas = getMovDeltas();
-
-    if (!deltas.deltaBoulevard && !deltas.deltaCentro && !deltas.deltaLotobel && !deltas.deltaSantaTereza) {
-      throw new Error("Informe pelo menos um valor de destino.");
-    }
-
-    setButtonLoading(btn, true);
-    setStatus("Verificando saldos para movimentação...", "muted", "spinner fa-spin");
-
-    const pBusca = {
-      lojaOrigem: base.lojaOrigem,
-      modalidade: base.modalidade,
-      concurso: String(base.concurso).replace(/[^\d]/g, "").trim(),
-      valorCota: base.valorCota,
-      dataInicial: base.dataInicial || "",
-      dataConcurso: base.dataConcurso || ""
-    };
-
-    let dataAtual = null;
-    try {
-      const resBusca = await callApi("buscarControle", pBusca);
-      console.log("buscarControle RAW:", resBusca);
-      console.log("buscarControle DATA:", resBusca?.data);
-      console.log("qtdBoulevard:", resBusca?.data?.qtdBoulevard);
-      console.log("formulaBoulevard:", resBusca?.data?.formulaBoulevard);
-
-      if (resBusca && resBusca.ok && resBusca.data) dataAtual = resBusca.data;
-    } catch (e) {
-      dataAtual = null;
-    }
-
-    const saldosParaCalculo = {
-      origem: (dataAtual && dataAtual.origem) ? dataAtual.origem : base.lojaOrigem,
-      modalidade: (dataAtual && dataAtual.modalidade) ? dataAtual.modalidade : base.modalidade,
-      concurso: (dataAtual && dataAtual.concurso) ? dataAtual.concurso : base.concurso,
-
-      dtInicial: (dataAtual && dataAtual.dtInicial) ? dataAtual.dtInicial : base.dataInicial,
-      dtConcurso: (dataAtual && dataAtual.dtConcurso) ? dataAtual.dtConcurso : base.dataConcurso,
-
-      valorCota: (dataAtual && typeof dataAtual.valorCota === "number") ? dataAtual.valorCota : base.valorCota,
-
-      qtdBoulevard: (dataAtual && Number.isFinite(dataAtual.qtdBoulevard)) ? dataAtual.qtdBoulevard : 0,
-      qtdCentro: (dataAtual && Number.isFinite(dataAtual.qtdCentro)) ? dataAtual.qtdCentro : 0,
-      qtdLotobel: (dataAtual && Number.isFinite(dataAtual.qtdLotobel)) ? dataAtual.qtdLotobel : 0,
-      qtdSantaTereza: (dataAtual && Number.isFinite(dataAtual.qtdSantaTereza)) ? dataAtual.qtdSantaTereza : 0,
-
-      formulaBoulevard: (dataAtual && dataAtual.formulaBoulevard) ? dataAtual.formulaBoulevard : "",
-      formulaCentro: (dataAtual && dataAtual.formulaCentro) ? dataAtual.formulaCentro : "",
-      formulaLotobel: (dataAtual && dataAtual.formulaLotobel) ? dataAtual.formulaLotobel : "",
-      formulaSantaTereza: (dataAtual && dataAtual.formulaSantaTereza) ? dataAtual.formulaSantaTereza : "",
-    };
-
-    setButtonLoading(btn, false);
-
-    showModal(
-      "Confirmar Movimentação",
-      formatarConfirmacaoMov(saldosParaCalculo, deltas),
-
-      async () => {
-        try {
-          setStatus("Gravando alteração...", "muted", "spinner fa-spin");
-          setButtonLoading(btn, true);
-
-          const payload = {
-            ...base,
-            ...deltas,
-            dtInicial: base.dataInicial,
-            dtConcurso: base.dataConcurso
-          };
-
-          const res = await callApi("movimentar", payload);
-          setButtonLoading(btn, false);
-
-          if (res && res.ok) {
-            setStatus("Planilha atualizada!", "ok", "check-double");
-            clearMov();
-          } else {
-            setStatus((res && res.message) ? res.message : "Erro ao gravar.", "err", "exclamation-circle");
-          }
-        } catch (e) {
-          setButtonLoading(btn, false);
-          setStatus(e.message || String(e), "err", "exclamation-circle");
-        }
-      },
-
-      () => {
-        setButtonLoading(btn, false);
-        setStatus("Movimentação cancelada.", "muted", "ban");
-      }
-    );
-
-  } catch (err) {
-    setButtonLoading(btn, false);
-    setStatus(err.message || String(err), "err", "exclamation-circle");
-  }
-}
-
-
-async function buscarControle() {
-  const p = validateBuscarControle(); // ✅ só o triplo + origem
-  const btn = $("btnBuscarControle");
+     async function onMovimentar() {
+    const btn = $("btnMovimentar");
   
-  setStatus("Buscando no sistema...", "muted", "spinner fa-spin");
-  setButtonLoading(btn, true);
-
-  try {
-    const res = await callApi("buscarControle", p);
-    setButtonLoading(btn, false);
-
-    if (res && res.ok) {
-      // ✅ CASO ENCONTRADO: Mostra os dados que estão na planilha
-      const texto = formatarPopupControle(res.data);
-      showModal("🔍 Dados Encontrados", texto, null);
-      setStatus("Busca concluída.", "ok", "check");
-    } else {
-      // ❌ CASO NÃO ENCONTRADO: Mostra o "espelho" do que foi digitado
-      const textoErro = formatarNaoEncontrado(p);
-      showModal("⚠️ Atenção", textoErro, null);
-      setStatus("Bolão não localizado.", "muted", "info-circle");
+    try {
+      const base = validateMov();
+      const deltas = getMovDeltas();
+  
+      if (!deltas.deltaBoulevard && !deltas.deltaCentro && !deltas.deltaLotobel && !deltas.deltaSantaTereza) {
+        throw new Error("Informe pelo menos um valor de destino.");
+      }
+  
+      setButtonLoading(btn, true);
+      setStatus("Verificando saldos para movimentação...", "muted", "spinner fa-spin");
+  
+      const pBusca = {
+        lojaOrigem: base.lojaOrigem,
+        modalidade: base.modalidade,
+        concurso: String(base.concurso).replace(/[^\d]/g, "").trim(),
+        valorCota: base.valorCota,
+        dataInicial: base.dataInicial || "",
+        dataConcurso: base.dataConcurso || ""
+      };
+  
+      let dataAtual = null;
+      try {
+        const resBusca = await callApi("buscarControle", pBusca);
+        console.log("buscarControle RAW:", resBusca);
+        console.log("buscarControle DATA:", resBusca?.data);
+        console.log("qtdBoulevard:", resBusca?.data?.qtdBoulevard);
+        console.log("formulaBoulevard:", resBusca?.data?.formulaBoulevard);
+  
+        if (resBusca && resBusca.ok && resBusca.data) dataAtual = resBusca.data;
+      } catch (e) {
+        dataAtual = null;
+      }
+  
+      const saldosParaCalculo = {
+        origem: (dataAtual && dataAtual.origem) ? dataAtual.origem : base.lojaOrigem,
+        modalidade: (dataAtual && dataAtual.modalidade) ? dataAtual.modalidade : base.modalidade,
+        concurso: (dataAtual && dataAtual.concurso) ? dataAtual.concurso : base.concurso,
+  
+        dtInicial: (dataAtual && dataAtual.dtInicial) ? dataAtual.dtInicial : base.dataInicial,
+        dtConcurso: (dataAtual && dataAtual.dtConcurso) ? dataAtual.dtConcurso : base.dataConcurso,
+  
+        valorCota: (dataAtual && typeof dataAtual.valorCota === "number") ? dataAtual.valorCota : base.valorCota,
+  
+        qtdBoulevard: (dataAtual && Number.isFinite(dataAtual.qtdBoulevard)) ? dataAtual.qtdBoulevard : 0,
+        qtdCentro: (dataAtual && Number.isFinite(dataAtual.qtdCentro)) ? dataAtual.qtdCentro : 0,
+        qtdLotobel: (dataAtual && Number.isFinite(dataAtual.qtdLotobel)) ? dataAtual.qtdLotobel : 0,
+        qtdSantaTereza: (dataAtual && Number.isFinite(dataAtual.qtdSantaTereza)) ? dataAtual.qtdSantaTereza : 0,
+  
+        formulaBoulevard: (dataAtual && dataAtual.formulaBoulevard) ? dataAtual.formulaBoulevard : "",
+        formulaCentro: (dataAtual && dataAtual.formulaCentro) ? dataAtual.formulaCentro : "",
+        formulaLotobel: (dataAtual && dataAtual.formulaLotobel) ? dataAtual.formulaLotobel : "",
+        formulaSantaTereza: (dataAtual && dataAtual.formulaSantaTereza) ? dataAtual.formulaSantaTereza : "",
+      };
+  
+      setButtonLoading(btn, false);
+  
+      showModal(
+        "Confirmar Movimentação",
+        formatarConfirmacaoMov(saldosParaCalculo, deltas),
+  
+        async () => {
+          try {
+            setStatus("Gravando alteração...", "muted", "spinner fa-spin");
+            setButtonLoading(btn, true);
+  
+            const payload = {
+              ...base,
+              ...deltas,
+              dataInicial: base.dataInicial,
+              dataConcurso: base.dataConcurso
+            };
+  
+            const res = await callApi("movimentar", payload);
+            setButtonLoading(btn, false);
+  
+            if (res && res.ok) {
+              setStatus("Planilha atualizada!", "ok", "check-double");
+              clearMov();
+            } else {
+              setStatus((res && res.message) ? res.message : "Erro ao gravar.", "err", "exclamation-circle");
+            }
+          } catch (e) {
+            setButtonLoading(btn, false);
+            setStatus(e.message || String(e), "err", "exclamation-circle");
+          }
+        },
+  
+        () => {
+          setButtonLoading(btn, false);
+          setStatus("Movimentação cancelada.", "muted", "ban");
+        }
+      );
+  
+    } catch (err) {
+      setButtonLoading(btn, false);
+      setStatus(err.message || String(err), "err", "exclamation-circle");
     }
-  } catch (err) {
-    setButtonLoading(btn, false);
-    setStatus("Erro: " + err.message, "err", "exclamation-triangle");
   }
-}
+  
+  
+  async function buscarControle() {
+    const p = validateBuscarControle(); // ✅ só o triplo + origem
+    const btn = $("btnBuscarControle");
+    
+    setStatus("Buscando no sistema...", "muted", "spinner fa-spin");
+    setButtonLoading(btn, true);
+  
+    try {
+      const res = await callApi("buscarControle", p);
+      setButtonLoading(btn, false);
+  
+      if (res && res.ok) {
+        // ✅ CASO ENCONTRADO: Mostra os dados que estão na planilha
+        const texto = formatarPopupControle(res.data);
+        showModal("🔍 Dados Encontrados", texto, null);
+        setStatus("Busca concluída.", "ok", "check");
+      } else {
+        // ❌ CASO NÃO ENCONTRADO: Mostra o "espelho" do que foi digitado
+        const textoErro = formatarNaoEncontrado(p);
+        showModal("⚠️ Atenção", textoErro, null);
+        setStatus("Bolão não localizado.", "muted", "info-circle");
+      }
+    } catch (err) {
+      setButtonLoading(btn, false);
+      setStatus("Erro: " + err.message, "err", "exclamation-triangle");
+    }
+  }
 // Função auxiliar para montar o HTML de consulta limpo
 function gerarHtmlConsultaUnica(d) {
   const lojas = ["Boulevard", "Centro", "Lotobel", "Santa Tereza"];
