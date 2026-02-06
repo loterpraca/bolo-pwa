@@ -771,7 +771,7 @@
       { label:"[10x09]", games:10, dezenas:9,  valor:"68,04", cotas:50 },
       { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
       { label:"[10x08]", games:10, dezenas:8,  valor:"22,68", cotas:50 },
-      { label:"[10x07]", games:10, dezenas:07, valor:"18,90", cotas:15 },
+      { label:"[10x07]", games:10, dezenas:7,  valor:"18,90", cotas:15 },
     ],
     "Super7": [
       { label:"[07x10]", games:7, dezenas:10, valor:"56,70", cotas:5 },
@@ -790,15 +790,15 @@
       { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
     ],
     "Federal": [
-      { label:"[10x04]", games:0, dezenas:0,  valor:"4,00",  cotas:10 },
+      { label:"[10x04]", games:0, dezenas:0, valor:"4,00",  cotas:10 },
       { label:"[10x10]", games:0, dezenas:0, valor:"10,00", cotas:10 },
-      { label:"[E.NML]", games:0, dezenas:0,  valor:"3,21", cotas:1 },
-      { label:"[E.ESP]", games:0, dezenas:0, valor:"8,04", cotas:1 },
+      { label:"[E.NML]", games:0, dezenas:0, valor:"3,21",  cotas:1 },
+      { label:"[E.ESP]", games:0, dezenas:0, valor:"8,04",  cotas:1 },
     ],
-  },
+  }
+}; // 👈 FECHAMENTO CORRETO DO SHORTCUTS
 
-  
-    const $ = (id) => document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 
     function setStatus(msg, type = "muted", icon = "info-circle") {
       const el = $("status");
