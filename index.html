@@ -799,6 +799,20 @@
 }; // 👈 FECHAMENTO CORRETO DO SHORTCUTS
 
 const $ = (id) => document.getElementById(id);
+    // ✅ ID único (sem libs)
+  
+    function newRequestId(prefix = "cad") {
+      const rand = Math.random().toString(36).slice(2);
+      return `${prefix}_${Date.now()}_${rand}`;
+    }
+
+// ✅ trava "em voo" por ação (evita duplo clique/chamada duplicada)
+    const inFlight = {
+    cadastrar: false,
+    movimentar: false,
+    buscar: false
+  };
+
 
     function setStatus(msg, type = "muted", icon = "info-circle") {
       const el = $("status");
@@ -878,6 +892,18 @@ function buildCadConfirmText(base){
     const json = JSON.stringify(obj);
     return btoa(unescape(encodeURIComponent(json)));
   }
+// ✅ ID único (sem libs)
+function newRequestId(prefix = "cad") {
+  const rand = Math.random().toString(36).slice(2);
+  return `${prefix}_${Date.now()}_${rand}`;
+}
+
+// ✅ trava "em voo" por botão (evita duplo clique + toque duplo)
+const inFlight = {
+  cadastrar: false,
+  movimentar: false,
+  buscar: false
+};
 
   function jsonp(url, cbName) {
     return new Promise((resolve, reject) => {
@@ -1369,7 +1395,15 @@ if (prev !== next) {
         setStatus("Enviando dados...", "muted", "spinner fa-spin");
         setButtonLoading(btn, true);
 
+        // ✅ trava contra clique duplo / chamadas simultâneas
+        if (inFlight.cadastrar) return;
+        inFlight.cadastrar = true;
+
+        // ✅ requestId por tentativa de cadastro
+        const reqId = newRequestId("cad");
+
         const payload = {
+          requestId: reqId,  // ✅ NOVO
           lojaOrigem: base.lojaOrigem,
           modalidade: base.modalidade,
           concurso: base.concurso,
@@ -1389,10 +1423,13 @@ if (prev !== next) {
 
           showModal("Bolão já existe", buildExistsConfirmText(base), async () => {
 
+            // ✅ requestId DIFERENTE para a confirmação
+            const reqId2 = newRequestId("cad_confirm");
+
             setStatus("Adicionando cotas...", "muted", "spinner fa-spin");
             setButtonLoading(btn, true);
 
-            const res2 = await callApi("cadastrar", { ...payload, confirmAdd: true });
+            const res2 = await callApi("cadastrar", { ...payload, requestId: reqId2, confirmAdd: true });
 
             setButtonLoading(btn, false);
             if (res2 && res2.ok) setStatus(res2.message || "Cotas adicionadas!", "ok", "check-circle");
@@ -1400,6 +1437,7 @@ if (prev !== next) {
           });
 
           setStatus("Aguardando confirmação...", "muted", "clock");
+          inFlight.cadastrar = false; // ✅ libera para permitir confirmar
           return;
         }
 
@@ -1407,10 +1445,14 @@ if (prev !== next) {
         if (res && res.ok) setStatus(res.message || "Bolão cadastrado!", "ok", "check-circle");
         else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
 
-      } catch (err2) {
-        setButtonLoading(btn, false);
-        setStatus(err2.message || String(err2), "err", "exclamation-circle");
+
+       } catch (err2) {
+         setButtonLoading(btn, false);
+         setStatus(err2.message || String(err2), "err", "exclamation-circle");
+      }  finally {
+         inFlight.cadastrar = false; // ✅ NOVO
       }
+
     });
 
   } catch (err) {
@@ -1432,7 +1474,8 @@ if (prev !== next) {
             setButtonLoading(btn, true);
 
             const base = validateBase(false);
-            const payload = {
+           const payload = {
+              requestId: newRequestId("cad_del"),
               lojaOrigem: base.lojaOrigem,
               modalidade: base.modalidade,
               concurso: base.concurso,
