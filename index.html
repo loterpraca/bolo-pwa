@@ -106,6 +106,51 @@
       font-weight:800;margin:0 0 6px 2px
     }
     .field label i{color:var(--primary);font-size:13px}
+   
+    /* ===== Setinhas de dia ao lado do label (Data Inicial / Data Concurso) ===== */
+    .label-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .day-stepper{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+
+/* aqui tem um detalhe IMPORTANTÍSSIMO:
+   como você tem regra GLOBAL de button, eu forço visual do stepper com !important */
+    .day-btn{
+      width:26px !important;
+      height:26px !important;
+      min-height:26px !important;
+      padding:0 !important;
+      border-radius:10px !important;
+      border:2px solid var(--line) !important;
+      background:#fff !important;
+      color:var(--primary) !important;
+      cursor:pointer;
+      transition:var(--transition);
+      display:grid !important;
+      place-items:center !important;
+      gap:0 !important;
+    }
+    .day-btn:hover{
+      border-color:var(--primary) !important;
+      transform:translateY(-1px);
+    }
+    
+    .day-btn:active{
+      transform:translateY(0px);
+    }
+    
+    .day-btn i{
+      font-size:12px !important;
+    }
+ 
     .field input,.field select{
       width:100%;font-size:13px;padding:6px 7px;border-radius:var(--radius-sm);
       border:2px solid var(--line);outline:none;background:#fff;transition:var(--transition);font-family:var(--font)
@@ -374,16 +419,42 @@
       </div>
 
       <!-- Data inicial + Data concurso -->
-      <div class="grid-2">
-        <div class="field">
-          <label><i class="fas fa-calendar-day"></i> Data inicial</label>
-          <input id="dataInicial" type="date" required />
-        </div>
-        <div class="field">
-          <label><i class="fas fa-calendar-check"></i> Data do concurso</label>
-          <input id="dataConcurso" type="date" required />
-        </div>
-      </div>
+      <!-- Data inicial + Data concurso -->
+<div class="grid-2">
+  <div class="field">
+    <label class="label-row">
+      <span><i class="fas fa-calendar-day"></i> Data inicial</span>
+
+      <span class="day-stepper">
+        <button type="button" class="day-btn" id="btnDataInicialPrev" title="-1 dia">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button type="button" class="day-btn" id="btnDataInicialNext" title="+1 dia">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </span>
+    </label>
+
+    <input id="dataInicial" type="date" required />
+  </div>
+
+  <div class="field">
+    <label class="label-row">
+      <span><i class="fas fa-calendar-check"></i> Data do concurso</span>
+
+      <span class="day-stepper">
+        <button type="button" class="day-btn" id="btnDataConcursoPrev" title="-1 dia">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button type="button" class="day-btn" id="btnDataConcursoNext" title="+1 dia">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </span>
+    </label>
+
+    <input id="dataConcurso" type="date" required />
+  </div>
+</div>
 
       <!-- Qtd de Jogos + Qtd de Dezenas -->
       <div class="grid-2">
@@ -1039,7 +1110,53 @@ function formatDateBR(dateStr) {
   const ano = d.getFullYear();
   return `${dia}/${mes}/${ano}`;
 }
+function addDaysToDateInput(inputId, deltaDays){
+  const el = $(inputId);
+  if (!el) return;
 
+  const v = String(el.value || "").trim();
+
+  // se vazio: começa em hoje
+  let y, m, d;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+    [y, m, d] = v.split("-").map(n => Number(n));
+  } else {
+    const now = new Date();
+    y = now.getFullYear();
+    m = now.getMonth() + 1;
+    d = now.getDate();
+  }
+
+  // cria data LOCAL (sem UTC shift)
+  const dt = new Date(y, (m - 1), d);
+  dt.setDate(dt.getDate() + Number(deltaDays || 0));
+
+  const yy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getDate()).padStart(2, "0");
+
+  el.value = `${yy}-${mm}-${dd}`;
+
+  // dispara change pra salvar draft e manter consistência
+  el.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+function bindDaySteppers(){
+  const map = [
+    ["btnDataInicialPrev",  "dataInicial",  -1],
+    ["btnDataInicialNext",  "dataInicial",  +1],
+    ["btnDataConcursoPrev", "dataConcurso", -1],
+    ["btnDataConcursoNext", "dataConcurso", +1],
+  ];
+
+  map.forEach(([btnId, inputId, delta]) => {
+    const b = $(btnId);
+    if (!b) return;
+    b.addEventListener("click", () => addDaysToDateInput(inputId, delta));
+  });
+}
+
+    
     function fmtBRL(n) {
       const num = Number(n || 0);
       return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -1288,8 +1405,9 @@ function linhaMovHtml(nome, atualNum, exprReal, delta){
   // $("concurso")
   // $("dataInicial")
   // $("dataConcurso")
-
+  applyFederalRulesUI(); // ✅ garante Federal=0 e trava campos
   setStatus(`Atalho aplicado: ${modKey} ${sc.label}`, "ok", "check-circle");
+     
   saveDraft();
 }
     
@@ -1337,47 +1455,50 @@ function linhaMovHtml(nome, atualNum, exprReal, delta){
   wrap.classList.add("active");
 }
 
-    function renderQuickbar(){
-      const grid = $("modGrid");
-      grid.innerHTML = "";
-      MODS.forEach(mod => {
-        const btn = buildModButton(mod);
-        btn.onclick = () => {
-  const loja = $("lojaOrigem").value.trim();
-  if (!loja) {
-    setStatus("Selecione a loja de origem antes de usar os atalhos.", "err", "exclamation-circle");
-    return;
-  }
+function renderQuickbar(){
+  const grid = $("modGrid");
+  grid.innerHTML = "";
 
-  const prev = localStorage.getItem("active_quick_mod") || "";
-const next = mod.key;
+  MODS.forEach(mod => {
+    const btn = buildModButton(mod);
 
-if (prev !== next) {
-  clearFieldsExceptLoja();
-}
-
-
-    localStorage.setItem("active_quick_mod", next);
-    setActiveModButton(next);
-    renderChips(next);
-
-    // (opcional) já seta o select de modalidade junto com o quickbar
-    $("modalidade").value = next;
-
-    saveDraft();
-};
-
-        grid.appendChild(btn);
-      });
-
-      const active = localStorage.getItem("active_quick_mod") || "";
-      if (active) {
-        setActiveModButton(active);
-        renderChips(active);
-      } else {
-        $("chipsWrap").classList.remove("active");
+    btn.onclick = () => {
+      const loja = $("lojaOrigem").value.trim();
+      if (!loja) {
+        setStatus("Selecione a loja de origem antes de usar os atalhos.", "err", "exclamation-circle");
+        return;
       }
-    }
+
+      const prev = localStorage.getItem("active_quick_mod") || "";
+      const next = mod.key;
+
+      if (prev !== next) {
+        clearFieldsExceptLoja();
+        $("modalidade").value = next; // repõe após limpar
+      } else {
+        $("modalidade").value = next;
+      }
+
+      localStorage.setItem("active_quick_mod", next);
+      setActiveModButton(next);
+      renderChips(next);
+      applyFederalRulesUI();
+      saveDraft();
+    };
+
+    grid.appendChild(btn);
+  });
+
+  const active = localStorage.getItem("active_quick_mod") || "";
+  if (active) {
+    setActiveModButton(active);
+    renderChips(active);
+    $("modalidade").value = active;
+    applyFederalRulesUI();
+  } else {
+    $("chipsWrap").classList.remove("active");
+  }
+}
 
     function refreshQuickbarForLoja(){
       // quando muda loja: mantém a modalidade ativa (se houver) e só troca os chips
@@ -1463,17 +1584,21 @@ if (prev !== next) {
             setButtonLoading(btn, true);
 
             const base = validateBase(false);
+
+            const isFederal = base.modalidade === "Federal";
+            const qj = Number(onlyDigits($("qtdJogos").value));
+            const qd = Number(onlyDigits($("qtdDezenas").value));
+
             const payload = {
               lojaOrigem: base.lojaOrigem,
               modalidade: base.modalidade,
               concurso: base.concurso,
               dataInicial: base.dataInicial,
               dataConcurso: base.dataConcurso,
-              qtdJogos: Number(onlyDigits($("qtdJogos").value)) || 1,
-              qtdDezenas: Number(onlyDigits($("qtdDezenas").value)) || 1,
+              qtdJogos: isFederal ? 0 : (Number.isFinite(qj) && qj > 0 ? qj : 1),
+              qtdDezenas: isFederal ? 0 : (Number.isFinite(qd) && qd > 0 ? qd : 1),
               cotas: -999,
               valorCota: $("valorCota").value.trim()
-
             };
 
             saveDraft();
@@ -1796,7 +1921,31 @@ function validateBuscarControle() {
 
   return { lojaOrigem, modalidade, concurso, valorCota, dataInicial, dataConcurso };
 }
+function applyFederalRulesUI() {
+  const modalidade = $("modalidade").value.trim();
+  const isFederal = modalidade === "Federal";
 
+  const jogosEl = $("qtdJogos");
+  const dezenasEl = $("qtdDezenas");
+  if (!jogosEl || !dezenasEl) return;
+
+  if (isFederal) {
+    jogosEl.value = "0";
+    dezenasEl.value = "0";
+    jogosEl.disabled = true;
+    dezenasEl.disabled = true;
+  } else {
+    jogosEl.disabled = false;
+    dezenasEl.disabled = false;
+
+    // se saiu do Federal e ficou 0, limpa pra não cadastrar errado
+    if (String(jogosEl.value).trim() === "0") jogosEl.value = "";
+    if (String(dezenasEl.value).trim() === "0") dezenasEl.value = "";
+  }
+
+  saveDraft();
+}
+    
 async function consultarDadosPlanilha(base){
   // busca só o que o backend precisa
   const payload = {
@@ -1868,6 +2017,7 @@ async function consultarDadosPlanilha(base){
   localStorage.setItem("active_quick_mod", m);
   setActiveModButton(m);
   renderChips(m);
+  applyFederalRulesUI();     
   saveDraft();
 });
 
@@ -1880,8 +2030,9 @@ async function consultarDadosPlanilha(base){
     updateThemeAndLogo();
     updateMovimentarUIByOrigem();
     refreshQuickbarForLoja();
+    applyFederalRulesUI();
+    bindDaySteppers();
 
-    
   </script>
 
   <!-- Service Worker -->
