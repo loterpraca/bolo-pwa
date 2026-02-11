@@ -585,7 +585,7 @@
     /********************************************************
      * CONFIG
      ********************************************************/
-    const API_URL = "https://script.google.com/macros/s/AKfycbwB2EeOZ-mucPkFXHhi9HblQzhi31kd8gZdwjaYa0Atm1nobtGXOMVVfYNJrtDkemIm/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyng4JQISxJ7LWHTlKrdjZXIdU9o3dn8KqURRZQYGIieZ7jdHw3CneCAfu7sZNpg8ni/exec";
 
     const LOJA_CONFIG = {
       "Boulevard":    { logo: "./icons/boulevard.png",    theme: "boulevard",    nome: "Boulevard",     position: "50% 50%" },
@@ -911,6 +911,12 @@ const $ = (id) => document.getElementById(id);
       const n = Number(cleaned);
       return Number.isFinite(n) ? n : 0;
     }
+    // mesma lógica do backend: limpa e força 2 casas -> "183.60"
+  function keyCotaClient(v) {
+  const n = parseBRMoneyToNumber(v); // você já tem
+  return Number.isFinite(n) ? n.toFixed(2) : "0.00";
+}
+
 function getModIcon(modKey){
   const m = MODS.find(x => x.key === modKey);
   return m ? m.icon : "";
@@ -1515,7 +1521,7 @@ function renderQuickbar(){
   try {
     const base = validateBase(true);
 
-    showModal("Confirmar cadastramento", buildCadConfirmText(base), async () => {
+   showModal("Confirmar cadastramento", formatarConfirmacaoCadastro(base), async () => {
 
       try {
         setStatus("Enviando dados...", "muted", "spinner fa-spin");
@@ -1572,48 +1578,56 @@ function renderQuickbar(){
 }
 
 
-    async function onDeletar() {
-      const loja = $("lojaOrigem").value;
-      showModal(
-        "Confirmar deleção",
-        `Deletar o bolão em ${loja}?\n\nEssa ação não pode ser desfeita.`,
-        async () => {
-          const btn = $("btnDeletar");
-          try {
-            setStatus("Deletando bolão...", "muted", "spinner fa-spin");
-            setButtonLoading(btn, true);
+   async function onDeletar() {
+  const btn = $("btnDeletar");
 
-            const base = validateBase(false);
+  try {
+    const base = validateBase(false);
 
-            const isFederal = base.modalidade === "Federal";
-            const qj = Number(onlyDigits($("qtdJogos").value));
-            const qd = Number(onlyDigits($("qtdDezenas").value));
-
-            const payload = {
-              lojaOrigem: base.lojaOrigem,
-              modalidade: base.modalidade,
-              concurso: base.concurso,
-              dataInicial: base.dataInicial,
-              dataConcurso: base.dataConcurso,
-              qtdJogos: isFederal ? 0 : (Number.isFinite(qj) && qj > 0 ? qj : 1),
-              qtdDezenas: isFederal ? 0 : (Number.isFinite(qd) && qd > 0 ? qd : 1),
-              cotas: -999,
-              valorCota: $("valorCota").value.trim()
-            };
-
-            saveDraft();
-            const res = await callApi("cadastrar", payload);
-
-            setButtonLoading(btn, false);
-            if (res && res.ok) setStatus(res.message || "Bolão deletado!", "ok", "check-circle");
-            else setStatus((res && res.message) ? res.message : "Erro desconhecido.", "err", "exclamation-circle");
-          } catch (err) {
-            setButtonLoading(btn, false);
-            setStatus(err.message || String(err), "err", "exclamation-circle");
-          }
-        }
-      );
+    // Federal não tem deleção (não cadastra)
+    if (base.modalidade === "Federal") {
+      setStatus("Federal não é cadastrado, não há o que deletar.", "err", "exclamation-circle");
+      return;
     }
+
+    // KEY exatamente como backend: Origem|Modalidade|Concurso|ValorCotaKey
+    const key = `${base.lojaOrigem}|${base.modalidade}|${String(base.concurso).replace(/[^\d]/g,"")}|${keyCotaClient($("valorCota").value)}`;
+
+    const msg = formatarConfirmacaoDelete({
+      origem: base.lojaOrigem,
+      modalidade: base.modalidade,
+      concurso: String(base.concurso).replace(/[^\d]/g,""),
+      dtInicial: base.dataInicial,
+      dtConcurso: base.dataConcurso,
+      qtdJogos: base.qtdJogos,
+      qtdDezenas: base.qtdDezenas,
+      valorCota: base.valorCota, // number estável
+      key
+    });
+
+    showModal("Confirmar deleção", msg, async () => {
+      try {
+        setStatus("Deletando bolão...", "muted", "spinner fa-spin");
+        setButtonLoading(btn, true);
+
+        const payload = { lojaOrigem: base.lojaOrigem, key };
+        const res = await callApi("deletar", payload);
+
+        setButtonLoading(btn, false);
+        if (res && res.ok) setStatus(res.message || "Bolão deletado!", "ok", "check-circle");
+        else setStatus((res && res.message) ? res.message : "Erro ao deletar.", "err", "exclamation-circle");
+      } catch (err) {
+        setButtonLoading(btn, false);
+        setStatus(err.message || String(err), "err", "exclamation-circle");
+      }
+    });
+
+  } catch (err) {
+    setButtonLoading(btn, false);
+    setStatus(err.message || String(err), "err", "exclamation-circle");
+  }
+}
+
 
      async function onMovimentar() {
     const btn = $("btnMovimentar");
@@ -1790,6 +1804,40 @@ function formatarPopupControle(data) {
     montarLinha("  🏠 Santa Tereza", data.qtdSantaTereza, data.countSantaTereza),
     ``,
     `🕓 Última alteração: ${formatDateTimeBR(data.carimbo)}`
+  ].join("\n");
+}
+function formatarConfirmacaoDelete(data) {
+  return [
+    `🗑️ CONFIRMAÇÃO DE DELEÇÃO`,
+    ``,
+    `📍 Origem: ${data.origem}`,
+    `🎯 Modalidade: ${data.modalidade}`,
+    `# Concurso: ${data.concurso}`,
+    `🗓️ Início: ${formatDateBR(data.dtInicial)}`,
+    `🎟️ Sorteio: ${formatDateBR(data.dtConcurso)}`,
+    `💰 Cota: R$ ${Number(data.valorCota||0).toFixed(2).replace(".", ",")}`,
+    `🎮 Jogos / Dezenas: ${data.qtdJogos} / ${data.qtdDezenas}`,
+    ``,
+    `🔑 KEY: ${data.key}`,
+    ``,
+    `⚠️ Este bolão será EXCLUÍDO PERMANENTEMENTE.`,
+    `Confirma a deleção?`
+  ].join("\n");
+}
+function formatarConfirmacaoCadastro(base) {
+  return [
+    `🧾 CONFIRMAÇÃO DE CADASTRO`,
+    ``,
+    `📍 Origem: ${base.lojaOrigem}`,
+    `🎯 Modalidade: ${base.modalidade}`,
+    `# Concurso: ${base.concurso}`,
+    `🗓️ Início: ${formatDateBR(base.dataInicial)}`,
+    `🎟️ Sorteio: ${formatDateBR(base.dataConcurso)}`,
+    `🎮 Jogos / Dezenas: ${Number(base.qtdJogos||0)} / ${Number(base.qtdDezenas||0)}`,
+    `💰 Valor da Cota: R$ ${Number(base.valorCota||0).toFixed(2).replace(".", ",")}`,
+    `📦 Cotas iniciais: ${Number(base.cotas||0)}`,
+    ``,
+    `⚠️ Confirma o cadastramento deste bolão?`
   ].join("\n");
 }
     
