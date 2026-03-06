@@ -1429,24 +1429,29 @@ function linhaMovHtml(nome, atualNum, exprReal, delta){
   return n.toFixed(2).replace(".", ",");
 }
        
-   async function applyShortcut(modKey, sc){
+  async function applyShortcut(modKey, sc){
   const loja = $("lojaOrigem").value.trim();
   if (!loja) {
     setStatus("Selecione a loja de origem antes de usar atalhos.", "err", "exclamation-circle");
     return;
   }
 
-  $("modalidade").value = modKey;
+  const modsEspeciais = ["Virada", "Independencia", "Sao Joao", "Pascoa"];
+  const isEspecial = modsEspeciais.includes(modKey);
 
+  // sempre preenche estes
+  $("modalidade").value = modKey;
   $("qtdJogos").value = sc.games ?? "";
   $("qtdDezenas").value = sc.dezenas ?? "";
   $("valorCota").value = fmtMoneyBR(sc.valor ?? "");
   $("cotas").value = sc.cotas ?? "";
 
-  // novos campos opcionais
-  $("concurso").value = sc.concurso ?? "";
-  $("dataInicial").value = sc.dataInicial ?? "";
-  $("dataConcurso").value = sc.dataConcurso ?? "";
+  // só modalidades especiais mexem nesses campos
+  if (isEspecial) {
+    $("concurso").value = sc.concurso ?? "";
+    $("dataInicial").value = sc.dataInicial ?? "";
+    $("dataConcurso").value = sc.dataConcurso ?? "";
+  }
 
   applyFederalRulesUI();
   setStatus(`Atalho aplicado: ${modKey} ${sc.label}`, "ok", "check-circle");
