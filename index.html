@@ -26,6 +26,7 @@
     [data-theme="centro"]{--primary:#2E8B57;--primary-dark:#16a34a;--primary-light:#4ade80;--secondary:#eab308;}
     [data-theme="lotobel"]{--primary:#CD5C5C;--primary-dark:#b91c1c;--primary-light:#ef4444;--secondary:#d97706;}
     [data-theme="santa-tereza"]{--primary:#483D8B;--primary-dark:#7e22ce;--primary-light:#a855f7;--secondary:#f59e0b;}
+    [data-theme="via-brasil"]{--primary:#D4A017;--primary-dark:#b45309;--primary-light:#facc15;--secondary:#2563eb;}
 
     *{box-sizing:border-box;margin:0;padding:0}
     body{margin:0;font-family:var(--font);color:var(--txt);background:var(--bg);min-height:100vh;transition:var(--transition)}
@@ -353,6 +354,9 @@
         <button type="button" class="brand-btn" data-loja="Santa Tereza" title="Santa Tereza">
           <img src="./icons/santa-tereza.png" alt="Santa Tereza">
         </button>
+        <button type="button" class="brand-btn" data-loja="Via Brasil" title="Via Brasil">
+          <img src="./icons/via-brasil.png" alt="Via Brasil">
+        </button>
       </div>
     </div>
   </header>
@@ -384,6 +388,7 @@
             <option>Centro</option>
             <option>Lotobel</option>
             <option>Santa Tereza</option>
+            <option>Via Brasil</option>
           </select>
         </div>
       </div>
@@ -549,8 +554,14 @@
           <label><i class="fas fa-church"></i> Santa Tereza</label>
           <input id="deltaSantaTereza" inputmode="numeric" placeholder="0" />
         </div>
+       </div>
+    <div class="grid-2 force-2">
+      <div class="field">
+        <label><i class="fas fa-road"></i> Via Brasil</label>
+        <input id="deltaViaBrasil" inputmode="numeric" placeholder="0" />
       </div>
-
+    <div></div>
+    </div>
       <div class="actions">
         <button type="button" class="btn-dark" id="btnMovimentar">
           <i class="fas fa-arrows-alt-h"></i><span>Movimentar</span>
@@ -585,15 +596,53 @@
     /********************************************************
      * CONFIG
      ********************************************************/
-    const API_URL = "https://script.google.com/macros/s/AKfycbzKAnbj5opAT49PlSBjc_zmNn6vy69sIW5ujLtTSmlSYLYlZ0JLgdRdFD-YnSt8Z0Qz/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyrPWP5tDCrAgjcIO2W4QhHYOAcoWVxibaY2PUB48ZmedLpW02nxOU8uuCJFEtXfA/exec";
 
     const LOJA_CONFIG = {
       "Boulevard":    { logo: "./icons/boulevard.png",    theme: "boulevard",    nome: "Boulevard",     position: "50% 50%" },
       "Centro":       { logo: "./icons/loterpraca.png",   theme: "centro",       nome: "Centro",        position: "50% 42%" },
       "Lotobel":      { logo: "./icons/lotobel.png",      theme: "lotobel",      nome: "Lotobel",       position: "50% 50%" },
-      "Santa Tereza": { logo: "./icons/santa-tereza.png", theme: "santa-tereza", nome: "Santa Tereza",  position: "50% 50%" }
+      "Santa Tereza": { logo: "./icons/santa-tereza.png", theme: "santa-tereza", nome: "Santa Tereza",  position: "50% 50%" },
+      "Via Brasil":   { logo: "./icons/via-brasil.png", theme: "via-brasil",   nome: "Via Brasil",    position: "50% 50%" }
     };
-
+    const LOJAS = [
+  {
+    nome: "Boulevard",
+    inputId: "deltaBoulevard",
+    qtdKey: "qtdBoulevard",
+    formulaKey: "formulaBoulevard",
+    countKey: "countBoulevard"
+  },
+  {
+    nome: "Centro",
+    inputId: "deltaCentro",
+    qtdKey: "qtdCentro",
+    formulaKey: "formulaCentro",
+    countKey: "countCentro"
+  },
+  {
+    nome: "Lotobel",
+    inputId: "deltaLotobel",
+    qtdKey: "qtdLotobel",
+    formulaKey: "formulaLotobel",
+    countKey: "countLotobel"
+  },
+  {
+    nome: "Santa Tereza",
+    inputId: "deltaSantaTereza",
+    qtdKey: "qtdSantaTereza",
+    formulaKey: "formulaSantaTereza",
+    countKey: "countSantaTereza"
+  },
+  {
+    nome: "Via Brasil",
+    inputId: "deltaViaBrasil",
+    qtdKey: "qtdViaBrasil",
+    formulaKey: "formulaViaBrasil",
+    countKey: "countViaBrasil"
+  }
+];
+    
     // Ícones (arquivos que você vai subir em ./icons/)
     const MODS = [
       { key:"Mega Sena",    short:"MS", icon:"./icons/mega-sena.png" },
@@ -846,7 +895,83 @@
       { label:"[10x14]", games:10, dezenas:14, valor:"2432,42", cotas:50, concurso:"2940", dataInicial:"2026-03-02", dataConcurso:"2026-04-04" },
     ],
   },
-
+  "Via Brasil": {
+    "Mega Sena": [
+      { label:"[03x10]", games:3, dezenas:10, valor:"51,03", cotas:100 },
+      { label:"[02x10]", games:2, dezenas:10, valor:"34,01", cotas:100 },
+      { label:"[01x10]", games:1, dezenas:11, valor:"37,42", cotas:100 },
+      { label:"[10x08]", games:10, dezenas:8, valor:"22,68", cotas:100 },
+      { label:"[05x08]", games:5, dezenas:8, valor:"22,68", cotas:50 },
+      { label:"[10x07]", games:10, dezenas:7, valor:"18,90", cotas:30 },
+    ],
+    "Lotofacil": [
+      { label:"[07x17]", games:7, dezenas:17, valor:"112,44", cotas:40 },
+      { label:"[01x18]", games:1, dezenas:18, valor:"77,11", cotas:50 },
+      { label:"[02x17]", games:2, dezenas:17, valor:"32,13", cotas:40 },
+      { label:"[10x16]", games:10, dezenas:16, valor:"25,19", cotas:30 },
+      { label:"[05x16]", games:5, dezenas:16, valor:"12,59", cotas:30 },
+      { label:"[10x15]", games:10, dezenas:15, valor:"11,81", cotas:4 },
+    ],
+    "Quina": [
+      { label:"[01x12]", games:1, dezenas:12, valor:"64,15", cotas:50 },
+      { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+      { label:"[01x10]", games:1, dezenas:10, valor:"20,41", cotas:50 },
+      { label:"[07x07]", games:7, dezenas:7,  valor:"12,15", cotas:49 },
+      { label:"[05x07]", games:5, dezenas:7,  valor:"12,15", cotas:35 },
+      { label:"[10x06]", games:10, dezenas:6,  valor:"12,14", cotas:20 },
+    ],
+    "Dia de Sorte": [
+      { label:"[01x13]", games:1, dezenas:13, valor:"96,52", cotas:60 },
+      { label:"[01x12]", games:1, dezenas:12, valor:"44,55", cotas:60 },
+      { label:"[01x11]", games:1, dezenas:11, valor:"27,82", cotas:40 },
+      { label:"[01x10]", games:1, dezenas:10, valor:"27,00", cotas:15 },
+      { label:"[10x08]", games:10, dezenas:8,  valor:"17,99", cotas:15 },
+      { label:"[05x08]", games:5, dezenas:8,  valor:"13,50", cotas:10 },
+    ],
+    "Timemania": [
+      { label:"[15x10]", games:15, dezenas:10, valor:"10,12", cotas:7 },
+    ],
+    "Dupla Sena": [
+      { label:"[01x14]", games:1, dezenas:14, valor:"243,24", cotas:50 },
+      { label:"[01x12]", games:1, dezenas:12, valor:"74,84", cotas:50 },
+      { label:"[01x11]", games:1, dezenas:11, valor:"37,42", cotas:50 },
+      { label:"[10x09]", games:10, dezenas:9,  valor:"68,04", cotas:50 },
+      { label:"[10x08]", games:10, dezenas:8,  valor:"22,68", cotas:50 },
+      { label:"[10x07]", games:10, dezenas:7, valor:"18,90", cotas:15 },
+    ],
+    "Super7": [
+      { label:"[07x10]", games:7, dezenas:10, valor:"56,70", cotas:5 },
+      { label:"[05x10]", games:5, dezenas:10, valor:"54,00", cotas:3 },
+      { label:"[04x11]", games:4, dezenas:11, valor:"51,83", cotas:5 },
+      { label:"[10x10]", games:10, dezenas:10, valor:"21,60", cotas:15 },
+    ],
+    "Milionaria": [
+      { label:"[01x10]", games:1, dezenas:10, valor:"48,60", cotas:35 },
+      { label:"[01x08]", games:1, dezenas:8, valor:"38,87", cotas:35 },
+      { label:"[08x06]", games:8, dezenas:6,  valor:"24,29", cotas:40 },
+      { label:"[10x06]", games:10, dezenas:6,  valor:"12,14", cotas:40 },
+      { label:"[14x06]", games:14, dezenas:6,  valor:"12,59", cotas:09 },
+      { label:"[01x06]", games:01, dezenas:6,  valor:"12,14", cotas:10  },
+    ],
+    "Loteca": [
+      { label:"[01x26]", games:1, dezenas:26, valor:"39,36", cotas:50 },
+      { label:"[01x24]", games:1, dezenas:24, valor:"21,87", cotas:30 },
+    ],
+    "Federal": [
+      { label:"[10x04]", games:0, dezenas:0,  valor:"4,00",  cotas:10 },
+      { label:"[10x10]", games:0, dezenas:0, valor:"10,00", cotas:10 },
+      { label:"[E.NML]", games:0, dezenas:0,  valor:"3,21", cotas:10 },
+      { label:"[E.ESP]", games:0, dezenas:0, valor:"8,04", cotas:10 },
+    ],
+    "Pascoa": [
+      { label:"[10x07]", games:10, dezenas:7, valor:"13,50", cotas:21, concurso:"2940", dataInicial:"2026-03-02", dataConcurso:"2026-04-04" },
+      { label:"[10x08]", games:10, dezenas:8, valor:"22,68", cotas:50, concurso:"2940", dataInicial:"2026-03-02", dataConcurso:"2026-04-04" },
+      { label:"[10x09]", games:10, dezenas:9, valor:"68,04", cotas:50, concurso:"2940", dataInicial:"2026-03-02", dataConcurso:"2026-04-04" },
+      { label:"[10x11]", games:10, dezenas:11, valor:"374,22", cotas:50, concurso:"2940", dataInicial:"2026-03-02", dataConcurso:"2026-04-04" },
+      { label:"[01x15]", games:1, dezenas:15, valor:"405,40", cotas:50, concurso:"2940", dataInicial:"2026-03-02", dataConcurso:"2026-04-04" },
+      { label:"[10x14]", games:10, dezenas:14, valor:"2432,42", cotas:50, concurso:"2940", dataInicial:"2026-03-02", dataConcurso:"2026-04-04" },
+    ],
+  },
   "Santa Tereza": {
     "Mega Sena": [
       { label:"[03x10]", games:3, dezenas:10, valor:"51,03", cotas:100 },
@@ -1061,61 +1186,65 @@ const inFlight = {
   }
 
    
-    function getMovDeltas() {
-      const deltaBoulevard = Number(onlyDigits($("deltaBoulevard").value || "0")) || 0;
-      const deltaCentro = Number(onlyDigits($("deltaCentro").value || "0")) || 0;
-      const deltaLotobel = Number(onlyDigits($("deltaLotobel").value || "0")) || 0;
-      const deltaSantaTereza = Number(onlyDigits($("deltaSantaTereza").value || "0")) || 0;
-      return { deltaBoulevard, deltaCentro, deltaLotobel, deltaSantaTereza };
-    }
+   function getMovDeltas() {
+  const obj = {};
+  LOJAS.forEach(loja => {
+    obj[loja.inputId] = Number(onlyDigits($(loja.inputId)?.value || "0")) || 0;
+  });
+  return obj;
+}
 
-    function saveDraft() {
-      const draft = {
-        lojaOrigem: $("lojaOrigem").value,
-        modalidade: $("modalidade").value,
-        concurso: $("concurso").value,
-        dataInicial: $("dataInicial").value,
-        dataConcurso: $("dataConcurso").value,
-        qtdJogos: $("qtdJogos").value,
-        qtdDezenas: $("qtdDezenas").value,
-        cotas: $("cotas").value,
-        valorCota: $("valorCota").value,
-        deltaBoulevard: $("deltaBoulevard").value,
-        deltaCentro: $("deltaCentro").value,
-        deltaLotobel: $("deltaLotobel").value,
-        deltaSantaTereza: $("deltaSantaTereza").value,
-        activeQuickMod: localStorage.getItem("active_quick_mod") || ""
-      };
-      localStorage.setItem("bolo_draft", JSON.stringify(draft));
-    }
+   function saveDraft() {
+  const draft = {
+    lojaOrigem: $("lojaOrigem").value,
+    modalidade: $("modalidade").value,
+    concurso: $("concurso").value,
+    dataInicial: $("dataInicial").value,
+    dataConcurso: $("dataConcurso").value,
+    qtdJogos: $("qtdJogos").value,
+    qtdDezenas: $("qtdDezenas").value,
+    cotas: $("cotas").value,
+    valorCota: $("valorCota").value,
+    activeQuickMod: localStorage.getItem("active_quick_mod") || ""
+  };
 
-    function loadDraft() {
-      try {
-        const raw = localStorage.getItem("bolo_draft");
-        if (!raw) return;
-        const d = JSON.parse(raw);
-        $("lojaOrigem").value = d.lojaOrigem || "";
-        $("modalidade").value = d.modalidade || "";
-        $("concurso").value = d.concurso || "";
-        $("dataInicial").value = d.dataInicial || "";
-        $("dataConcurso").value = d.dataConcurso || "";
-        $("qtdJogos").value = d.qtdJogos || "";
-        $("qtdDezenas").value = d.qtdDezenas || "";
-        $("cotas").value = d.cotas || "";
-        $("valorCota").value = d.valorCota || "";
-        $("deltaBoulevard").value = d.deltaBoulevard || "";
-        $("deltaCentro").value = d.deltaCentro || "";
-        $("deltaLotobel").value = d.deltaLotobel || "";
-        $("deltaSantaTereza").value = d.deltaSantaTereza || "";
-        if (d.activeQuickMod) localStorage.setItem("active_quick_mod", d.activeQuickMod);
-      } catch (e) {}
-    }
-    
-    function clearFieldsExceptLoja() {
+  LOJAS.forEach(loja => {
+    draft[loja.inputId] = $(loja.inputId)?.value || "";
+  });
+
+  localStorage.setItem("bolo_draft", JSON.stringify(draft));
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem("bolo_draft");
+    if (!raw) return;
+    const d = JSON.parse(raw);
+
+    $("lojaOrigem").value = d.lojaOrigem || "";
+    $("modalidade").value = d.modalidade || "";
+    $("concurso").value = d.concurso || "";
+    $("dataInicial").value = d.dataInicial || "";
+    $("dataConcurso").value = d.dataConcurso || "";
+    $("qtdJogos").value = d.qtdJogos || "";
+    $("qtdDezenas").value = d.qtdDezenas || "";
+    $("cotas").value = d.cotas || "";
+    $("valorCota").value = d.valorCota || "";
+
+    LOJAS.forEach(loja => {
+      const el = $(loja.inputId);
+      if (el) el.value = d[loja.inputId] || "";
+    });
+
+    if (d.activeQuickMod) localStorage.setItem("active_quick_mod", d.activeQuickMod);
+  } catch (e) {}
+}
+
+function clearFieldsExceptLoja() {
   const idsToClear = [
     "modalidade", "concurso", "dataInicial", "dataConcurso",
     "qtdJogos", "qtdDezenas", "valorCota", "cotas",
-    "deltaBoulevard", "deltaCentro", "deltaLotobel", "deltaSantaTereza"
+    ...LOJAS.map(loja => loja.inputId)
   ];
 
   idsToClear.forEach(id => {
@@ -1123,17 +1252,16 @@ const inFlight = {
     if (el) el.value = "";
   });
 
-  // ⚠️ Salva rascunho atualizado
   saveDraft();
 }
 
-    function clearMov() {
-      $("deltaBoulevard").value = "";
-      $("deltaCentro").value = "";
-      $("deltaLotobel").value = "";
-      $("deltaSantaTereza").value = "";
-      saveDraft();
-    }
+function clearMov() {
+  LOJAS.forEach(loja => {
+    const el = $(loja.inputId);
+    if (el) el.value = "";
+  });
+  saveDraft();
+}
 function formatDateBR(dateStr) {
   if (!dateStr) return "-";
 
@@ -1357,26 +1485,19 @@ function linhaMovHtml(nome, atualNum, exprReal, delta){
     }
 
     function updateMovimentarUIByOrigem() {
-      const loja = $("lojaOrigem").value.trim();
-      const chip = $("movOrigemText");
-      if (chip) chip.textContent = loja ? `Origem: ${loja}` : "Origem: —";
+  const loja = $("lojaOrigem").value.trim();
+  const chip = $("movOrigemText");
+  if (chip) chip.textContent = loja ? `Origem: ${loja}` : "Origem: —";
 
-      const map = [
-        { loja: "Boulevard", inputId: "deltaBoulevard" },
-        { loja: "Centro", inputId: "deltaCentro" },
-        { loja: "Lotobel", inputId: "deltaLotobel" },
-        { loja: "Santa Tereza", inputId: "deltaSantaTereza" },
-      ];
+  LOJAS.forEach(({ nome, inputId }) => {
+    const el = $(inputId);
+    if (!el) return;
 
-      map.forEach(({ loja: lojaName, inputId }) => {
-        const el = $(inputId);
-        if (!el) return;
-
-        const shouldDisable = !!loja && loja === lojaName;
-        el.disabled = shouldDisable;
-        if (shouldDisable) el.value = "";
-      });
-    }
+    const shouldDisable = !!loja && loja === nome;
+    el.disabled = shouldDisable;
+    if (shouldDisable) el.value = "";
+  });
+}
 
     /********************************************************
      * QUICKBAR (ATALHOS)
@@ -1678,9 +1799,10 @@ function renderQuickbar(){
       const base = validateMov();
       const deltas = getMovDeltas();
   
-      if (!deltas.deltaBoulevard && !deltas.deltaCentro && !deltas.deltaLotobel && !deltas.deltaSantaTereza) {
-        throw new Error("Informe pelo menos um valor de destino.");
-      }
+      const temMovimento = LOJAS.some(loja => Number(deltas[loja.inputId] || 0) !== 0);
+if (!temMovimento) {
+  throw new Error("Informe pelo menos um valor de destino.");
+}
   
       setButtonLoading(btn, true);
       setStatus("Verificando saldos para movimentação...", "muted", "spinner fa-spin");
@@ -1708,25 +1830,24 @@ function renderQuickbar(){
       }
   
       const saldosParaCalculo = {
-        origem: (dataAtual && dataAtual.origem) ? dataAtual.origem : base.lojaOrigem,
-        modalidade: (dataAtual && dataAtual.modalidade) ? dataAtual.modalidade : base.modalidade,
-        concurso: (dataAtual && dataAtual.concurso) ? dataAtual.concurso : base.concurso,
-  
-        dtInicial: (dataAtual && dataAtual.dtInicial) ? dataAtual.dtInicial : base.dataInicial,
-        dtConcurso: (dataAtual && dataAtual.dtConcurso) ? dataAtual.dtConcurso : base.dataConcurso,
-  
-        valorCota: (dataAtual && typeof dataAtual.valorCota === "number") ? dataAtual.valorCota : base.valorCota,
-  
-        qtdBoulevard: (dataAtual && Number.isFinite(dataAtual.qtdBoulevard)) ? dataAtual.qtdBoulevard : 0,
-        qtdCentro: (dataAtual && Number.isFinite(dataAtual.qtdCentro)) ? dataAtual.qtdCentro : 0,
-        qtdLotobel: (dataAtual && Number.isFinite(dataAtual.qtdLotobel)) ? dataAtual.qtdLotobel : 0,
-        qtdSantaTereza: (dataAtual && Number.isFinite(dataAtual.qtdSantaTereza)) ? dataAtual.qtdSantaTereza : 0,
-  
-        formulaBoulevard: (dataAtual && dataAtual.formulaBoulevard) ? dataAtual.formulaBoulevard : "",
-        formulaCentro: (dataAtual && dataAtual.formulaCentro) ? dataAtual.formulaCentro : "",
-        formulaLotobel: (dataAtual && dataAtual.formulaLotobel) ? dataAtual.formulaLotobel : "",
-        formulaSantaTereza: (dataAtual && dataAtual.formulaSantaTereza) ? dataAtual.formulaSantaTereza : "",
-      };
+  origem: (dataAtual && dataAtual.origem) ? dataAtual.origem : base.lojaOrigem,
+  modalidade: (dataAtual && dataAtual.modalidade) ? dataAtual.modalidade : base.modalidade,
+  concurso: (dataAtual && dataAtual.concurso) ? dataAtual.concurso : base.concurso,
+  dtInicial: (dataAtual && dataAtual.dtInicial) ? dataAtual.dtInicial : base.dataInicial,
+  dtConcurso: (dataAtual && dataAtual.dtConcurso) ? dataAtual.dtConcurso : base.dataConcurso,
+  valorCota: (dataAtual && typeof dataAtual.valorCota === "number") ? dataAtual.valorCota : base.valorCota
+};
+
+LOJAS.forEach(loja => {
+  saldosParaCalculo[loja.qtdKey] =
+    (dataAtual && Number.isFinite(dataAtual[loja.qtdKey])) ? dataAtual[loja.qtdKey] : 0;
+
+  saldosParaCalculo[loja.formulaKey] =
+    (dataAtual && dataAtual[loja.formulaKey]) ? dataAtual[loja.formulaKey] : "";
+
+  saldosParaCalculo[loja.countKey] =
+    (dataAtual && Number.isFinite(dataAtual[loja.countKey])) ? dataAtual[loja.countKey] : 0;
+});
   
       setButtonLoading(btn, false);
   
@@ -1803,7 +1924,7 @@ function renderQuickbar(){
   }
 // Função auxiliar para montar o HTML de consulta limpo
 function gerarHtmlConsultaUnica(d) {
-  const lojas = ["Boulevard", "Centro", "Lotobel", "Santa Tereza"];
+  const lojas = ["Boulevard", "Centro", "Lotobel","Santa Tereza","Via Brasil"];
   let listaSaldos = "";
 
   lojas.forEach(l => {
@@ -1825,28 +1946,36 @@ function gerarHtmlConsultaUnica(d) {
     </div>`;
 }
 function formatarPopupControle(data) {
-  // Função auxiliar para montar a linha com aviso de múltiplos registros
   const montarLinha = (label, valor, count) => {
     let aviso = count > 1 ? ` ⚠️ (${count} registros)` : "";
     return `${label}: ${valor}${aviso}`;
   };
 
-  return [
+  const linhas = [
     `📍 Origem: ${data.origem}`,
     `🎯 Modalidade: ${data.modalidade}`,
     `# Concurso: ${data.concurso}`,
     `🗓️ Início: ${formatDateBR(data.dtInicial)}`,
     `🎟️ Concurso: ${formatDateBR(data.dtConcurso)}`,
-    `💰 Cota: R$ ${data.valorCota.toFixed(2).replace(".", ",")}`,
+    `💰 Cota: R$ ${Number(data.valorCota || 0).toFixed(2).replace(".", ",")}`,
     ``,
-    `🎯 Quantidade de cotas por destino:`,
-    montarLinha("  🏢 Boulevard", data.qtdBoulevard, data.countBoulevard),
-    montarLinha("  🏬 Centro", data.qtdCentro, data.countCentro),
-    montarLinha("  🏪 Lotobel", data.qtdLotobel, data.countLotobel),
-    montarLinha("  🏠 Santa Tereza", data.qtdSantaTereza, data.countSantaTereza),
-    ``,
-    `🕓 Última alteração: ${formatDateTimeBR(data.carimbo)}`
-  ].join("\n");
+    `🎯 Quantidade de cotas por destino:`
+  ];
+
+  LOJAS.forEach(loja => {
+    linhas.push(
+      montarLinha(
+        `  ${loja.nome}`,
+        data[loja.qtdKey] ?? 0,
+        data[loja.countKey] ?? 0
+      )
+    );
+  });
+
+  linhas.push(``);
+  linhas.push(`🕓 Última alteração: ${formatDateTimeBR(data.carimbo)}`);
+
+  return linhas.join("\n");
 }
 function formatarConfirmacaoDelete(data) {
   return [
@@ -1884,23 +2013,33 @@ function formatarConfirmacaoCadastro(base) {
 }
     
 function formatarConfirmacaoMov(data, deltas) {
-  return [
+  const linhas = [
     `📍 Origem: ${data.origem}`,
     `🎯 Modalidade: ${data.modalidade}`,
     `# Concurso: ${data.concurso}`,
     `🗓️ Início: ${formatDateBR(data.dtInicial)}`,
     `🎟️ Concurso: ${formatDateBR(data.dtConcurso)}`,
-    `💰 Cota: R$ ${Number(data.valorCota||0).toFixed(2).replace(".", ",")}`,
+    `💰 Cota: R$ ${Number(data.valorCota || 0).toFixed(2).replace(".", ",")}`,
     ``,
     `📊 CONFERÊNCIA DE MOVIMENTAÇÃO:`,
-    `(Expressão [Mov] ➔ Final)`,
-    montarLinhaCalculo("  🏢 Boulevard",    data.qtdBoulevard,    data.formulaBoulevard,    deltas.deltaBoulevard),
-    montarLinhaCalculo("  🏬 Centro",       data.qtdCentro,       data.formulaCentro,       deltas.deltaCentro),
-    montarLinhaCalculo("  🏪 Lotobel",      data.qtdLotobel,      data.formulaLotobel,      deltas.deltaLotobel),
-    montarLinhaCalculo("  🏠 Santa Tereza", data.qtdSantaTereza,  data.formulaSantaTereza,  deltas.deltaSantaTereza),
-    ``,
-    `⚠️ Confirma a atualização desses valores?`
-  ].join("\n");
+    `(Expressão [Mov] ➔ Final)`
+  ];
+
+  LOJAS.forEach(loja => {
+    linhas.push(
+      montarLinhaCalculo(
+        `  ${loja.nome}`,
+        data[loja.qtdKey] ?? 0,
+        data[loja.formulaKey] ?? "",
+        deltas[loja.inputId] ?? 0
+      )
+    );
+  });
+
+  linhas.push(``);
+  linhas.push(`⚠️ Confirma a atualização desses valores?`);
+
+  return linhas.join("\n");
 }
 
  function formatarNaoEncontrado(p) {
