@@ -1124,12 +1124,12 @@ function buildCadConfirmText(base){
 }
 
   
-  async function callApi(action, payloadObj) {
-    const cbName = "cb_" + Math.random().toString(36).slice(2);
-    const payload = base64Json(payloadObj || {});
-    const url = `${API_URL}?action=${encodeURIComponent(action)}&callback=${cbName}&payload=${encodeURIComponent(payload)}&_t=${Date.now()}`;
-    return await jsonp(url, cbName);
-  }
+ async function callApi(action, payloadObj, timeoutMs = 330000) {
+  const cbName = "cb_" + Math.random().toString(36).slice(2);
+  const payload = base64Json(payloadObj || {});
+  const url = `${API_URL}?action=${encodeURIComponent(action)}&callback=${cbName}&payload=${encodeURIComponent(payload)}&_t=${Date.now()}`;
+  return await jsonp(url, cbName, timeoutMs);
+}
 
   function base64Json(obj) {
     const json = JSON.stringify(obj);
@@ -1148,42 +1148,42 @@ const inFlight = {
   buscar: false
 };
 
-  function jsonp(url, cbName) {
-    return new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      let done = false;
+  function jsonp(url, cbName, timeoutMs = 330000) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    let done = false;
 
-      const timer = setTimeout(() => {
-        if (done) return;
-        done = true;
-        cleanup();
-        reject(new Error("Timeout na chamada da API."));
-      }, 25000);
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error("Tempo excedido ao aguardar a gravação. Nada foi confirmado. Envie novamente."));
+    }, timeoutMs);
 
       function cleanup() {
-        clearTimeout(timer);
-        try { delete window[cbName]; } catch (e) {}
-        if (s && s.parentNode) s.parentNode.removeChild(s);
-      }
+      clearTimeout(timer);
+      try { delete window[cbName]; } catch (e) {}
+      if (s && s.parentNode) s.parentNode.removeChild(s);
+    }
 
-      window[cbName] = (data) => {
-        if (done) return;
-        done = true;
-        cleanup();
-        resolve(data);
-      };
+    window[cbName] = (data) => {
+      if (done) return;
+      done = true;
+      cleanup();
+      resolve(data);
+    };
 
-      s.onerror = () => {
-        if (done) return;
-        done = true;
-        cleanup();
-        reject(new Error("Falha carregando JSONP (script)."));
-      };
+    s.onerror = () => {
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error("Falha carregando JSONP (script)."));
+    };
 
-      s.src = url;
-      document.body.appendChild(s);
-    });
-  }
+    s.src = url;
+    document.body.appendChild(s);
+  });
+}
 
    
    function getMovDeltas() {
